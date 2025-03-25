@@ -1,0 +1,98 @@
+﻿@model IEnumerable<TaskToDo>
+
+<div class="row pb-3">
+    @foreach (var item in Model.Where(i => i.Status.ToLower() == "todo"))
+    {
+        @if (item.Priority.ToLower() == "low")
+        {
+            <div class="col-lg-3 col-sm-6 bg-info">
+                <div class="row p-2">
+                    <div class="col-12 p-1">
+                        <div class="card border-0 p-3 shadow border-top border-5 rounded">
+
+                            <div class="card-body pb-0">
+                                <div class="pl-1">
+                                    <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">@item.Title</p>
+                                    <p class="card-title text-warning text-center"><b>@item.Description</b></p>
+                                </div>
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center">Status: <span>@item.Status</span></p>
+                                </div>
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center">Priority: <span>@item.Priority</span></p>
+                                </div>
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center">DueDate: <span>@item.DueDate</span></p>
+                                </div>
+                            </div>
+                            <div>
+                                <a asp-action="Details" asp-route-productId="@item.Id" class="btn btn-primary bg-gradient border-0 fom-controll">Update</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (item.Priority.ToLower() == "medium")
+        {
+            <div class="col-lg-3 col-sm-6 bg-warning">
+                <div class="row p-2">
+                    <div class="col-12 p-1">
+                        <div class="card border-0 p-3 shadow border-top border-5 rounded">
+
+                            <div class="card-body pb-0">
+                                <div class="pl-1">
+                                    <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">@item.Title</p>
+                                    <p class="card-title text-warning text-center">by <b>@item.Description</b></p>
+                                </div>
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center mb-0">Status: <span class="text-decoration-line-through">@item.Status</span></p>
+                                </div>
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center">Priority: <span>@item.Priority</span></p>
+                                </div>
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center">DueDate: <span>@item.DueDate</span></p>
+                                </div>
+                            </div>
+                            <div>
+                                <a asp-action="Details" asp-route-productId="@item.Id" class="btn btn-primary bg-gradient border-0 fom-controll">Update</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (item.Priority.ToLower() == "high")
+        {
+            <div class="col-lg-3 col-sm-6 text-bg-danger">
+                <div class="row p-2">
+                    <div class="col-12 p-1">
+                        <div class="card border-0 p-3 shadow border-top border-5 rounded">
+
+                            <div class="card-body pb-0">
+                                <div class="pl-1">
+                                    <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">@item.Title</p>
+                                    <p class="card-title text-warning text-center">by <b>@item.Description</b></p>
+                                </div>
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center mb-0">Status: <span class="text-decoration-line-through">@item.Status</span></p>
+                                </div>
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center">Priority: <span>@item.Priority</span></p>
+                                </div>
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center">DueDate: <span>@item.DueDate</span></p>
+                                </div>
+                            </div>
+                            <div>
+                                <a asp-action="Details" asp-route-productId="@item.Id" class="btn btn-primary bg-gradient border-0 fom-controll">Update</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    }
+</div>
