@@ -7,7 +7,7 @@ using TaskManager.DataAccess.Entities;
 
 namespace TaskManager.DataAccess.Repositories.Interfaces
 {
-    public interface IToDoRepository : IGenericRepository<TaskToDo>
+    public interface IHistoryRepository : IGenericRepository<History>
     {
     }
 }

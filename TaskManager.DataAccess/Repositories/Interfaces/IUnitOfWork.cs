@@ -9,8 +9,12 @@ namespace TaskManager.DataAccess.Repositories.Interfaces
     public interface IUnitOfWork
     {
         IAppUserRepository AppUser { get; }
-        IToDoRepository TaskToDo { get; }
+        ITaskItemRepository TaskItem { get; }
         ICommentRepository Comment { get; }
+        ITeamRepository Team { get; }
+        IStatusRepository Status { get; }
+        IPriorityRepository Priority { get; }
+        IHistoryRepository History { get; }
         void Save();
     }
 }

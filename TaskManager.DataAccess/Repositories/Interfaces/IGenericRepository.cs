@@ -13,6 +13,7 @@ namespace TaskManager.DataAccess.Repositories.Interfaces
         T Get(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false);
         void Add(T entity);
         void Remove(T entity);
+        void Update(T entity);
         void RemoveRange(IEnumerable<T> entity);
     }
 }

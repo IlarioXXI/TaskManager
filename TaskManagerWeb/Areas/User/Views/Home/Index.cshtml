@@ -1,11 +1,12 @@
-﻿@model IEnumerable<TaskToDo>
+﻿@using TaskManagerWeb.Models
+@model IEnumerable<TaskItem>
 
 <div class="row pb-3">
-    @foreach (var item in Model.Where(i => i.Status.ToLower() == "todo"))
+    @foreach (var item in Model.Where(i => i.Status.Name.ToLower() == "not started" || i.Status.Name.ToLower() == "in progress"))
     {
-        @if (item.Priority.ToLower() == "low")
+        @if (item.Priority.Name.ToLower() == "low")
         {
-            <div class="col-lg-3 col-sm-6 bg-info">
+            <div class="col-lg-3 col-sm-6 bg-success">
                 <div class="row p-2">
                     <div class="col-12 p-1">
                         <div class="card border-0 p-3 shadow border-top border-5 rounded">
@@ -16,24 +17,30 @@
                                     <p class="card-title text-warning text-center"><b>@item.Description</b></p>
                                 </div>
                                 <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center">Status: <span>@item.Status</span></p>
+                                    <p class="text-dark text-opacity-75 text-center">Status: <span>@item.Status.Name</span></p>
                                 </div>
                                 <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center">Priority: <span>@item.Priority</span></p>
+                                    <p class="text-dark text-opacity-75 text-center">Priority: <span>@item.Priority.Name</span></p>
                                 </div>
                                 <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center">DueDate: <span>@item.DueDate</span></p>
+                                    <p class="text-dark text-opacity-75 text-center">DueDate: <span>@item.DueDate.ToString()</span></p>
                                 </div>
                             </div>
-                            <div>
-                                <a asp-action="Details" asp-route-productId="@item.Id" class="btn btn-primary bg-gradient border-0 fom-controll">Update</a>
+                            <div class="row">
+                                <div class="col-6">
+                                    <a data-id="@item.Id" class="delete btn btn-danger border-0 bg-gradient fom-controll ">Delete</a>
+                                </div>
+                                <div class="col-6">
+                                    <a asp-controller="TaskItem" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary bg-gradient border-0 fom-controll">Details</a>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         }
-        else if (item.Priority.ToLower() == "medium")
+        else if (item.Priority.Name.ToLower() == "medium")
         {
             <div class="col-lg-3 col-sm-6 bg-warning">
                 <div class="row p-2">
@@ -46,24 +53,25 @@
                                     <p class="card-title text-warning text-center">by <b>@item.Description</b></p>
                                 </div>
                                 <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center mb-0">Status: <span class="text-decoration-line-through">@item.Status</span></p>
+                                    <p class="text-dark text-opacity-75 text-center mb-0">Status: <p>@item.Status.Name</p></p>
                                 </div>
                                 <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center">Priority: <span>@item.Priority</span></p>
+                                    <p class="text-dark text-opacity-75 text-center">Priority: <span>@item.Priority.Name</span></p>
                                 </div>
                                 <div class="pl-1">
                                     <p class="text-dark text-opacity-75 text-center">DueDate: <span>@item.DueDate</span></p>
                                 </div>
                             </div>
                             <div>
-                                <a asp-action="Details" asp-route-productId="@item.Id" class="btn btn-primary bg-gradient border-0 fom-controll">Update</a>
+                                <a data-id="@item.Id" class="delete btn btn-danger border-0 bg-gradient fom-controll ">Delete</a>
+                                <a asp-controller="TaskItem" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary bg-gradient border-0 fom-controll">Details</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         }
-        else if (item.Priority.ToLower() == "high")
+        else if (item.Priority.Name.ToLower() == "high")
         {
             <div class="col-lg-3 col-sm-6 text-bg-danger">
                 <div class="row p-2">
@@ -76,17 +84,18 @@
                                     <p class="card-title text-warning text-center">by <b>@item.Description</b></p>
                                 </div>
                                 <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center mb-0">Status: <span class="text-decoration-line-through">@item.Status</span></p>
+                                    <p class="text-dark text-opacity-75 text-center mb-0">Status: <span>@item.Status.Name</span></p>
                                 </div>
                                 <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center">Priority: <span>@item.Priority</span></p>
+                                    <p class="text-dark text-opacity-75 text-center">Priority: <span>@item.Priority.Name</span></p>
                                 </div>
                                 <div class="pl-1">
                                     <p class="text-dark text-opacity-75 text-center">DueDate: <span>@item.DueDate</span></p>
                                 </div>
                             </div>
                             <div>
-                                <a asp-action="Details" asp-route-productId="@item.Id" class="btn btn-primary bg-gradient border-0 fom-controll">Update</a>
+                                <a data-id="@item.Id" class="delete btn btn-danger border-0 bg-gradient fom-controll ">Delete</a>
+                                <a asp-controller="TaskItem" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary bg-gradient border-0 fom-controll">Details</a>
                             </div>
                         </div>
                     </div>
@@ -96,3 +105,29 @@
 
     }
 </div>
+
+@section Scripts {
+    <script>
+        $(document).on("click", ".delete", function (e) {
+            e.preventDefault();
+
+            const taskId = $(this).data("id");
+            console.log(taskId);
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Reindirizza alla tua azione di eliminazione
+                    window.location.href = '@Url.Action("Delete", "TaskItem")' + '?id=' + taskId;
+                }
+            });
+        });
+    </script>
+    }
+

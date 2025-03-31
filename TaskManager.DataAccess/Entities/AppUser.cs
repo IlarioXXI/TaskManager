@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskManager.DataAccess.Entities
 {
@@ -14,5 +10,8 @@ namespace TaskManager.DataAccess.Entities
         public string Name { get; set; }
         public string? Avatar { get; set; }
 
+        public List<Team> Teams { get; set; } = [];
+        [NotMapped]
+        public string Role { get; set; }
     }
 }

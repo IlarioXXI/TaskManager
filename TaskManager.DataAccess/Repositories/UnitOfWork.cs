@@ -12,8 +12,12 @@ namespace TaskManager.DataAccess.Repositories
         private readonly AppDbContext _db;
         
         public IAppUserRepository AppUser { get; private set; }
-        public IToDoRepository TaskToDo { get; private set; }
+        public ITaskItemRepository TaskItem { get; private set; }
         public ICommentRepository Comment { get; private set; }
+        public ITeamRepository Team { get; private set; }
+        public IPriorityRepository Priority { get; private set; }
+        public IStatusRepository Status { get; private set; }
+        public IHistoryRepository History { get; private set; }
 
 
 
@@ -21,8 +25,12 @@ namespace TaskManager.DataAccess.Repositories
         {
             _db = db;
             AppUser = new AppUserRepository(_db);
-            TaskToDo = new TaskToDoRepository(_db);
+            TaskItem = new TaskItemRepository(_db);
             Comment = new CommentRepository(_db);
+            Team = new TeamRepository(_db);
+            Priority = new PriorityRepository(_db);
+            Status = new StatusRepository(_db); 
+            History = new HistoryRepository(_db);
         }
         public void Save()
         {

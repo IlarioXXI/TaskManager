@@ -13,7 +13,7 @@ namespace TaskManager.DataAccess.Repositories
         {
             _db = db;
             this.dbSet = _db.Set<T>();
-            _db.Comments.Include(c=>c.TaskToDo).Include(c=>c.TaskToDoId);
+            _db.Comments.Include(c=>c.TaskItem).Include(c=>c.TaskItemId);
         }
 
         public void Add(T entity)
@@ -71,6 +71,11 @@ namespace TaskManager.DataAccess.Repositories
         public void RemoveRange(IEnumerable<T> entity)
         {
             dbSet.RemoveRange(entity);
+        }
+
+        public void Update(T entity)
+        {
+            dbSet.Update(entity);
         }
     }
 }

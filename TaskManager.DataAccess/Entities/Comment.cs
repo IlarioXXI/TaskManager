@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,10 +18,14 @@ namespace TaskManager.DataAccess.Entities
         public string Description { get; set; }
         public DateTime CreationDate { get; set; }
 
-        public int TaskToDoId { get; set; }
+        public int TaskItemId { get; set; }
 
-        [ForeignKey("TaskToDoId")]
-        public TaskToDo? TaskToDo { get; set; }
+        [ForeignKey("TaskItemId")]
+        public TaskItem? TaskItem { get; set; }
+
+        public string? AppUserId { get; set; }
+        [ForeignKey("AppUserId")]
+        public AppUser? AppUser { get; set; }
 
     }
 }

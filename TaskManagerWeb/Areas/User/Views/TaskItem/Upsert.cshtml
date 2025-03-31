@@ -1,0 +1,80 @@
+﻿@using TaskManager.DataAccess.Utility
+@model TaskManagerWeb.Models.ToDoVM
+<form method="post" asp-action="Upsert" asp-controller="TaskItem" asp-area="User">
+    <input asp-for="TaskToDo.Id" />
+    <input asp-for="TaskToDo.TeamId" hidden />
+    <div class="row">
+        <div class="col-10">
+            <div class="border p-3 mt-4">
+                <div class=" row pb-2">
+                    <h2 class="text-primary">Update Task</h2>
+                </div>
+
+            </div>
+            <div class="mb-3 row p-1">
+                <label asp-for="TaskToDo.Title" class="p-0"></label>
+                <input asp-for="TaskToDo.Title" class="form-control" />
+                <span asp-validation-for="TaskToDo.Title" class="text-danger"></span>
+            </div>
+            <div class="mb-3 row p-1">
+                <label asp-for="TaskToDo.Description" class="p-0"></label>
+                <input asp-for="TaskToDo.Description" class="form-control" />
+                <span asp-validation-for="TaskToDo.Description" class="text-danger"></span>
+            </div>
+            <div class="mb-3 row p-1">
+                <label>Due Date</label>
+                <input asp-for="TaskToDo.DueDate" class="form-control" required>
+            </div>
+
+            @if (Model.TaskToDo.StatusId == 0 || Model.TaskToDo.PriorityId == 0)
+            {
+                <div class="mb-3 row p-1">
+                    <select asp-for="StatusSelectedId" asp-items="@Model.StatusList" class="form-select p-0">
+                        <option disabled selected>--Select Status--</option>
+                    </select>
+
+                </div>
+                <div class="mb-3 row p-1">
+                    <select asp-for="PrioritySelectedId" asp-items="@Model.PriorityList" class="form-select p-0">
+                        <option disabled selected>--Select Priority--</option>
+                    </select>
+
+                </div>
+            } else
+            {
+                <div class="mb-3 row p-1">
+                    <select asp-for="@Model.StatusSelectedId" asp-items="@Model.StatusList" class="form-select p-0">
+                        <option>--Select Status--</option>
+                    </select>
+
+                </div>
+                <div class="mb-3 row p-1">
+                    <select asp-for="@Model.PrioritySelectedId" asp-items="@Model.PriorityList" class="form-select p-0">
+                        <option>--Select Priority--</option>
+                    </select>
+
+                </div>
+            }
+            @if (User.IsInRole(SD.Role_Admin))
+            {
+                <div class="mb-3 row p-1">
+                    <label>Add Users</label>
+                    <select asp-for="TaskToDo.AppUserId" asp-items="@Model.Users" class="form-select p-0" multiple>
+                    </select>
+                </div>
+            }
+            
+            <button type="submit" class="btn btn-primary form-control">Update</button>
+            <a asp-controller="Comment" asp-action="Upsert" asp-route-taskId="@Model.TaskToDo.Id" class="btn btn-primary form-control mt-3">Add Comment</a>
+        </div>
+        <div class="col-6 col-mid-3">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary border  form-control">Back to List</a>
+        </div>
+    </div>
+</form>
+
+@{
+    <partial name="_ValidationScriptsPartial" />
+}
+
+

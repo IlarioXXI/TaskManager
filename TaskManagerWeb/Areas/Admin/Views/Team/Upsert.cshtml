@@ -1,0 +1,52 @@
+﻿@using TaskManagerWeb.Models
+@model TeamVM
+<form method="post" asp-action="Upsert" asp-controller="Team">
+    <input asp-for="Team.Id" hidden />
+    <div class="row">
+        <div class="col-10">
+            <div class="border p-3 mt-4">
+                <div class=" row pb-2">
+                    <h2 class="text-primary">@(Model.Team.Id != 0 ? "Update" : "Create") Team</h2>
+                </div>
+
+            </div>
+            <div class="mb-3 row p-1">
+                <label asp-for="Team.Name" class="p-0"></label>
+                <input asp-for="Team.Name" class="form-control" />
+                <span asp-validation-for="Team.Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3 row p-1">
+                <label>Add Users</label>
+                <select asp-for=" @Model.SelectedUserIds" asp-items="@Model.Users" class="form-select p-0" multiple>
+                </select>
+            </div>
+            <div class="row">
+                <div class="col-6 col-md-3">
+                    @if (Model.Team.Id != 0)
+                    {
+                        <button type="submit" class="btn btn-primary form-control">Update</button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-primary form-control">Create</button>
+                    }
+
+                </div>
+                <div class="col-6 col-mid-3">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary border  form-control">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("select[multiple]").select2();
+        });
+    </script>
+}
+@{
+    <partial name="_ValidationScriptsPartial"   />
+}

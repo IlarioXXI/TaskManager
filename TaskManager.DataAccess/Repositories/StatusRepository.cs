@@ -8,16 +8,12 @@ using TaskManager.DataAccess.Repositories.Interfaces;
 
 namespace TaskManager.DataAccess.Repositories
 {
-    public class TaskToDoRepository : GenericRepository<TaskToDo>, IToDoRepository
+    public class StatusRepository : GenericRepository<Status>,IStatusRepository
     {
         private readonly AppDbContext _db;
-        public TaskToDoRepository(AppDbContext db) : base(db)
+        public StatusRepository(AppDbContext db) : base(db)
         {
             _db = db;
-        }
-        public void Update(TaskToDo entity)
-        {
-            dbSet.Update(entity);
         }
     }
 }

@@ -2,12 +2,11 @@ using System.Diagnostics;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.DataAccess.Repositories.Interfaces;
-using TaskManager.DataAccess.Utility;
 using TaskManagerWEB.Models;
 
-namespace TaskManagerWEB.Areas.User.Controllers;
+namespace TaskManagerWEB.Areas.Admin.Controllers;
 
-[Area("User")]
+[Area("Admin")]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -24,14 +23,10 @@ public class HomeController : Controller
 
         if (User.Identity.IsAuthenticated)
         {
-            if (User.IsInRole(SD.Role_Admin))
-            {
-                return Redirect("Admin/Home/Index");
-            }
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            return View(_unitOfWork.TaskItem.GetAll(t => t.AppUserId == claim, includeProperties: "Priority,Status"));
+            return RedirectToAction("Index","Team");
         }
         return Redirect("identity/account/login");
     }
