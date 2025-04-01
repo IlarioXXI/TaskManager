@@ -296,11 +296,18 @@ namespace TaskManager.DataAccess.Migrations
                     FromStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ToStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ChangeDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TaskItemId = table.Column<int>(type: "int", nullable: false)
+                    TaskItemId = table.Column<int>(type: "int", nullable: false),
+                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_History", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_History_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_History_TaskItems_TaskItemId",
                         column: x => x.TaskItemId,
@@ -362,6 +369,11 @@ namespace TaskManager.DataAccess.Migrations
                 name: "IX_Comments_TaskItemId",
                 table: "Comments",
                 column: "TaskItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_History_AppUserId",
+                table: "History",
+                column: "AppUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_History_TaskItemId",

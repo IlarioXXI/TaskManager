@@ -16,13 +16,13 @@
 
 </head>
 <body>
-    <header >
+    <header>
         @if (!User.Identity.IsAuthenticated)
         {
             <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-primary border-bottom box-shadow mb-3 text-white">
                 <div class="container-fluid">
                     <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+                            aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
@@ -44,7 +44,7 @@
                 <div class="container-fluid">
                     <a class="navbar-brand text-white" asp-area="User" asp-controller="Home" asp-action="Index">TaskManagerWEB</a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+                            aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
@@ -52,7 +52,7 @@
                             <li class="nav-item">
                                 <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
-                            <li class="nav-item dropdown" >
+                            <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Teams
                                 </a>
@@ -62,26 +62,36 @@
                                         <li class="nav-item">
                                             <a class="dropdown-item" asp-area="User" asp-controller="Team" asp-action="Index">MyTeams</a>
                                         </li>
-                                    }else
+                                    }
+                                    else
                                     {
                                         <li class="nav-item">
                                             <a class="dropdown-item" asp-area="User" asp-controller="Team" asp-action="Index">MyTeams</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="dropdown-item" asp-area="User" asp-controller="Team" asp-action="Upsert">Add Team</a>
+                                            <a class="dropdown-item" asp-area="Admin" asp-controller="Team" asp-action="Index">AllTeams</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="dropdown-item" asp-area="Admin" asp-controller="Team" asp-action="Upsert">Add Team</a>
                                         </li>
                                     }
-                                    
+
                                 </ul>
                             </li>
-                    </ul>
-                    <partial name="_LoginPartial"></partial>
-                </div>
+                            @if (User.IsInRole(SD.Role_Admin))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-area="Admin" asp-controller="User" asp-action="Index">ManageUser</a>
+                                </li>
+                            }
+                        </ul>
+                        <partial name="_LoginPartial"></partial>
+                    </div>
 
-            </div>
-        </nav>
+                </div>
+            </nav>
         }
-        
+
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -101,7 +111,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://cdn.tiny.cloud/1/2ektt0c7uk9qk2epidlwjpd0hlplc7b4s60u2dhz5s8gsg3m/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/notification.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+@* @section Scripts {
+    <script>
+            Swal.fire({
+              title: "<strong>HTML <u>example</u></strong>",
+              icon: "info",
+              html: `
+                You can use <b>bold text</b>,
+        <a href="#" autofocus>links</a>,
+                and other HTML tags
+              `,
+              showCloseButton: true,
+              showCancelButton: true,
+              focusConfirm: false,
+              confirmButtonText: `
+        <i class="fa fa-thumbs-up"></i> Great!
+              `,
+              confirmButtonAriaLabel: "Thumbs up, great!",
+              cancelButtonText: `
+        <i class="fa fa-thumbs-down"></i>
+              `,
+              cancelButtonAriaLabel: "Thumbs down"
+            });
+    </script>
+            
+} *@

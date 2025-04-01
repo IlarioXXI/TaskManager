@@ -48,6 +48,7 @@ namespace TaskManager.DataAccess.Entities
         [ForeignKey("AppUserId")]
         [ValidateNever]
         public string? AppUserId { get; set; }
+
         public DateTime TaskNotification { get; set; }
     }
 }

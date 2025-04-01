@@ -59,7 +59,7 @@ namespace TaskManager.DataAccess.Repositories
                 {
                     query = query.Include(includeProp);
                 }
-            }
+            }   
             return query.ToList();
         }
 

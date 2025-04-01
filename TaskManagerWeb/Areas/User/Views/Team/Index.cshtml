@@ -10,21 +10,13 @@
                     Teams
                 </h5>
             </div>
-
         </div>
     </div>
     <div class="card-body my-4">
-        <div class="row">
-        </div>
         <div class="row mb-3 pb-3">
-            <div class="col-md-2 offset-md-1">
-                <a asp-area="user" asp-controller="Home" asp-action="Index" class="btn btn-outline-primary text-uppercase mb-5 btn-sm"><small>Back to tasks</small></a>
-            </div>
             <div class="col-md-10 offset-md-1">
-
                 @foreach (var item in Model)
                 {
-
                     <div class="row border-bottom pb-3">
                         <div class="col-12 col-lg-6 pt-md-3">
                             <h5 class="text-uppercase text-secondary"><strong>@item.Team.Name</strong></h5>
@@ -40,11 +32,7 @@
                                     {
                                         <li>@user.Name</li>
                                     }
-
                                 </div>
-                                @* <select asp-items="item.Users" class="form-select p-0">
-                                    <option disabled selected>Users</option>
-                                </select> *@
                             }
                             else
                             {
@@ -52,62 +40,66 @@
                             }
                         </div>
 
-                        <div class="col-12 col-lg-6 pt-md-3">
-                            @if (item.TaskItems != null)
-                            {
-                                foreach (var t in item.TaskItems)
+                        <div class="col-12 pt-md-3">
+                            <div class="row">
+                                @if (item.TaskItems != null)
                                 {
-                                    if (t.Priority.Name.ToLower().Equals("low"))
+                                    foreach (var t in item.TaskItems)
                                     {
-                                        <div class="col-12 col-lg-6 pt-md-3 bg-success p-2 mb-2">
-                                            <h5 class="text-uppercase text-secondary"><strong>@t.Title</strong></h5>
-                                            <p><small>@Html.Raw(t.Status.Name)</small></p>
-                                            <p><small>@Html.Raw(t.Priority.Name)</small></p>
-                                            <a asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" asp-route-id="@t.Id" class="btn btn-primary border-0 bg-gradient w-100 py-2">Update</a>
-                                        </div>
-                                    }else if (t.Priority.Name.ToLower().Equals("medium"))
-                                    {
-                                        <div class="col-12 col-lg-6 pt-md-3 bg-warning p-2 mb-2">
-                                            <h5 class="text-uppercase text-secondary"><strong>@t.Title</strong></h5>
-                                            <p><small>@Html.Raw(t.Status.Name)</small></p>
-                                            <p><small>@Html.Raw(t.Priority.Name)</small></p>
-                                            <a asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" asp-route-id="@t.Id" class="btn btn-primary border-0 bg-gradient w-100 py-2">Update</a>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="col-12 col-lg-6 pt-md-3 bg-danger p-2 mb-2">
-                                            <h5 class="text-uppercase text-secondary"><strong>@t.Title</strong></h5>
-                                            <p><small>@Html.Raw(t.Status.Name)</small></p>
-                                            <p><small>@Html.Raw(t.Priority.Name)</small></p>
-                                            <a asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" asp-route-id="@t.Id" class="btn btn-primary border-0 bg-gradient w-100 py-2">Update</a>
-                                        </div>
-                                    }
+                                        var taskClass = t.Priority.Name.ToLower() switch
+                                        {
+                                            "low" => "bg-success",
+                                            "medium" => "bg-warning",
+                                            _ => "bg-danger"
+                                        };
 
+                                        <div class="col-12 col-lg-6 pt-md-3 @taskClass p-2 mb-2">
+                                            <h5 class="text-uppercase text-secondary"><strong>@t.Title</strong></h5>
+                                            <p><small>@Html.Raw(t.Status.Name)</small></p>  
+                                            <p><small>@Html.Raw(t.Priority.Name)</small></p>
+
+                                                <a asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" asp-route-id="@t.Id" class="btn btn-primary border-0 bg-gradient w-100 py-2">Update</a>
+                                            
+                                            
+
+                                            @if (t.Comments != null)
+                                            {
+                                                <div class="mt-2">
+                                                    <h6>Comments:</h6>
+                                                    @foreach (var comment in t.Comments)
+                                                    {
+                                                        <div>
+                                                            <strong>@comment.AppUser.Name:</strong>
+                                                            <small>@Html.Raw(comment.Description)</small>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    }
                                 }
-                            }
+                            </div>
                         </div>
+
                         <div class="row">
-                            @if (User.IsInRole(SD.Role_Admin))
-                            {
-                                <div class="col-4">
-                                    <a asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" class="btn btn-info border-0 bg-gradient w-100 py-2">Add Task</a>
-                                </div>
-                                <div class="col-4">
-                                    <a asp-action="Upsert" asp-route-id="@item.Team.Id" class="btn btn-warning border-0 bg-gradient w-100 py-2">Update</a>
-                                </div>
-                                <div class="col-4">
-                                    <a data-id="@item.Team.Id" class="delete btn btn-danger border-0 bg-gradient w-100 py-2">Delete</a>
-                                </div>
-                            }
-                            
+                            <div class="col-3">
+                                <a asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" class="btn btn-info border-0 bg-gradient w-100 py-2">Add Task</a>
+                            </div>
+                            <div class="col-3">
+                                <a asp-action="Upsert" asp-controller="Team" asp-route-id="@item.Team.Id" class="btn btn-warning border-0 bg-gradient w-100 py-2">Update</a>
+                            </div>
+
+                            <div class="col-3">
+                                <a data-id="@item.Team.Id" class="delete btn btn-danger border-0 bg-gradient w-100 py-2">Delete</a>
+                            </div>
+                            <div class="col-3">
+                                <a asp-action="Index" asp-controller="History" asp-route-id="@item.Team.Id" class="btn btn-dark border-0 bg-gradient w-100 py-2">History</a>
+                            </div>
                         </div>
                     </div>
                 }
-
             </div>
         </div>
-       
     </div>
 
     @section Scripts {
@@ -127,7 +119,6 @@
                     confirmButtonText: "Yes, delete it!"
                 }).then((result) => {
                     if (result.isConfirmed) {
-
                         window.location.href = '@Url.Action("Delete", "Team")' + '?id=' + teamId;
                     }
                 });

@@ -12,7 +12,7 @@ using TaskManager.DataAccess;
 namespace TaskManager.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250331082748_init")]
+    [Migration("20250401093049_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -285,6 +285,10 @@ namespace TaskManager.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("ChangeDate")
                         .HasColumnType("datetime2");
 
@@ -300,6 +304,8 @@ namespace TaskManager.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("TaskItemId");
 
@@ -501,11 +507,19 @@ namespace TaskManager.DataAccess.Migrations
 
             modelBuilder.Entity("TaskManager.DataAccess.Entities.History", b =>
                 {
+                    b.HasOne("TaskManager.DataAccess.Entities.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TaskManager.DataAccess.Entities.TaskItem", "TaskItem")
                         .WithMany("History")
                         .HasForeignKey("TaskItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AppUser");
 
                     b.Navigation("TaskItem");
                 });

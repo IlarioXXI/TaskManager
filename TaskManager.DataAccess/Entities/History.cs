@@ -18,6 +18,9 @@ namespace TaskManager.DataAccess.Entities
         public int TaskItemId { get; set; }
         [ForeignKey("TaskItemId")]
         public TaskItem TaskItem { get; set; }
+        public string AppUserId { get; set; }
+        [ForeignKey("AppUserId")]
+        public AppUser AppUser { get; set; }
 
     }
 }

@@ -48,13 +48,52 @@ namespace TaskManager.DataAccess.DBInitializer
 
                 _userManager.CreateAsync(new AppUser
                 {
-                    UserName = "admindef@gmail.com",
-                    Email = "admindef@gmail.com",
+                    UserName = "admin@gmail.com",
+                    Email = "admin@gmail.com",
                     Name = "Admin",
                     PhoneNumber = " 1234567890",
                 }, "Admin.1").GetAwaiter().GetResult();
 
-                AppUser user = _db.AppUsers.FirstOrDefault(u => u.Email == "admindef@gmail.com");
+
+
+                _db.Status.Add(new Status
+                {
+                    Name = "not started",
+                });
+                _db.SaveChanges();
+                _db.Status.Add(new Status
+                {
+                    Name = "in progress",
+                });
+                _db.SaveChanges();
+                _db.Status.Add(new Status
+                {
+                    Name = "completed",
+                });
+                _db.SaveChanges();
+
+
+
+                _db.Priority.Add(new Priority
+                {
+                    Name = "low",
+                });
+                _db.SaveChanges();
+                _db.Priority.Add(new Priority
+                {
+                    Name = "medium",
+                });
+                _db.SaveChanges();
+                _db.Priority.Add(new Priority
+                {
+                    Name = "high",
+                });
+                _db.SaveChanges();
+
+
+
+                AppUser user = _db.AppUsers.FirstOrDefault(u => u.Email == "admin@gmail.com");
+
                 _userManager.AddToRoleAsync(user, SD.Role_Admin).GetAwaiter().GetResult();
             }
             return;

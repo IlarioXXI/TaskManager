@@ -1,4 +1,5 @@
-﻿@using TaskManager.DataAccess.Utility
+﻿@using System.Security.Claims
+@using TaskManager.DataAccess.Utility
 @model TaskManagerWeb.Models.ToDoVM
 <form method="post" asp-action="Upsert" asp-controller="TaskItem" asp-area="User">
     <input asp-for="TaskToDo.Id" />
@@ -25,36 +26,42 @@
                 <label>Due Date</label>
                 <input asp-for="TaskToDo.DueDate" class="form-control" required>
             </div>
+            
+            @if (Model.TaskToDo.AppUserId == User.FindFirst(ClaimTypes.NameIdentifier).Value)
+                {
+                    @if (Model.TaskToDo.StatusId == 0 || Model.TaskToDo.PriorityId == 0)
+                    {
+                        <div class="mb-3 row p-1">
+                            <select asp-for="StatusSelectedId" asp-items="@Model.StatusList" class="form-select p-0">
+                                <option disabled selected>--Select Status--</option>
+                            </select>
 
-            @if (Model.TaskToDo.StatusId == 0 || Model.TaskToDo.PriorityId == 0)
-            {
-                <div class="mb-3 row p-1">
-                    <select asp-for="StatusSelectedId" asp-items="@Model.StatusList" class="form-select p-0">
-                        <option disabled selected>--Select Status--</option>
-                    </select>
+                        </div>
+                        <div class="mb-3 row p-1">
+                            <select asp-for="PrioritySelectedId" asp-items="@Model.PriorityList" class="form-select p-0">
+                                <option disabled selected>--Select Priority--</option>
+                            </select>
 
-                </div>
-                <div class="mb-3 row p-1">
-                    <select asp-for="PrioritySelectedId" asp-items="@Model.PriorityList" class="form-select p-0">
-                        <option disabled selected>--Select Priority--</option>
-                    </select>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-3 row p-1">
+                            <select asp-for="@Model.StatusSelectedId" asp-items="@Model.StatusList" class="form-select p-0">
+                                <option>--Select Status--</option>
+                            </select>
 
-                </div>
-            } else
-            {
-                <div class="mb-3 row p-1">
-                    <select asp-for="@Model.StatusSelectedId" asp-items="@Model.StatusList" class="form-select p-0">
-                        <option>--Select Status--</option>
-                    </select>
+                        </div>
+                        <div class="mb-3 row p-1">
+                            <select asp-for="@Model.PrioritySelectedId" asp-items="@Model.PriorityList" class="form-select p-0">
+                                <option>--Select Priority--</option>
+                            </select>
 
-                </div>
-                <div class="mb-3 row p-1">
-                    <select asp-for="@Model.PrioritySelectedId" asp-items="@Model.PriorityList" class="form-select p-0">
-                        <option>--Select Priority--</option>
-                    </select>
-
-                </div>
-            }
+                        </div>
+                    }
+                }
+            
+            
             @if (User.IsInRole(SD.Role_Admin))
             {
                 <div class="mb-3 row p-1">

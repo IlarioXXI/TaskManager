@@ -15,9 +15,6 @@ namespace TaskManager.DataAccess.Repositories
         {
             _db = db;
         }
-        public void Update(Comment entity)
-        {
-            dbSet.Update(entity);
-        }
+
     }
 }

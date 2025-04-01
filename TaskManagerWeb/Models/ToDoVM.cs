@@ -7,7 +7,7 @@ namespace TaskManagerWeb.Models
     public class ToDoVM
     {
         public TaskItem? TaskToDo { get; set; }
-
+        public AppUser? AppUser { get; set; }
 
         [ValidateNever]
         public IEnumerable<SelectListItem> PriorityList { get; set; }

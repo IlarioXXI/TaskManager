@@ -15,10 +15,6 @@ namespace TaskManager.DataAccess.Repositories
         {
             _db = db;
         }
-        public void Update(TaskItem entity)
-        {
-            dbSet.Update(entity);
-        }
         public void Add(TaskItem taskItem, int priorityId, int statusId)
         {
             //var priority = _db.Priority.FirstOrDefault(p=>p.Id == priorityId);

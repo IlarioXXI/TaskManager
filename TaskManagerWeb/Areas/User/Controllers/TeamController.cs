@@ -18,6 +18,8 @@ namespace TaskManagerWeb.Areas.User.Controllers
         }
         public IActionResult Upsert(int? id)
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             TeamVM teamVM = new()
             {
                 Team = new Team(),
@@ -27,9 +29,13 @@ namespace TaskManagerWeb.Areas.User.Controllers
                     Value = u.Id.ToString()
                 }),
                 SelectedUserIds = new List<string>(),
-                TaskItems = new List<TaskItem>()
+                TaskItems = new List<TaskItem>(),
+                
             };
-
+            foreach (var task in teamVM.TaskItems)
+            {
+                task.AppUserId = userId;
+            }
             if (id != null && id != 0)
             {
                 teamVM.Team = _unitOfWork.Team.Get(u => u.Id == id, includeProperties: "TaskItems,Users");
@@ -41,6 +47,7 @@ namespace TaskManagerWeb.Areas.User.Controllers
         [HttpPost]
         public IActionResult Upsert(TeamVM teamVM)
         {
+            
             if (ModelState.IsValid)
             {
                 if (teamVM.Team.Id == 0)
@@ -92,13 +99,13 @@ namespace TaskManagerWeb.Areas.User.Controllers
             {
                 TeamVM teamVM = new()
                 {
-                    Team = team,
+                    Team = _unitOfWork.Team.Get(t=>t.Id == team.Id,includeProperties:"TaskItems,Users"),
                     Users = _unitOfWork.AppUser.GetAll().Select(u => new SelectListItem
                     {
                         Text = u.Name,
                         Value = u.Id.ToString()
                     }),
-                    TaskItems = team.TaskItems,
+                    TaskItems = _unitOfWork.TaskItem.GetAll(t=>t.TeamId == team.Id,includeProperties:"Comments"),
                 };
                 teamVMs.Add(teamVM);
             }

@@ -34,7 +34,7 @@ namespace TaskManager.DataAccess.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("AppUserTeam", (string)null);
+                    b.ToTable("AppUserTeam");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -271,7 +271,7 @@ namespace TaskManager.DataAccess.Migrations
 
                     b.HasIndex("TaskItemId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("TaskManager.DataAccess.Entities.History", b =>
@@ -281,6 +281,10 @@ namespace TaskManager.DataAccess.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("ChangeDate")
                         .HasColumnType("datetime2");
@@ -298,9 +302,11 @@ namespace TaskManager.DataAccess.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AppUserId");
+
                     b.HasIndex("TaskItemId");
 
-                    b.ToTable("History", (string)null);
+                    b.ToTable("History");
                 });
 
             modelBuilder.Entity("TaskManager.DataAccess.Entities.Priority", b =>
@@ -317,7 +323,7 @@ namespace TaskManager.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Priority", (string)null);
+                    b.ToTable("Priority");
                 });
 
             modelBuilder.Entity("TaskManager.DataAccess.Entities.Status", b =>
@@ -334,7 +340,7 @@ namespace TaskManager.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Status", (string)null);
+                    b.ToTable("Status");
                 });
 
             modelBuilder.Entity("TaskManager.DataAccess.Entities.TaskItem", b =>
@@ -379,7 +385,7 @@ namespace TaskManager.DataAccess.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("TaskItems", (string)null);
+                    b.ToTable("TaskItems");
                 });
 
             modelBuilder.Entity("TaskManager.DataAccess.Entities.Team", b =>
@@ -396,7 +402,7 @@ namespace TaskManager.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teams", (string)null);
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("TaskManager.DataAccess.Entities.AppUser", b =>
@@ -498,11 +504,19 @@ namespace TaskManager.DataAccess.Migrations
 
             modelBuilder.Entity("TaskManager.DataAccess.Entities.History", b =>
                 {
+                    b.HasOne("TaskManager.DataAccess.Entities.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TaskManager.DataAccess.Entities.TaskItem", "TaskItem")
                         .WithMany("History")
                         .HasForeignKey("TaskItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AppUser");
 
                     b.Navigation("TaskItem");
                 });

@@ -52,42 +52,7 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
                 }
                 else
                 {
-                    var currentTeam = _db.Teams.Include(u => u.Users).FirstOrDefault(t => t.Id == teamVM.Team.Id);
-                    var currentUsersIds = currentTeam.Users.Select(u => u.Id).ToList();
-
-                    if (teamVM.SelectedUserIds == null)
-                    {
-                        teamVM.Team.Users.Clear();
-
-                    }
-                    else
-                    {
-                        foreach (var userId in teamVM.SelectedUserIds)
-                        {
-                            if (!currentUsersIds.Contains(userId))
-                            {
-                                var user = _db.AppUsers.Find(userId);
-                                if (user != null)
-                                {
-                                    currentTeam.Users.Add(user);
-                                }
-                            }
-                        }
-
-                        foreach (var userId in currentUsersIds)
-                        {
-                            if (!teamVM.SelectedUserIds.Contains(userId))
-                            {
-                                var userToRemove = currentTeam.Users.FirstOrDefault(u => u.Id == userId);
-                                if (userToRemove != null)
-                                {
-                                    currentTeam.Users.Remove(userToRemove);
-                                }
-                            }
-                        }
-                    }
-
-                    _unitOfWork.Team.Update(teamVM.Team);
+                    _unitOfWork.Team.UpdateTeamInUsers(teamVM.Team, teamVM.SelectedUserIds);
                 }
                 //if (teamVM.SelectedUserIds != null)
                 //{
@@ -113,7 +78,7 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            var teamList = _unitOfWork.Team.GetAll(includeProperties: "TaskItems");
+            var teamList = _unitOfWork.Team.GetAll(includeProperties: "TaskItems,Users");
             foreach (var t in teamList)
             {
                 foreach (var ti in t.TaskItems)
@@ -128,13 +93,13 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
             {
                 TeamVM teamVM = new()
                 {
-                    Team = _unitOfWork.Team.Get(t => t.Id == team.Id, includeProperties: "Users"),
+                    Team = team,
                     Users = _unitOfWork.AppUser.GetAll().Select(u => new SelectListItem
                     {
                         Text = u.Name,
                         Value = u.Id.ToString()
                     }),
-                    TaskItems = team.TaskItems,
+                    TaskItems = _unitOfWork.TaskItem.GetAll(t=>t.TeamId == team.Id,includeProperties:"Comments"),
                 };
                 teamVMs.Add(teamVM);
             }

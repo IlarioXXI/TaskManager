@@ -25,9 +25,4 @@
 		<ProjectReference Include="..\TaskManager.DataAccess\TaskManager.DataAccess.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Hubs\" />
-	  <Folder Include="Services\" />
-	</ItemGroup>
-
 </Project>
