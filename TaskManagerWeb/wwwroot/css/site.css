@@ -30,3 +30,17 @@ html {
 body {
     margin-bottom: 60px;
 }
+.swal-title {
+    font-size: 24px;
+    color: #333;
+}
+
+.swal-html {
+    font-size: 16px;
+    color: #555;
+}
+
+.swal-confirm-button {
+    background-color: #28a745; /* Verde */
+    color: white;
+}

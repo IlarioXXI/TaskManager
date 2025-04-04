@@ -1,0 +1,154 @@
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
+using System.Numerics;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using TaskManager.DataAccess.Entities;
+using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.DataAccess.Utility;
+using TaskManagerWeb.Models;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace TaskManagerWEB.Api.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public class TaskItemController : Controller
+    {
+
+
+        private readonly ILogger<TaskItemController> _logger;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IValidator<ToDoVM> _validator;
+        public TaskItemController(ILogger<TaskItemController> logger, IUnitOfWork unitOfWork, IValidator<ToDoVM> validation)
+        {
+            _logger = logger;
+            _unitOfWork = unitOfWork;
+            _validator = validation;
+        }
+
+
+
+        // GET: api/<TaskItemController>
+        [HttpGet("getAll")]
+        public IActionResult GetAll()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.Email).Value;
+            //var userRole = User.FindFirst(ClaimTypes.Role);
+            if (claimsIdentity == null)
+            {
+                return Unauthorized();
+            }
+            else
+            {
+                var allTasks = _unitOfWork.TaskItem.GetAll(t => t.AppUserId == userId);
+                return Json(new { data = allTasks });
+            }
+
+        }
+
+        // GET api/<TaskItemController>/
+        [HttpGet("getById/{id}")]
+        public IActionResult GetById(int id)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            //var userRole = User.FindFirst(ClaimTypes.Role);
+            if (claimsIdentity == null)
+            {
+                return Unauthorized();
+            }
+            else
+            {
+                var task = _unitOfWork.TaskItem.Get(t => t.Id == id);
+                return Json(new { data = task });
+            }
+        }
+
+        // POST api/<TaskItemController>
+        [HttpPost("upsert/{teamId}")]
+        public async Task<IActionResult> Upsert(int teamId, [FromBody] ToDoVM taskItem)
+        {
+            var resultValidation = await _validator.ValidateAsync(taskItem);
+            if (!resultValidation.IsValid)
+            {
+                resultValidation.AddToModelState(this.ModelState);
+                var errors = new List<string>();
+                foreach (var error in resultValidation.Errors)
+                {
+                    errors.Add(error.ErrorMessage);
+                }
+                return BadRequest(errors);
+            }
+
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
+
+
+            if (taskItem.TaskToDo.Id == 0)
+            {
+                taskItem.TaskToDo.TeamId = teamId;
+                _unitOfWork.TaskItem.Add(taskItem.TaskToDo);
+                _unitOfWork.Save();
+                _logger.LogInformation("TaskItem ({taskItemName}) created successfully by : {email}",taskItem.TaskToDo.Title,user.Email);
+                return Json(new { data = taskItem.TaskToDo});
+            }
+            else
+            {
+                var existingItem = _unitOfWork.TaskItem.Get(t=>t.Id == taskItem.TaskToDo.Id);
+                var oldStatus = _unitOfWork.Status.Get(s=>s.Id == existingItem.StatusId);
+                var oldPriority = _unitOfWork.Priority.Get(p=>p.Id == existingItem.PriorityId);
+                existingItem.StatusId = taskItem.TaskToDo.StatusId;
+                existingItem.PriorityId = taskItem.TaskToDo.PriorityId;
+                if (oldStatus.Id != existingItem.StatusId || oldPriority.Id != existingItem.PriorityId)
+                {
+                    History history = new()
+                    {
+                        FromStatus = oldStatus.Name,
+                        ToStatus = _unitOfWork.Status.Get(s => s.Id == existingItem.StatusId).Name,
+                        ChangeDate = DateTime.Now,
+                        TaskItemId = existingItem.Id,
+                        AppUserId = userId,
+                    };
+                    _unitOfWork.History.Add(history);
+                    _unitOfWork.Save();
+                }
+                if (existingItem.AppUserId != null)
+                {
+                    existingItem.AppUserId = taskItem.TaskToDo.AppUserId;
+                }
+                existingItem.Description = taskItem.TaskToDo.Description;
+                existingItem.DueDate = taskItem.TaskToDo.DueDate;
+
+                _unitOfWork.TaskItem.Update(existingItem);
+                _unitOfWork.Save();
+                _logger.LogInformation("TaskItem ({taskItemName}) updated successfully by : {email}", taskItem.TaskToDo.Title, user.Email);
+                return Json(new { data = existingItem });
+            }  
+        }
+
+        // DELETE api/<TaskItemController>/5
+        [HttpDelete("Delete/{id}")]
+        public IActionResult Delete(int id)
+        {
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
+            if (_unitOfWork.TaskItem.Get(x=>x.Id == id) == null)
+            {
+                return NotFound();
+            }
+            _unitOfWork.TaskItem.Remove(_unitOfWork.TaskItem.Get(x => x.Id == id));
+            _unitOfWork.Save();
+            _logger.LogInformation("TaskItem ({taskItemId}) deleted successfully by : {email}", id,user.Email);
+            return Ok("Delete successfully");            
+        }
+    }
+}

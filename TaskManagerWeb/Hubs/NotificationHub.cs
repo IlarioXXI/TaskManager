@@ -13,25 +13,18 @@ namespace TaskManagerWeb.Hubs
             _db = db;
         }
 
-        private static Dictionary<string, List<string>> NtoIdMappingTable = new Dictionary<string, List<string>>();
+        private static Dictionary<string, string> _connectedUsers = new Dictionary<string, string>();
         public override async Task OnConnectedAsync()
         {
             var username = Context.User.Identity.Name;
             var userId = Context.UserIdentifier;
-            List<string> userIds;
 
             //store the userid to the list.  
-            if (!NtoIdMappingTable.TryGetValue(username, out userIds))
+            if (!_connectedUsers.TryGetValue(userId, out username))
             {
-                userIds = new List<string>();
-                userIds.Add(userId);
-
-                NtoIdMappingTable.Add(username, userIds);
+                _connectedUsers.Add(userId, Context.User.Identity.Name);
             }
-            else
-            {
-                userIds.Add(userId);
-            }
+          
 
             await base.OnConnectedAsync();
         }
@@ -39,19 +32,20 @@ namespace TaskManagerWeb.Hubs
         {
             var username = Context.User.Identity.Name;
             var userId = Context.UserIdentifier;
-            List<string> userIds;
 
             //remove userid from the List  
-            if (NtoIdMappingTable.TryGetValue(username, out userIds))
+            if (_connectedUsers.TryGetValue(userId, out username))
             {
-                userIds.Remove(userId);
+                _connectedUsers.Remove(userId);
             }
             await base.OnDisconnectedAsync(exception);
         }
 
-        //public async Task SendNotification(string message)
-        //{
-        //    await Clients.All.SendAsync("SendNotification", message);
-        //}
+        public static bool IsUserConnected(string userId)
+        {
+
+            return _connectedUsers.ContainsKey(userId);
+        }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -27,5 +28,18 @@ namespace TaskManager.DataAccess.Entities
         [ForeignKey("AppUserId")]
         public AppUser? AppUser { get; set; }
 
+    }
+
+    public class CommentValidation : AbstractValidator<Comment>
+    {
+        public CommentValidation() 
+        {
+            RuleFor(x => x.Description).NotNull();
+            RuleFor(x => x.CreationDate).Empty();
+            RuleFor(x=>x.TaskItemId).NotNull();
+            RuleFor(x => x.TaskItem).Null();
+            RuleFor(x => x.AppUserId).Null();
+            RuleFor(x => x.AppUser).Null();
+        }
     }
 }

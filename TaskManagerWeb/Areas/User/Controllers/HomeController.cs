@@ -24,10 +24,6 @@ public class HomeController : Controller
 
         if (User.Identity.IsAuthenticated)
         {
-            if (User.IsInRole(SD.Role_Admin))
-            {
-                return Redirect("Admin/Home/Index");
-            }
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 

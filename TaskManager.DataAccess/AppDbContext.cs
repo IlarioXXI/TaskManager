@@ -22,6 +22,7 @@ namespace TaskManager.DataAccess
         public DbSet<Priority> Priority { get; set; }
         public DbSet<Status> Status { get; set; }
         public DbSet<History> History { get; set; }
+ 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -30,8 +31,12 @@ namespace TaskManager.DataAccess
             builder.Entity<AppUser>()
                 .HasMany(u => u.Teams)
                 .WithMany(e => e.Users);
-
         }
-    
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
+
     }
 }

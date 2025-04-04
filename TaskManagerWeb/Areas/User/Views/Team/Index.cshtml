@@ -58,9 +58,9 @@
                                             <p><small>@Html.Raw(t.Status.Name)</small></p>  
                                             <p><small>@Html.Raw(t.Priority.Name)</small></p>
 
-                                                <a asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" asp-route-id="@t.Id" class="btn btn-primary border-0 bg-gradient w-100 py-2">Update</a>
-                                            
-                                            
+                                            <a asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" asp-route-id="@t.Id" class="btn btn-primary border-0 bg-gradient w-100 py-2">Update</a>
+
+
 
                                             @if (t.Comments != null)
                                             {
@@ -80,22 +80,25 @@
                                 }
                             </div>
                         </div>
+                        @if (User.IsInRole(SD.Role_Admin))
+                        {
+                            <div class="row">
+                                <div class="col-3">
+                                    <a asp-area="Admin" asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" class="btn btn-info border-0 bg-gradient w-100 py-2">Add Task</a>
+                                </div>
+                                <div class="col-3">
+                                    <a asp-area="Admin" asp-action="Upsert" asp-controller="Team" asp-route-id="@item.Team.Id" class="btn btn-warning border-0 bg-gradient w-100 py-2">Update</a>
+                                </div>
 
-                        <div class="row">
-                            <div class="col-3">
-                                <a asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" class="btn btn-info border-0 bg-gradient w-100 py-2">Add Task</a>
+                                <div class="col-3">
+                                    <a data-id="@item.Team.Id" class="delete btn btn-danger border-0 bg-gradient w-100 py-2">Delete</a>
+                                </div>
+                                <div class="col-3">
+                                    <a asp-area="Admin" asp-action="Index" asp-controller="History" asp-route-id="@item.Team.Id" class="btn btn-dark border-0 bg-gradient w-100 py-2">History</a>
+                                </div>
                             </div>
-                            <div class="col-3">
-                                <a asp-action="Upsert" asp-controller="Team" asp-route-id="@item.Team.Id" class="btn btn-warning border-0 bg-gradient w-100 py-2">Update</a>
-                            </div>
-
-                            <div class="col-3">
-                                <a data-id="@item.Team.Id" class="delete btn btn-danger border-0 bg-gradient w-100 py-2">Delete</a>
-                            </div>
-                            <div class="col-3">
-                                <a asp-action="Index" asp-controller="History" asp-route-id="@item.Team.Id" class="btn btn-dark border-0 bg-gradient w-100 py-2">History</a>
-                            </div>
-                        </div>
+                        }
+                        
                     </div>
                 }
             </div>
