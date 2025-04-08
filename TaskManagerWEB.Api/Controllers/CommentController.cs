@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TaskManager.DataAccess.Entities;
@@ -40,7 +41,7 @@ namespace TaskManagerWEB.Api.Controllers
             {
                 return NotFound();
             }
-            return Json(new { data = comments });
+            return Ok(comments);
         }
 
 
@@ -78,7 +79,7 @@ namespace TaskManagerWEB.Api.Controllers
                 _unitOfWork.Comment.Add(comment);
                 _unitOfWork.Save();
                 _logger.LogInformation("User {email} added new comment ad task : {task}",user.Email,task.Title);
-                return Json(new { data = comment });
+                return Ok(comment);
             }
             else
             {
@@ -91,7 +92,7 @@ namespace TaskManagerWEB.Api.Controllers
                 _unitOfWork.Save();
                 _logger.LogInformation("User {email} changed {comment} comment ad task : {task}", user.Email, existingComment.Description,task.Title);
             }
-            return Json(new { data = comment });
+            return Ok(comment);
         }
 
 
@@ -112,7 +113,7 @@ namespace TaskManagerWEB.Api.Controllers
             _unitOfWork.Comment.Remove(comment);
             _unitOfWork.Save();
             _logger.LogInformation("User {email} deleted comment : {comment}", user.Email, comment.Description);
-            return Json(new {data = comment});
+            return Ok(comment);
         }
     }
 }

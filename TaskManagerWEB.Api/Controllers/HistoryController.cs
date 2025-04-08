@@ -36,7 +36,7 @@ namespace TaskManagerWEB.Api.Controllers
             else
             {
                 var historyTask = _unitOfWork.History.GetAll(h => h.TaskItemId == taskId);
-                return Json(new { data = historyTask });
+                return Ok(historyTask );
             }
 
         }

@@ -9,7 +9,6 @@ using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Org.BouncyCastle.Crypto.Generators;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -44,10 +43,10 @@ namespace TaskManagerWEB.Api.Controllers
 
 
 
-        public ApiIdentityController(IOptions<AppJWTSettings> settings, 
-            UserManager<IdentityUser> userManager, 
-            IUnitOfWork unitOfWork, 
-            IValidator<RegisterModel> validator, 
+        public ApiIdentityController(IOptions<AppJWTSettings> settings,
+            UserManager<IdentityUser> userManager,
+            IUnitOfWork unitOfWork,
+            IValidator<RegisterModel> validator,
             IValidator<AuthUser> validatorUser,
             IValidator<ChangePasswordModel> validatorPass,
             ILogger<ApiIdentityController> logger)
@@ -62,6 +61,7 @@ namespace TaskManagerWEB.Api.Controllers
             _validatorPass = validatorPass;
             _logger = logger;
         }
+
         [Route("auth")]
         [HttpPost]
         [AllowAnonymous]
@@ -120,7 +120,7 @@ namespace TaskManagerWEB.Api.Controllers
             var handler = new JwtSecurityTokenHandler();
             SecurityToken token = handler.CreateToken(descriptor);
             string tokenString = handler.WriteToken(token);
-            _logger.LogInformation("User {email} is logged at : {data}", authUser.Email, DateTime.Now);
+            _logger.LogInformation("User {email} is logged at : {data}", authUser.Email, DateTime.Now.ToLocalTime());
             return Ok(tokenString);
         }
 
