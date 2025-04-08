@@ -31,6 +31,8 @@ namespace TaskManagerWEB.Api.Controllers
 
 
         [HttpGet("getAll")]
+        [ProducesResponseType(typeof(Team), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult GetAll()
         {
             if (!User.IsInRole(SD.Role_Admin))
@@ -38,21 +40,25 @@ namespace TaskManagerWEB.Api.Controllers
                 return Unauthorized();
             }
             var teams = _unitOfWork.Team.GetAll();
-            return Json(new { data = teams });
+            return Ok(teams);
         }
 
         [HttpGet("getAllMyTeams")]
+        [ProducesResponseType(typeof(Team), StatusCodes.Status200OK)]
         public IActionResult GetAllMyTeams()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
             var teams = _unitOfWork.Team.GetAll(t => t.Users.Contains(user));
-            return Json(new { data = teams });
-            
+            return Ok(teams);
+
         }
 
         [HttpPost("upsert")]
+        [ProducesResponseType(typeof(Team), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpsertAsync(TeamVM team)
         {
             var resultValidation = await _validator.ValidateAsync(team);
@@ -76,39 +82,42 @@ namespace TaskManagerWEB.Api.Controllers
             }
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
-            if (team.Team.Id==0||team.Team.Id==null)
+            if (team.Team.Id == 0 || team.Team.Id == null)
             {
                 _unitOfWork.Team.Add(team.Team);
                 _unitOfWork.Save();
                 _logger.LogInformation("Team ({teamName}) created successfully by : {email}", team.Team.Name, user.Email);
-                return Json(new { data = team.Team });
+                return Ok(team.Team);
             }
             else
             {
                 var existingTeam = _unitOfWork.Team.Get(t => t.Id == team.Team.Id);
                 existingTeam.Name = team.Team.Name;
-                if (team.SelectedUserIds!=null )
+                if (team.SelectedUserIds != null)
                 {
                     _unitOfWork.Team.UpdateTeamInUsers(existingTeam, team.SelectedUserIds);
                     _unitOfWork.Save();
                     _logger.LogInformation("Team ({teamName}) updated successfully by : {email}", team.Team.Name, user.Email);
-                    return Json(new { data = existingTeam });
+                    return Ok(existingTeam);
                 }
                 _unitOfWork.Team.Update(existingTeam);
                 _unitOfWork.Save();
                 _logger.LogInformation("Team ({teamName}) updated successfully by : {email}", team.Team.Name, user.Email);
-                return Json(new { data = existingTeam });
+                return Ok(existingTeam);
             }
         }
 
 
         [HttpDelete("Delete/{id}")]
+        [ProducesResponseType(typeof(Team), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Delete(int id)
         {
             var team = _unitOfWork.Team.Get(t => t.Id == id);
             if (team == null)
             {
-                return BadRequest();
+                return NotFound();
             }
             if (!User.IsInRole(SD.Role_Admin))
             {
@@ -117,7 +126,7 @@ namespace TaskManagerWEB.Api.Controllers
             _unitOfWork.Team.Remove(team);
             _unitOfWork.Save();
             _logger.LogInformation("Team ({teamName}) deleted successfully", team.Name);
-            return Json(new {data = team});
+            return Ok(team);
         }
     }
 }

@@ -37,44 +37,47 @@ namespace TaskManagerWEB.Api.Controllers
 
         // GET: api/<TaskItemController>
         [HttpGet("getAll")]
+        [ProducesResponseType(typeof(TaskItem),StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult GetAll()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.Email).Value;
-            //var userRole = User.FindFirst(ClaimTypes.Role);
-            if (claimsIdentity == null)
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
+            if (!User.IsInRole(SD.Role_Admin))
             {
                 return Unauthorized();
             }
             else
             {
                 var allTasks = _unitOfWork.TaskItem.GetAll(t => t.AppUserId == userId);
-                return Json(new { data = allTasks });
+                return Ok(allTasks);
             }
 
         }
 
         // GET api/<TaskItemController>/
         [HttpGet("getById/{id}")]
+        [ProducesResponseType(typeof(TaskItem), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult GetById(int id)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            //var userRole = User.FindFirst(ClaimTypes.Role);
-            if (claimsIdentity == null)
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
+            if (!User.IsInRole(SD.Role_Admin))
             {
                 return Unauthorized();
             }
             else
             {
                 var task = _unitOfWork.TaskItem.Get(t => t.Id == id);
-                return Json(new { data = task });
+                return Ok(task);
             }
         }
 
         // POST api/<TaskItemController>
         [HttpPost("upsert/{teamId}")]
+        [ProducesResponseType(typeof(TaskItem), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Upsert(int teamId, [FromBody] ToDoVM taskItem)
         {
             var resultValidation = await _validator.ValidateAsync(taskItem);
@@ -99,7 +102,7 @@ namespace TaskManagerWEB.Api.Controllers
                 _unitOfWork.TaskItem.Add(taskItem.TaskToDo);
                 _unitOfWork.Save();
                 _logger.LogInformation("TaskItem ({taskItemName}) created successfully by : {email}",taskItem.TaskToDo.Title,user.Email);
-                return Json(new { data = taskItem.TaskToDo});
+                return Ok(taskItem.TaskToDo);
             }
             else
             {
@@ -131,16 +134,22 @@ namespace TaskManagerWEB.Api.Controllers
                 _unitOfWork.TaskItem.Update(existingItem);
                 _unitOfWork.Save();
                 _logger.LogInformation("TaskItem ({taskItemName}) updated successfully by : {email}", taskItem.TaskToDo.Title, user.Email);
-                return Json(new { data = existingItem });
+                return Ok(existingItem  );
             }  
         }
 
         // DELETE api/<TaskItemController>/5
         [HttpDelete("Delete/{id}")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Delete(int id)
         {
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
+            if (User.IsInRole(SD.Role_User))
+            {
+                return Unauthorized();
+            }
             if (_unitOfWork.TaskItem.Get(x=>x.Id == id) == null)
             {
                 return NotFound();

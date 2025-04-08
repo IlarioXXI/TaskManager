@@ -12,8 +12,8 @@ using TaskManager.DataAccess;
 namespace TaskManager.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250404084254_RemovedDisciminator")]
-    partial class RemovedDisciminator
+    [Migration("20250408183608_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

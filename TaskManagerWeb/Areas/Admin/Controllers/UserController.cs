@@ -28,6 +28,10 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
             List<AppUserVM> appUsers = new List<AppUserVM>();
             foreach (var user in users)
             {
+                if (user.Role == null)
+                {
+                    return NotFound();
+                }
                 var roleId = userRoles.FirstOrDefault(u => u.UserId == user.Id).RoleId;
                 user.Role = roles.FirstOrDefault(u => u.Id == roleId).Name;
                 appUsers.Add(new AppUserVM

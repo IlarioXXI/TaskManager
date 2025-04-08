@@ -34,6 +34,8 @@ namespace TaskManagerWEB.Api.Controllers
         }
 
         [HttpGet("GetAllByTaskId/{taskItemId}")]
+        [ProducesResponseType(typeof(Comment), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetAllByTaskId(int taskItemId)
         {
             var comments = _unitOfWork.Comment.GetAll(c => c.TaskItemId == taskItemId);
@@ -46,6 +48,9 @@ namespace TaskManagerWEB.Api.Controllers
 
 
         [HttpPost("Upsert")]
+        [ProducesResponseType(typeof(Comment), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpsertAsync(Comment comment)
         {
             var resultValidation = await _validator.ValidateAsync(comment);
@@ -97,6 +102,9 @@ namespace TaskManagerWEB.Api.Controllers
 
 
         [HttpDelete("Delete/{id}")]
+        [ProducesResponseType(typeof(Comment), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);

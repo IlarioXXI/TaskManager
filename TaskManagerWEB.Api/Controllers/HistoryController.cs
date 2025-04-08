@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using TaskManager.DataAccess.Entities;
 using TaskManager.DataAccess.Repositories.Interfaces;
 using TaskManager.DataAccess.Utility;
 using TaskManagerWeb.Models;
@@ -27,6 +28,8 @@ namespace TaskManagerWEB.Api.Controllers
 
 
         [HttpGet("getAll/{taskId}")]
+        [ProducesResponseType(typeof(History), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult GetAll(int taskId)
         {
             if (!User.IsInRole(SD.Role_Admin))

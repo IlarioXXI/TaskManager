@@ -65,6 +65,9 @@ namespace TaskManagerWEB.Api.Controllers
         [Route("auth")]
         [HttpPost]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateJWTToken(
             [FromBody] AuthUser authUser)
         {
@@ -126,6 +129,9 @@ namespace TaskManagerWEB.Api.Controllers
 
 
         [HttpPost("Register")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register(RegisterModel model)
         {
             var resultValidation = await _validator.ValidateAsync(model);
@@ -154,11 +160,13 @@ namespace TaskManagerWEB.Api.Controllers
            
             await _userManager.AddToRoleAsync(user, model.Role);
             var role = await _userManager.GetRolesAsync(user);
-            return Json(new {data = user.Id});
+            return Ok(user.Id);
         }
 
         [HttpGet("getAllUsers")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ProducesResponseType(typeof(IdentityUser), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult GetAllUsers()
         {
             if (!User.IsInRole(SD.Role_Admin))
@@ -166,12 +174,14 @@ namespace TaskManagerWEB.Api.Controllers
                 return Unauthorized();
             };
             var users = _unitOfWork.AppUser.GetAll();
-            return Json(users);
+            return Ok(users);
         }
 
 
         [HttpPost("ChangePassword")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ChangePasswordAsync(ChangePasswordModel model)
         {
             var resultValidation = await _validatorPass.ValidateAsync(model);

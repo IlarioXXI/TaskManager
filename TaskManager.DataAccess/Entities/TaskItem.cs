@@ -21,9 +21,8 @@ namespace TaskManager.DataAccess.Entities
 
         public int TeamId { get; set; }
         [ForeignKey("TeamId")]
-        [Required]
         [ValidateNever]
-        public Team Team { get; set; }
+        public Team? Team { get; set; }
         public int StatusId { get; set; }
         [ForeignKey("StatusId")]
         [ValidateNever]
