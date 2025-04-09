@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -160,7 +161,20 @@ namespace TaskManagerWEB.Api.Controllers
            
             await _userManager.AddToRoleAsync(user, model.Role);
             var role = await _userManager.GetRolesAsync(user);
-            return Ok(user.Id);
+
+            var token = await CreateJWTToken(new AuthUser
+            {
+                Email = model.Email,
+                Password = model.Password
+            });
+
+            if (token is OkObjectResult okResult)
+            {
+                var tokenToString = okResult.Value as string;
+                return Ok(tokenToString);
+            }
+
+            return BadRequest("Invalid credentials or other error.");
         }
 
         [HttpGet("getAllUsers")]
