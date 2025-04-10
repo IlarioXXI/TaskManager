@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TaskManager.DataAccess.Entities;
-using TaskManagerWeb.Models;
-using TaskManager.DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using TaskManager.DataAccess.Utility;
-using System.Security.Claims;
-using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.Models;
+using TaskManagerWeb.Models;
 
 namespace TaskManagerWeb.Areas.User.Controllers
 {

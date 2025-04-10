@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
-using System;
 using System.Text;
 using TaskManager.DataAccess;
-using TaskManager.DataAccess.Entities;
 using TaskManager.DataAccess.Repositories;
 using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.Models;
+using TaskManager.Services.Middlewares;
+using TaskManager.Services.Validators;
 using TaskManagerWeb.Models;
 using TaskManagerWEB.Api.models;
 
@@ -48,7 +50,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
-
+builder.Services.AddHttpContextAccessor();
 
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -64,19 +66,45 @@ builder.Services.AddMvc();
 
 
 
-builder.Services.AddScoped<IValidator<ToDoVM>, TaskItemValidation>();
+builder.Services.AddScoped<IValidator<ToDoVM>, TaskItemValidation > ();
 builder.Services.AddScoped<IValidator<TeamVM>, TeamValidation>();
 builder.Services.AddScoped<IValidator<Comment>, CommentValidation>();
 builder.Services.AddScoped<IValidator<RegisterModel>, RegisterValidation>();
 builder.Services.AddScoped<IValidator<AuthUser>, AuthUserValidation>();
 builder.Services.AddScoped<IValidator<ChangePasswordModel>, ChangePasswordValidation>();
-
+builder.Services.AddTransient<GlobalErrorHandler>();
 
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[]{ }
+        }
+    });
+});
 
 Log.Logger = new LoggerConfiguration()             // Create a new Serilog logger configuration
                 .ReadFrom.Configuration(builder.Configuration) // Read settings from appsettings.json
@@ -104,7 +132,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.UseAuthentication();
-
+app.UseMiddleware<GlobalErrorHandler>();
 app.MapControllers();
 
 app.Run();

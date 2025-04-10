@@ -2,16 +2,13 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Moq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
-using TaskManager.DataAccess.Entities;
 using TaskManager.DataAccess.Repositories.Interfaces;
 using TaskManager.DataAccess.Utility;
+using TaskManager.Models;
 using TaskManagerWEB.Api.Controllers;
 using TaskManagerWEB.Api.models;
 using Xunit;

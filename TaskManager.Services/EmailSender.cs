@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TaskManager.DataAccess.Utility
+namespace TaskManager.Services
 {
     public class EmailSender : IEmailSender
     {

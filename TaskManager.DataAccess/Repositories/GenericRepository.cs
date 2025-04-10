@@ -6,7 +6,7 @@ namespace TaskManager.DataAccess.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly AppDbContext _db;
+        protected readonly AppDbContext _db;
         internal DbSet<T> dbSet;
 
         public GenericRepository(AppDbContext db)

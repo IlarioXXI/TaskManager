@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Hosting;
 using System.Reflection.Emit;
-using TaskManager.DataAccess.Entities;
+using TaskManager.Models;
 
 namespace TaskManager.DataAccess
 {

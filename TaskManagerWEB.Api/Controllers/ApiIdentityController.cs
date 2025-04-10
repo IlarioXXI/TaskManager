@@ -1,25 +1,16 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NuGet.Protocol;
-using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using TaskManager.DataAccess;
-using TaskManager.DataAccess.Entities;
 using TaskManager.DataAccess.Repositories.Interfaces;
 using TaskManager.DataAccess.Utility;
+using TaskManager.Models;
 using TaskManagerWEB.Api.models;
 
 namespace TaskManagerWEB.Api.Controllers

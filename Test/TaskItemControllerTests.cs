@@ -2,14 +2,12 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using TaskManager.DataAccess.Entities;
 using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.Models;
 using TaskManagerWeb.Models;
 using TaskManagerWEB.Api.Controllers;
 using Xunit;
@@ -57,6 +55,7 @@ namespace Test
             var result = _controller.GetAll();
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<List<TaskItem>>(okResult.Value);
+            Assert.Equal(taskItems, returnValue);
         }
 
         [Fact]

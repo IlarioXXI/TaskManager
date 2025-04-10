@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using TaskManager.DataAccess.Entities;
-using TaskManager.DataAccess.Repositories;
 using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.Models;
 
 namespace TaskManagerWeb.Areas.User.Controllers
 {

@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagerWEB.Api", "TaskM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{C245A909-6C3F-47AB-A88C-5CBAAB1F7170}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.Models", "TaskManager.Models\TaskManager.Models.csproj", "{150DE96E-268D-453E-B4C8-232885A3FD94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.Services", "TaskManager.Services\TaskManager.Services.csproj", "{83634F96-F130-4829-B40F-36C9CAA0C434}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{C245A909-6C3F-47AB-A88C-5CBAAB1F7170}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C245A909-6C3F-47AB-A88C-5CBAAB1F7170}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C245A909-6C3F-47AB-A88C-5CBAAB1F7170}.Release|Any CPU.Build.0 = Release|Any CPU
+		{150DE96E-268D-453E-B4C8-232885A3FD94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{150DE96E-268D-453E-B4C8-232885A3FD94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{150DE96E-268D-453E-B4C8-232885A3FD94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{150DE96E-268D-453E-B4C8-232885A3FD94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83634F96-F130-4829-B40F-36C9CAA0C434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83634F96-F130-4829-B40F-36C9CAA0C434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83634F96-F130-4829-B40F-36C9CAA0C434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83634F96-F130-4829-B40F-36C9CAA0C434}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

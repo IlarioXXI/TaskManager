@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using TaskManager.DataAccess.Entities;
+using TaskManager.Models;
 
 namespace TaskManagerWeb.Models;
 

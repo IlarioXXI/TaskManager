@@ -1,6 +1,6 @@
 ﻿
-using TaskManager.DataAccess.Entities;
 using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.Models;
 
 namespace TaskManager.DataAccess.Repositories
 {

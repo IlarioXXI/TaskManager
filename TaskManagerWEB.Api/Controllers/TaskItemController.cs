@@ -2,14 +2,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.ComponentModel.DataAnnotations;
-using System.Numerics;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using TaskManager.DataAccess.Entities;
 using TaskManager.DataAccess.Repositories.Interfaces;
 using TaskManager.DataAccess.Utility;
+using TaskManager.Models;
 using TaskManagerWeb.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

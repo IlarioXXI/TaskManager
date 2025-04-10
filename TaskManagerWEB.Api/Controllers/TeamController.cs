@@ -1,14 +1,11 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using TaskManager.DataAccess;
-using TaskManager.DataAccess.Entities;
 using TaskManager.DataAccess.Repositories.Interfaces;
 using TaskManager.DataAccess.Utility;
+using TaskManager.Models;
 using TaskManagerWeb.Models;
 
 namespace TaskManagerWEB.Api.Controllers

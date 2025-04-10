@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using TaskManager.DataAccess.Entities;
 using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.Models;
 using TaskManagerWEB.Api.Controllers;
 using Xunit;
 

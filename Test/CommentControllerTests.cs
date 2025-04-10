@@ -1,25 +1,14 @@
-﻿using Castle.Components.DictionaryAdapter.Xml;
-using Castle.Core.Logging;
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NuGet.Protocol;
-using System;
-using System.Collections.Generic;
-using System.Drawing.Text;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using TaskManager.DataAccess.Entities;
 using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.Models;
+using TaskManager.Services.Services;
 using TaskManagerWEB.Api.Controllers;
 using Xunit;
 
@@ -31,6 +20,7 @@ namespace Test
         private readonly Mock<IUnitOfWork> _unitOfWorkMock;
         private readonly Mock<IValidator<Comment>> _validatorMock;
         private readonly Mock<ILogger<CommentController>> _loggerMock;
+      
 
         public CommentControllerTests()
         {
@@ -62,7 +52,7 @@ namespace Test
             _unitOfWorkMock.Setup(uow => uow.Comment.GetAll(It.IsAny<Expression<Func<Comment, bool>>>(), It.IsAny<string>()))
                 .Returns(comments);
             var jsonResult = _controller.GetAllByTaskId(taskItemId);
-            var notFoundResult = Assert.IsType<NotFoundResult>(jsonResult);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(jsonResult);
         }
 
         [Fact]

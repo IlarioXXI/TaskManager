@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using TaskManager.DataAccess.Entities;
+using TaskManager.Models;
 
 namespace TaskManagerWeb.Models
 {
@@ -14,14 +14,5 @@ namespace TaskManagerWeb.Models
         public List<string>? SelectedUserIds { get; set; }
     }
 
-    public class TeamValidation : AbstractValidator<TeamVM>
-    {
-        public TeamValidation()
-        {
-            RuleFor(x => x.Users).Null();
-            RuleFor(x => x.TaskItems).Null();
-            RuleFor(x => x.SelectedUserIds).NotNull();
-            RuleFor(x=>x.Team).NotNull();
-        }
-    }
+    
 }

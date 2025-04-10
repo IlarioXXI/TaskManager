@@ -5,13 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TaskManager.DataAccess.Entities
+namespace TaskManager.Models
 {
-    public class Priority
+    public class Status
     {
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
-        
     }
 }

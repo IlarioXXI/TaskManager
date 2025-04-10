@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using TaskManager.DataAccess;
-using TaskManager.DataAccess.Entities;
-using TaskManagerWeb.Models;
 
-namespace TaskManagerWeb.Hubs
+namespace TaskManager.Services.Hubs
 {
     public class NotificationHub : Hub
     {

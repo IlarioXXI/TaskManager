@@ -1,14 +1,15 @@
 ﻿
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using TaskManager.DataAccess;
-using TaskManager.DataAccess.Entities;
-using TaskManager.DataAccess.Utility;
-using TaskManagerWeb.Hubs;
+using TaskManager.Models;
+using TaskManager.Services.Hubs;
 
 
-namespace askManagerWeb.Services
+namespace TaskManager.Services
 {
     public class NotificationService : BackgroundService
     {
@@ -66,7 +67,7 @@ namespace askManagerWeb.Services
                                     }
                                 }
                             }
-                            
+
                         }
 
 

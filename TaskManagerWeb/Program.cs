@@ -1,14 +1,13 @@
-using askManagerWeb.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-
 using TaskManager.DataAccess;
 using TaskManager.DataAccess.DBInitializer;
 using TaskManager.DataAccess.Repositories;
 using TaskManager.DataAccess.Repositories.Interfaces;
-using TaskManager.DataAccess.Utility;
-using TaskManagerWeb.Hubs;
+using TaskManager.Services;
+using TaskManager.Services.Hubs;
+using TaskManager.Services.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,7 +58,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<IDbInitializer,DbInitializer>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
-
+builder.Services.AddTransient<GlobalErrorHandler>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -83,15 +82,13 @@ SeedDatabase();
 
 //app.UseSession();
 app.MapRazorPages();
-
+app.UseMiddleware<GlobalErrorHandler>();
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=user}/{controller=Home}/{action=Index}/{id?}");
 
 
 app.MapHub<NotificationHub>("/notificationHub");
-
-
 
 app.Run();
 

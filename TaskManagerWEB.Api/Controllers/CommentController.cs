@@ -1,17 +1,14 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.IdentityModel.Tokens;
-using NuGet.Protocol;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using TaskManager.DataAccess.Entities;
 using TaskManager.DataAccess.Repositories.Interfaces;
 using TaskManager.DataAccess.Utility;
+using TaskManager.Models;
+using TaskManager.Services.Services;
+using TaskManager.Services.Services.ServicesInterfaces;
 
 namespace TaskManagerWEB.Api.Controllers
 {
@@ -23,7 +20,8 @@ namespace TaskManagerWEB.Api.Controllers
         private readonly ILogger<CommentController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<Comment> _validator;
-        
+        private readonly ICommentService _commentService;
+
 
         public CommentController(ILogger<CommentController> logger, IUnitOfWork unitOfWork,IValidator<Comment> validator)
         {
@@ -41,10 +39,15 @@ namespace TaskManagerWEB.Api.Controllers
             var comments = _unitOfWork.Comment.GetAll(c => c.TaskItemId == taskItemId);
             if (comments.IsNullOrEmpty())
             {
-                return NotFound();
+                return NotFound("No comments found for this task");
             }
             return Ok(comments);
         }
+        //public IActionResult GetAllByTaskId(int taskItemId)
+        //{
+        //    var comments = _commentService.GetAllByTaskId(taskItemId);
+        //    return Ok(comments);
+        //}
 
 
         [HttpPost("Upsert")]
@@ -100,6 +103,11 @@ namespace TaskManagerWEB.Api.Controllers
             return Ok(comment);
         }
 
+        //public async Task<IActionResult> UpsertAsync(Comment comment)
+        //{
+        //    return Ok(_commentService.UpsertAsync(comment));
+        //}
+
 
         [HttpDelete("Delete/{id}")]
         [ProducesResponseType(typeof(Comment), StatusCodes.Status200OK)]
@@ -123,5 +131,10 @@ namespace TaskManagerWEB.Api.Controllers
             _logger.LogInformation("User {email} deleted comment : {comment}", user.Email, comment.Description);
             return Ok(comment);
         }
+
+        //public IActionResult Delete(int id)
+        //{
+        //    return Ok(_commentService.Delete(id));
+        //}
     }
 }

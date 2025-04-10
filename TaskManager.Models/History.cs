@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TaskManager.DataAccess.Entities 
+namespace TaskManager.Models
 {
     public class History
     {

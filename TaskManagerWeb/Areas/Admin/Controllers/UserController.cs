@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Runtime.CompilerServices;
 using TaskManager.DataAccess;
-using TaskManager.DataAccess.Entities;
-using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.Models;
 using TaskManagerWeb.Models;
 
 namespace TaskManagerWeb.Areas.Admin.Controllers
