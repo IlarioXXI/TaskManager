@@ -6,11 +6,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Linq.Expressions;
-using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
 using TaskManagerWEB.Api.Controllers;
-using TaskManagerWEB.Api.models;
+using TaskManagerWEB.Api.ViewModels.UserViewModels;
 using Xunit;
 using ValidationFailure = FluentValidation.Results.ValidationFailure;
 

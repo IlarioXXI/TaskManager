@@ -7,13 +7,16 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
 using TaskManager.DataAccess;
+using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Repositories;
-using TaskManager.DataAccess.Repositories.Interfaces;
 using TaskManager.Models;
+using TaskManager.Services.Interfaces;
 using TaskManager.Services.Middlewares;
-using TaskManager.Services.Validators;
-using TaskManagerWeb.Models;
-using TaskManagerWEB.Api.models;
+using TaskManagerWeb.Api.ViewModels;
+using TaskManagerWEB.Api.Validators;
+using TaskManagerWEB.Api.Validators.UserValidators;
+using TaskManagerWEB.Api.ViewModels.UserViewModels;
+using TaskManager.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +64,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserClaimService, UserClaimService>();
 builder.Services.AddControllers();
 builder.Services.AddMvc();
 

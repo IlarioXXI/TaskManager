@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query;
-using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.DataAccess.Interfaces;
 using TaskManagerWeb.Models;
 
 namespace TaskManagerWeb.Areas.Admin.Controllers

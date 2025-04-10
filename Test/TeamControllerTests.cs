@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.DataAccess.Interfaces;
 using TaskManager.Models;
 using TaskManagerWeb.Models;
 using TaskManagerWEB.Api.Controllers;

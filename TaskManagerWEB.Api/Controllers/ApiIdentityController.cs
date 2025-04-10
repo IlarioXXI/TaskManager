@@ -8,10 +8,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
-using TaskManagerWEB.Api.models;
+using TaskManager.Services.Extensions;
+using TaskManagerWEB.Api.ViewModels.UserViewModels;
 
 namespace TaskManagerWEB.Api.Controllers
 {

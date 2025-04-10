@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
-using TaskManager.DataAccess.Repositories.Interfaces;
+using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
+using TaskManager.Services.Extensions;
 using TaskManager.Services.Services;
-using TaskManager.Services.Services.ServicesInterfaces;
+using TaskManager.Services.ServicesInterfaces;
 
 namespace TaskManagerWEB.Api.Controllers
 {

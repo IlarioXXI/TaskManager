@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.DataAccess;
 using TaskManager.DataAccess.DBInitializer;
+using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Repositories;
-using TaskManager.DataAccess.Repositories.Interfaces;
-using TaskManager.Services;
 using TaskManager.Services.Hubs;
 using TaskManager.Services.Middlewares;
+using TaskManager.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

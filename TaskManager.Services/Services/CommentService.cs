@@ -9,11 +9,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Repositories;
-using TaskManager.DataAccess.Repositories.Interfaces;
 using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
-using TaskManager.Services.Services.ServicesInterfaces;
+using TaskManager.Services.ServicesInterfaces;
 
 namespace TaskManager.Services.Services 
 {
