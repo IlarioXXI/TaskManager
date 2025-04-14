@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +13,7 @@ using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
 using TaskManager.Services.Extensions;
+using TaskManager.Services.Interfaces;
 using TaskManagerWEB.Api.ViewModels.UserViewModels;
 
 namespace TaskManagerWEB.Api.Controllers
@@ -20,39 +22,28 @@ namespace TaskManagerWEB.Api.Controllers
     [ApiController]
     public class ApiIdentityController : Controller
     {
-        private readonly string JWT_ISSUER;
-        private readonly string JWT_AUDIENCE;
-        private readonly byte[] JWT_SECRETKEY;
 
-        private const string JWT_TOKEN_ID = "id";
-        private const int JWT_EXPIRATION_MINUTES = 15;
-
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<RegisterModel> _validator;
         private readonly IValidator<AuthUser> _validatorUser;
         private readonly IValidator<ChangePasswordModel> _validatorPass;
-        private readonly ILogger<ApiIdentityController> _logger;
+        private readonly IApiIdentityService _apiIdentityService;
+        private readonly IMapper _mapper;
 
 
 
-        public ApiIdentityController(IOptions<AppJWTSettings> settings,
-            UserManager<IdentityUser> userManager,
-            IUnitOfWork unitOfWork,
+        public ApiIdentityController(
             IValidator<RegisterModel> validator,
             IValidator<AuthUser> validatorUser,
             IValidator<ChangePasswordModel> validatorPass,
-            ILogger<ApiIdentityController> logger)
+            IApiIdentityService apiIdentityService,
+            IMapper mapper)
         {
-            JWT_ISSUER = settings.Value.Issuer;
-            JWT_AUDIENCE = settings.Value.Audience;
-            JWT_SECRETKEY = Encoding.UTF8.GetBytes(settings.Value.SecretKey);
-            _userManager = userManager;
-            _unitOfWork = unitOfWork;
             _validator = validator;
             _validatorUser = validatorUser;
             _validatorPass = validatorPass;
-            _logger = logger;
+            _apiIdentityService = apiIdentityService;
+            _mapper = mapper;
+
         }
 
         [Route("auth")]
@@ -75,49 +66,9 @@ namespace TaskManagerWEB.Api.Controllers
                 }
                 return BadRequest(errors);
             }
-            var user = await _userManager.FindByEmailAsync(authUser.Email);
-            if (!await _userManager.CheckPasswordAsync(user, authUser.Password))
-            {
-                _logger.LogInformation("User {email} tried to login with wrong password", authUser.Email);
-                return Unauthorized("Wrong credentials!");
-            }
 
-            DateTime expiration = DateTime.UtcNow.AddMinutes(JWT_EXPIRATION_MINUTES);
-
-            var userRoles = await _userManager.GetRolesAsync(user);
-            var isAdmin = false;
-            if (userRoles.Contains(SD.Role_Admin))
-            {
-                isAdmin = true;
-            }
-
-            //var user = AuthenticateUser(authUser.UserName, authUser.Password);
-            // configure and send final token.
-
-            var descriptor = new SecurityTokenDescriptor()
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new (JWT_TOKEN_ID, Guid.NewGuid().ToString()),
-                    //new (JwtRegisteredClaimNames.NameId, authUser.AppUserId),
-                    new (ClaimTypes.Role,isAdmin ? SD.Role_Admin : SD.Role_User),
-                    new (JwtRegisteredClaimNames.Sub, user.Id),
-                    new (ClaimTypes.Name, user.Id),
-                    new (JwtRegisteredClaimNames.Name, authUser.Email),
-                    new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        }),
-                SigningCredentials = new SigningCredentials
-                    (new SymmetricSecurityKey(JWT_SECRETKEY), SecurityAlgorithms.HmacSha256Signature),
-                Expires = expiration,
-                Issuer = JWT_ISSUER,
-                Audience = JWT_AUDIENCE,
-            };
-
-            var handler = new JwtSecurityTokenHandler();
-            SecurityToken token = handler.CreateToken(descriptor);
-            string tokenString = handler.WriteToken(token);
-            _logger.LogInformation("User {email} is logged at : {data}", authUser.Email, DateTime.Now.ToLocalTime());
-            return Ok(tokenString);
+            var result = await _apiIdentityService.CreateJwtTokenAsync(authUser);
+            return Ok(result);
         }
 
 
@@ -138,35 +89,8 @@ namespace TaskManagerWEB.Api.Controllers
                 }
                 return BadRequest(errors);
             }
-            var users = _unitOfWork.AppUser.GetAll();
-            var existingUser = _unitOfWork.AppUser.Get(u => u.UserName == model.Email);
-            if (existingUser != null)
-            {
-                return BadRequest("User already registered!");
-            }
-            var user = new AppUser
-            {
-                UserName = model.Email,
-                Email = model.Email,
-            };
-            var result = await _userManager.CreateAsync(user,model.Password);
-           
-            await _userManager.AddToRoleAsync(user, model.Role);
-            var role = await _userManager.GetRolesAsync(user);
-
-            var token = await CreateJWTToken(new AuthUser
-            {
-                Email = model.Email,
-                Password = model.Password
-            });
-
-            if (token is OkObjectResult okResult)
-            {
-                var tokenToString = okResult.Value as string;
-                return Ok(tokenToString);
-            }
-
-            return BadRequest("Invalid credentials or other error.");
+            var result = await _apiIdentityService.RegisterAsync(model);
+            return Ok(result);
         }
 
         [HttpGet("getAllUsers")]
@@ -175,12 +99,9 @@ namespace TaskManagerWEB.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult GetAllUsers()
         {
-            if (!User.IsInRole(SD.Role_Admin))
-            {
-                return Unauthorized();
-            };
-            var users = _unitOfWork.AppUser.GetAll();
-            return Ok(users);
+            var result = _apiIdentityService.GetAllUsers();
+            var resultVM = _mapper.Map<IEnumerable<AppUser>, IEnumerable<AppUserVM>>(result);
+            return Ok(resultVM);
         }
 
 
@@ -201,16 +122,11 @@ namespace TaskManagerWEB.Api.Controllers
                 }
                 return BadRequest(errors);
             }
-            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByIdAsync(userId);
-            var result = await _userManager.ChangePasswordAsync(user,model.CurrentPassword,model.NewPassword);
-            if (result.Succeeded)
-            {
-                _logger.LogInformation("User {email} changed is password",user.Email);
-                return Ok($"{user.Email}: password changed!");
-            }
-            return BadRequest(result.Errors.FirstOrDefault().Description);
+            
+            var result = await _apiIdentityService.MyChangePasswordAsync(model);
+            return Ok(result);
         }
 
     }
+
 }

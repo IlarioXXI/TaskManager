@@ -1,28 +1,34 @@
 ﻿using FluentValidation;
 using TaskManagerWeb.Api.ViewModels;
+using TaskManagerWeb.Models;
+using TaskManagerWEB.Api.ViewModels;
 
 
 namespace TaskManagerWEB.Api.Validators
 {
-    public class TaskItemValidation : AbstractValidator<ToDoVM>
+    public class TaskItemValidation : AbstractValidator<TaskItemVM>
     {
         public TaskItemValidation()
         {
-            RuleFor(x => x.TaskToDo).NotNull();
-            RuleFor(x => x.TaskToDo.AppUserId).NotNull();
-            RuleFor(x => x.TaskToDo.StatusId).NotNull();
-            RuleFor(x => x.TaskToDo.PriorityId).NotNull();
-            RuleFor(x => x.TaskToDo.Description).NotNull();
-            RuleFor(x => x.TaskToDo.DueDate).NotNull();
-
-            RuleFor(x => x.TaskToDo.History).Null();
-            RuleFor(x => x.TaskToDo.Status).Null();
-            RuleFor(x => x.TaskToDo.Priority).Null();
-            RuleFor(x => x.TaskToDo.Comments).Null();
-            RuleFor(x => x.AppUser).Null();
-            RuleFor(x => x.PriorityList).Null();
-            RuleFor(x => x.Users).Null();
-            RuleFor(x => x.StatusList).Null();
+            RuleFor(x => x.Id).NotNull();
+            RuleFor(x => x.AppUserId).NotNull();
+            RuleFor(x => x.StatusId).NotNull();
+            RuleFor(x => x.PriorityId).NotNull();
+            RuleFor(x => x.Description).Length(1, 500).NotNull();
+            RuleFor(x => x.DueDate).NotNull();
+            RuleFor(x => x.TeamId).NotNull();
+            RuleFor(x => x.Title)
+                .NotEmpty()
+                .WithMessage("Title is required.")
+                .Length(1, 100)
+                .WithMessage("Title must be between 1 and 100 characters long.");
+           RuleFor(x => x.TeamName)
+                .NotEmpty()
+                .WithMessage("Team name is required.")
+                .Length(1, 100)
+                .WithMessage("Team name must be between 1 and 100 characters long.");
+            RuleFor(x=>x.TeamId).NotNull()
+                .WithMessage("TeamId is required.");
         }
     }
 }

@@ -1,18 +1,17 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using TaskManager.Models;
+﻿using TaskManager.Models;
 
-namespace TaskManagerWeb.Api.ViewModels
+namespace TaskManagerWEB.Api.ViewModels
 {
     public class TeamVM
     {
-        public Team Team { get; set; }
-        public IEnumerable<SelectListItem>? Users { get; set; }
-        [ValidateNever]
-        public IEnumerable<TaskItem>? TaskItems { get; set; }
-        public List<string>? SelectedUserIds { get; set; }
-    }
+        public int Id { get; set; }
 
-    
+        public string Name { get; set; }
+
+        public List<TaskItem>? TaskItems { get; set; }
+        public List<int> taskItemsIds { get; set; }
+
+        public List<string> UsersIds { get; set; }
+        public List<AppUser> Users { get; set; }
+    }
 }

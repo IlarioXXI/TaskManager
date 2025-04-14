@@ -10,8 +10,6 @@ namespace TaskManager.Models
         public string Name { get; set; }
 
         public List<TaskItem>? TaskItems { get; set; }
-
-
-        public List<AppUser> Users { get; set; } = [];
+        public List<AppUser>? Users { get; set; }
     }
 }

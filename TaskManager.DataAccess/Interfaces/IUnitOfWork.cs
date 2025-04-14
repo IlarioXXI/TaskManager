@@ -15,6 +15,8 @@ namespace TaskManager.DataAccess.Interfaces
         IStatusRepository Status { get; }
         IPriorityRepository Priority { get; }
         IHistoryRepository History { get; }
+
+        //IGenericRepository<T> GetRepository<T>() where T : class;
         void Save();
     }
 }

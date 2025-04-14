@@ -1,18 +1,12 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using TaskManager.DataAccess.Interfaces;
-using TaskManager.DataAccess.Repositories;
 using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
+using TaskManager.Services.Interfaces;
 using TaskManager.Services.ServicesInterfaces;
 
 namespace TaskManager.Services.Services 
@@ -21,14 +15,12 @@ namespace TaskManager.Services.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<CommentService> _logger;
-        private readonly IValidator<Comment> _validator;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public CommentService(IUnitOfWork unitOfWork,ILogger<CommentService> logger, IValidator<Comment> validator,IHttpContextAccessor httpCon)
+        private readonly IUserClaimService _userClaimService;
+        public CommentService(IUnitOfWork unitOfWork,ILogger<CommentService> logger,IUserClaimService userClaimService)
         {
             _unitOfWork = unitOfWork;
-            _validator = validator;
             _logger = logger;
-            _httpContextAccessor = httpCon;
+            _userClaimService = userClaimService;
         }
         public IEnumerable<Comment> GetAllByTaskId(int taskItemId)
         {
@@ -42,12 +34,6 @@ namespace TaskManager.Services.Services
 
         public async Task<Comment> UpsertAsync(Comment comment)
         {
-            var resultValidation = await _validator.ValidateAsync(comment);
-            if (!resultValidation.IsValid)
-            {
-                throw new ValidationException(resultValidation.Errors);
-            }
-
             if (comment == null)
             {
                 throw new ArgumentNullException(nameof(comment));
@@ -58,7 +44,7 @@ namespace TaskManager.Services.Services
             {
                 throw new Exception("Task not found");
             }
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = _userClaimService.GetUserId();
             if (comment.Id == 0)
             {
                 comment.CreationDate = DateTime.Now;
@@ -89,9 +75,9 @@ namespace TaskManager.Services.Services
 
         public Comment Delete(int id)
         {
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
-            if (!_httpContextAccessor.HttpContext.User.IsInRole(SD.Role_Admin))
+            var userRole = _userClaimService.GetClaims().FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            var user = _userClaimService.GetUser();
+            if (userRole != SD.Role_Admin)
             {
                 throw new Exception("User on authorized");
             }

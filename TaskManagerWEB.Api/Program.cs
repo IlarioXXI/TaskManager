@@ -17,6 +17,13 @@ using TaskManagerWEB.Api.Validators;
 using TaskManagerWEB.Api.Validators.UserValidators;
 using TaskManagerWEB.Api.ViewModels.UserViewModels;
 using TaskManager.Services.Services;
+using TaskManagerWEB.Api.Configuration;
+using TaskManagerWeb.Models;
+using TaskManagerWeb.Api.Models;
+using TaskManager.DataAccess.Utility;
+using TaskManager.Services.ServicesInterfaces;
+using TaskManagerWEB.Api.ViewModels;
+using TeamVM = TaskManagerWEB.Api.ViewModels.TeamVM;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,21 +69,26 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LogoutPath = "/Identity/Account/Logout";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 });
-
+builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserClaimService, UserClaimService>();
+builder.Services.AddScoped<IApiIdentityService, ApiIdentityService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IHistoryService, HistoryService>();
+builder.Services.AddScoped<ITaskItemService, TaskItemService>();
+
 builder.Services.AddControllers();
 builder.Services.AddMvc();
 
 
 
-builder.Services.AddScoped<IValidator<ToDoVM>, TaskItemValidation > ();
+builder.Services.AddScoped<IValidator<TaskItemVM>, TaskItemValidation > ();
 builder.Services.AddScoped<IValidator<TeamVM>, TeamValidation>();
-builder.Services.AddScoped<IValidator<Comment>, CommentValidation>();
+builder.Services.AddScoped<IValidator<CommentVM>, CommentValidation>();
 builder.Services.AddScoped<IValidator<RegisterModel>, RegisterValidation>();
 builder.Services.AddScoped<IValidator<AuthUser>, AuthUserValidation>();
 builder.Services.AddScoped<IValidator<ChangePasswordModel>, ChangePasswordValidation>();
-builder.Services.AddTransient<GlobalErrorHandler>();
+builder.Services.AddTransient<GlobalErrorHandlerMiddleware>();
 
 
 
@@ -136,7 +148,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.UseAuthentication();
-app.UseMiddleware<GlobalErrorHandler>();
+app.UseMiddleware<GlobalErrorHandlerMiddleware>();
 app.MapControllers();
 
 app.Run();

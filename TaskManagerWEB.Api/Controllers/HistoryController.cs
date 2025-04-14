@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
+using TaskManager.Services.Interfaces;
+using TaskManagerWEB.Api.ViewModels;
 
 namespace TaskManagerWEB.Api.Controllers
 {
@@ -13,12 +16,13 @@ namespace TaskManagerWEB.Api.Controllers
     public class HistoryController : Controller
     {
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IHistoryService _historyService;
+        private readonly IMapper _mapper;
 
-        public HistoryController( IUnitOfWork unitOfWork)
+        public HistoryController( IHistoryService historyService,IMapper mapper)
         {
-
-            _unitOfWork = unitOfWork;
+            _historyService = historyService;
+            _mapper = mapper;
         }
 
 
@@ -27,16 +31,9 @@ namespace TaskManagerWEB.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult GetAll(int taskId)
         {
-            if (!User.IsInRole(SD.Role_Admin))
-            {
-                return Unauthorized();
-            }
-            else
-            {
-                var historyTask = _unitOfWork.History.GetAll(h => h.TaskItemId == taskId);
-                return Ok(historyTask );
-            }
-
+            var history = _historyService.GetAllByTaskId(taskId);
+            var result = _mapper.Map<IEnumerable<History>,IEnumerable<HistoryVM>>(history);
+            return Ok(result);
         }
     }
 }

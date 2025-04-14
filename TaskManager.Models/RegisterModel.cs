@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.Globalization;
 
-namespace TaskManagerWEB.Api.ViewModels.UserViewModels
+namespace TaskManager.Models
 {
     public class RegisterModel
     {

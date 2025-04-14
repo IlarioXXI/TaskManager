@@ -13,9 +13,9 @@ namespace TaskManager.Services.Services
 {
     public class UserClaimService : IUserClaimService
     {
-        private readonly HttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUnitOfWork _unitOfWork;
-        public UserClaimService(HttpContextAccessor httpContextAccessor,IUnitOfWork unitOfWork)
+        public UserClaimService(IHttpContextAccessor httpContextAccessor,IUnitOfWork unitOfWork)
         {
             _httpContextAccessor = httpContextAccessor;
             _unitOfWork = unitOfWork;
@@ -38,7 +38,8 @@ namespace TaskManager.Services.Services
 
         public string GetUserId()
         {
-            return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = _httpContextAccessor.HttpContext.User.Identity.Name;
+            return userId;
         }
     }
 }

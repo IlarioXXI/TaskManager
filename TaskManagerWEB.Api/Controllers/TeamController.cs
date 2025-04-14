@@ -1,13 +1,16 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
 using TaskManager.Services.Extensions;
+using TaskManager.Services.Interfaces;
 using TaskManagerWeb.Models;
+using TaskManagerWEB.Api.ViewModels;
+using TeamVM = TaskManagerWEB.Api.ViewModels.TeamVM;
 
 namespace TaskManagerWEB.Api.Controllers
 {
@@ -16,15 +19,15 @@ namespace TaskManagerWEB.Api.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TeamController : Controller
     {
-        private readonly ILogger<TeamController> _logger;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ITeamService _teamService;
         private readonly IValidator<TeamVM> _validator;
+        private readonly IMapper _mapper;
 
-        public TeamController(ILogger<TeamController> logger, IUnitOfWork unitOfWork, IValidator<TeamVM> validation)
+        public TeamController(ITeamService teamService,IValidator<TeamVM> validation,IMapper mapper)
         {
-            _logger = logger;
-            _unitOfWork = unitOfWork;
+            _teamService = teamService;
             _validator = validation;
+            _mapper = mapper;   
         }
 
 
@@ -33,24 +36,18 @@ namespace TaskManagerWEB.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult GetAll()
         {
-            if (!User.IsInRole(SD.Role_Admin))
-            {
-                return Unauthorized();
-            }
-            var teams = _unitOfWork.Team.GetAll();
-            return Ok(teams);
+            var teams = _teamService.GetAll();
+            var result = _mapper.Map<IEnumerable<Team>,IEnumerable<TeamVM>>(teams);
+            return Ok(result);
         }
 
         [HttpGet("getAllMyTeams")]
         [ProducesResponseType(typeof(Team), StatusCodes.Status200OK)]
         public IActionResult GetAllMyTeams()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
-            var teams = _unitOfWork.Team.GetAll(t => t.Users.Contains(user));
-            return Ok(teams);
-
+            var teams = _teamService.GetAllMyTeams();
+            var result = _mapper.Map<IEnumerable<Team>, IEnumerable<TeamVM>>(teams);
+            return Ok(result);
         }
 
         [HttpPost("upsert")]
@@ -70,39 +67,11 @@ namespace TaskManagerWEB.Api.Controllers
                 }
                 return BadRequest(errors);
             }
-            if (team.Team == null)
-            {
-                return BadRequest();
-            }
-            if (!User.IsInRole(SD.Role_Admin))
-            {
-                return Unauthorized();
-            }
-            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
-            if (team.Team.Id == 0 || team.Team.Id == null)
-            {
-                _unitOfWork.Team.Add(team.Team);
-                _unitOfWork.Save();
-                _logger.LogInformation("Team ({teamName}) created successfully by : {email}", team.Team.Name, user.Email);
-                return Ok(team.Team);
-            }
-            else
-            {
-                var existingTeam = _unitOfWork.Team.Get(t => t.Id == team.Team.Id);
-                existingTeam.Name = team.Team.Name;
-                if (team.SelectedUserIds != null)
-                {
-                    _unitOfWork.Team.UpdateTeamInUsers(existingTeam, team.SelectedUserIds);
-                    _unitOfWork.Save();
-                    _logger.LogInformation("Team ({teamName}) updated successfully by : {email}", team.Team.Name, user.Email);
-                    return Ok(existingTeam);
-                }
-                _unitOfWork.Team.Update(existingTeam);
-                _unitOfWork.Save();
-                _logger.LogInformation("Team ({teamName}) updated successfully by : {email}", team.Team.Name, user.Email);
-                return Ok(existingTeam);
-            }
+            var teamToUpdate = _mapper.Map<TeamVM, Team>(team);
+            var result = _teamService.Upsert(teamToUpdate);
+            var resultVM = _mapper.Map<Team, TeamVM>(result);
+            return Ok(resultVM);
+
         }
 
 
@@ -112,19 +81,15 @@ namespace TaskManagerWEB.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Delete(int id)
         {
-            var team = _unitOfWork.Team.Get(t => t.Id == id);
-            if (team == null)
+            var result = _teamService.Delete(id);
+            if (result)
             {
-                return NotFound();
+                return Ok();
             }
-            if (!User.IsInRole(SD.Role_Admin))
+            else
             {
-                return Unauthorized();
+                return BadRequest("Error deleting team");
             }
-            _unitOfWork.Team.Remove(team);
-            _unitOfWork.Save();
-            _logger.LogInformation("Team ({teamName}) deleted successfully", team.Name);
-            return Ok(team);
         }
     }
 }

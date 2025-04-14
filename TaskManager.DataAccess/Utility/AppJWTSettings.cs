@@ -1,4 +1,4 @@
-﻿namespace TaskManagerWEB.Api.ViewModels.UserViewModels
+﻿namespace TaskManager.DataAccess.Utility
 {
     public class AppJWTSettings
     {

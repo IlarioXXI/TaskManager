@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,9 @@ using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
 using TaskManager.Services.Extensions;
+using TaskManager.Services.Interfaces;
 using TaskManagerWeb.Models;
+using TaskManagerWEB.Api.ViewModels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,16 +21,14 @@ namespace TaskManagerWEB.Api.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TaskItemController : Controller
     {
-
-
-        private readonly ILogger<TaskItemController> _logger;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<ToDoVM> _validator;
-        public TaskItemController(ILogger<TaskItemController> logger, IUnitOfWork unitOfWork, IValidator<ToDoVM> validation)
+        private readonly ITaskItemService _taskItemService;
+        private readonly IValidator<TaskItemVM> _validator;
+        private readonly IMapper _mapper;
+        public TaskItemController(IValidator<TaskItemVM> validation,ITaskItemService taskItemService,IMapper mapper)
         {
-            _logger = logger;
-            _unitOfWork = unitOfWork;
+            _taskItemService = taskItemService;
             _validator = validation;
+            _mapper = mapper;
         }
 
 
@@ -38,18 +39,9 @@ namespace TaskManagerWEB.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult GetAll()
         {
-            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
-            if (!User.IsInRole(SD.Role_Admin))
-            {
-                return Unauthorized();
-            }
-            else
-            {
-                var allTasks = _unitOfWork.TaskItem.GetAll(t => t.AppUserId == userId);
-                return Ok(allTasks);
-            }
-
+            var taskItems = _taskItemService.GetAll();
+            var result = _mapper.Map<IEnumerable<TaskItem>,IEnumerable<TaskItemVM>>(taskItems);
+            return Ok(result);
         }
 
         // GET api/<TaskItemController>/
@@ -58,24 +50,16 @@ namespace TaskManagerWEB.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult GetById(int id)
         {
-            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
-            if (!User.IsInRole(SD.Role_Admin))
-            {
-                return Unauthorized();
-            }
-            else
-            {
-                var task = _unitOfWork.TaskItem.Get(t => t.Id == id);
-                return Ok(task);
-            }
+            var taskItem = _taskItemService.GetById(id);
+            var result = _mapper.Map<TaskItem, TaskItemVM>(taskItem);
+            return Ok(result);
         }
 
         // POST api/<TaskItemController>
-        [HttpPost("upsert/{teamId}")]
+        [HttpPost("upsert")]
         [ProducesResponseType(typeof(TaskItem), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Upsert(int teamId, [FromBody] ToDoVM taskItem)
+        public async Task<IActionResult> Upsert([FromBody] TaskItemVM taskItem)
         {
             var resultValidation = await _validator.ValidateAsync(taskItem);
             if (!resultValidation.IsValid)
@@ -88,51 +72,9 @@ namespace TaskManagerWEB.Api.Controllers
                 }
                 return BadRequest(errors);
             }
-
-            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
-
-
-            if (taskItem.TaskToDo.Id == 0)
-            {
-                taskItem.TaskToDo.TeamId = teamId;
-                _unitOfWork.TaskItem.Add(taskItem.TaskToDo);
-                _unitOfWork.Save();
-                _logger.LogInformation("TaskItem ({taskItemName}) created successfully by : {email}",taskItem.TaskToDo.Title,user.Email);
-                return Ok(taskItem.TaskToDo);
-            }
-            else
-            {
-                var existingItem = _unitOfWork.TaskItem.Get(t=>t.Id == taskItem.TaskToDo.Id);
-                var oldStatus = _unitOfWork.Status.Get(s=>s.Id == existingItem.StatusId);
-                var oldPriority = _unitOfWork.Priority.Get(p=>p.Id == existingItem.PriorityId);
-                existingItem.StatusId = taskItem.TaskToDo.StatusId;
-                existingItem.PriorityId = taskItem.TaskToDo.PriorityId;
-                if (oldStatus.Id != existingItem.StatusId || oldPriority.Id != existingItem.PriorityId)
-                {
-                    History history = new()
-                    {
-                        FromStatus = oldStatus.Name,
-                        ToStatus = _unitOfWork.Status.Get(s => s.Id == existingItem.StatusId).Name,
-                        ChangeDate = DateTime.Now,
-                        TaskItemId = existingItem.Id,
-                        AppUserId = userId,
-                    };
-                    _unitOfWork.History.Add(history);
-                    _unitOfWork.Save();
-                }
-                if (existingItem.AppUserId != null)
-                {
-                    existingItem.AppUserId = taskItem.TaskToDo.AppUserId;
-                }
-                existingItem.Description = taskItem.TaskToDo.Description;
-                existingItem.DueDate = taskItem.TaskToDo.DueDate;
-
-                _unitOfWork.TaskItem.Update(existingItem);
-                _unitOfWork.Save();
-                _logger.LogInformation("TaskItem ({taskItemName}) updated successfully by : {email}", taskItem.TaskToDo.Title, user.Email);
-                return Ok(existingItem  );
-            }  
+            var taskItemToUpdateOrCreate = _mapper.Map<TaskItemVM, TaskItem>(taskItem);
+            var taskItemResult = _taskItemService.Upsert(taskItemToUpdateOrCreate);
+            return Ok(taskItemResult);
         }
 
         // DELETE api/<TaskItemController>/5
@@ -141,20 +83,7 @@ namespace TaskManagerWEB.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Delete(int id)
         {
-            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
-            if (User.IsInRole(SD.Role_User))
-            {
-                return Unauthorized();
-            }
-            if (_unitOfWork.TaskItem.Get(x=>x.Id == id) == null)
-            {
-                return NotFound();
-            }
-            _unitOfWork.TaskItem.Remove(_unitOfWork.TaskItem.Get(x => x.Id == id));
-            _unitOfWork.Save();
-            _logger.LogInformation("TaskItem ({taskItemId}) deleted successfully by : {email}", id,user.Email);
-            return Ok("Delete successfully");            
+            return Ok(_taskItemService.Delete(id));
         }
     }
 }

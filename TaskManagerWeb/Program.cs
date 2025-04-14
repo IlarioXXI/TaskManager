@@ -58,7 +58,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<IDbInitializer,DbInitializer>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
-builder.Services.AddTransient<GlobalErrorHandler>();
+builder.Services.AddTransient<GlobalErrorHandlerMiddleware>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -82,7 +82,7 @@ SeedDatabase();
 
 //app.UseSession();
 app.MapRazorPages();
-app.UseMiddleware<GlobalErrorHandler>();
+app.UseMiddleware<GlobalErrorHandlerMiddleware>();
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=user}/{controller=Home}/{action=Index}/{id?}");

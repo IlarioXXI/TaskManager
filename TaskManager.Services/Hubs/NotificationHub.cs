@@ -22,7 +22,7 @@ namespace TaskManager.Services.Hubs
             {
                 _connectedUsers.Add(userId, Context.User.Identity.Name);
             }
-          
+
 
             await base.OnConnectedAsync();
         }

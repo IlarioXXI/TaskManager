@@ -1,4 +1,5 @@
-﻿using TaskManager.DataAccess.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskManager.DataAccess.Interfaces;
 
 namespace TaskManager.DataAccess.Repositories
 {
@@ -18,6 +19,7 @@ namespace TaskManager.DataAccess.Repositories
 
         public UnitOfWork(AppDbContext db)
         {
+
             _db = db;
             AppUser = new AppUserRepository(_db);
             TaskItem = new TaskItemRepository(_db);
@@ -31,5 +33,10 @@ namespace TaskManager.DataAccess.Repositories
         {
             _db.SaveChanges();
         }
+
+        //public IGenericRepository<T> GetRepository<T>() where T : class
+        //{
+        //    return new GenericRepository<T>(_db);
+        //}
     }
 }

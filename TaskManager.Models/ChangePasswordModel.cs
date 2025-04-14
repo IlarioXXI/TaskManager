@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace TaskManagerWEB.Api.ViewModels.UserViewModels
+namespace TaskManager.Models
 {
     public class ChangePasswordModel
     {
