@@ -1,313 +1,172 @@
-﻿//using FluentValidation;
-//using FluentValidation.Results;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.Extensions.Logging;
-//using Moq;
-//using System.Linq.Expressions;
-//using System.Security.Claims;
-//using TaskManager.DataAccess.Interfaces;
-//using TaskManager.Models;
-//using TaskManagerWeb.Models;
-//using TaskManagerWEB.Api.Controllers;
-//using Xunit;
+﻿using AutoMapper;
+using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
+using System.Linq.Expressions;
+using System.Security.Claims;
+using TaskManager.DataAccess.Interfaces;
+using TaskManager.Models;
+using TaskManager.Services.Interfaces;
+using TaskManager.Services.Services;
+using TaskManagerWeb.Models;
+using TaskManagerWEB.Api.Controllers;
+using TaskManagerWEB.Api.ViewModels;
+using Xunit;
 
-//namespace Test.ControllerTest
-//{
-//    public class TaskItemControllerTests
-//    {
-//        private readonly Mock<IValidator<ToDoVM>> _validatorMock;
-//        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-//        private readonly Mock<ILogger<TaskItemController>> _loggerMock;
-//        private readonly TaskItemController _controller;
+namespace Test.ControllerTest
+{
+    public class TaskItemControllerTests
+    {
+        private readonly Mock<IValidator<TaskItemVM>> _validatorMock;
+        private readonly Mock<ITaskItemService> _taskItemServiceMock;
+        private readonly Mock<IMapper> _mapper;
+        private readonly TaskItemController _controller;
 
-//        public TaskItemControllerTests()
-//        {
-//            _validatorMock = new Mock<IValidator<ToDoVM>>();
-//            _unitOfWorkMock = new Mock<IUnitOfWork>();
-//            _loggerMock = new Mock<ILogger<TaskItemController>>();
-//            _controller = new TaskItemController(_loggerMock.Object, _unitOfWorkMock.Object, _validatorMock.Object);
-//        }
+        public TaskItemControllerTests()
+        {
+            _validatorMock = new Mock<IValidator<TaskItemVM>>();
+            _taskItemServiceMock = new Mock<ITaskItemService>();
+            _mapper = new Mock<IMapper>();
+            _controller = new TaskItemController(_validatorMock.Object, _taskItemServiceMock.Object, _mapper.Object);
+        }
 
-//        [Fact]
-//        public void GetAll_Ok()
-//        {
-//            _controller.ControllerContext.HttpContext = new DefaultHttpContext()
-//            {
-//                User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-//                {
-//                    new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
-//                    new Claim(ClaimTypes.Role, "Admin")
-//                }))
-//            };
-
-//            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new AppUser { Id = _controller.HttpContext.User.Identity.Name });
-
-//            var taskItems = new List<TaskItem>
-//            {
-//                new TaskItem { Id = 1, Title = "Test task 1" },
-//                new TaskItem { Id = 2, Title = "Test task 2" }
-//            };
-//            _unitOfWorkMock.Setup(uow => uow.TaskItem.GetAll(It.IsAny<Expression<Func<TaskItem, bool>>>(), It.IsAny<string>()))
-//                .Returns(taskItems);
-
-//            var result = _controller.GetAll();
-//            var okResult = Assert.IsType<OkObjectResult>(result);
-//            var returnValue = Assert.IsType<List<TaskItem>>(okResult.Value);
-//            Assert.Equal(taskItems, returnValue);
-//        }
-
-//        [Fact]
-//        public void GetAll_Unauthorized()
-//        {
-//            _controller.ControllerContext.HttpContext = new DefaultHttpContext()
-//            {
-//                User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-//                {
-//                    new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
-//                    new Claim(ClaimTypes.Role, "User")
-//                }))
-//            };
-//            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new AppUser { Id = _controller.HttpContext.User.Identity.Name });
-//            var result = _controller.GetAll();
-//            var unauthorizedResult = Assert.IsType<UnauthorizedResult>(result);
-//        }
-
-//        [Fact]
-//        public void GetById_OK()
-//        {
-//            _controller.ControllerContext.HttpContext = new DefaultHttpContext()
-//            {
-//                User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-//                {
-//                    new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
-//                    new Claim(ClaimTypes.Role, "Admin")
-//                }))
-//            };
-//            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new AppUser { Id = _controller.HttpContext.User.Identity.Name });
-
-//            var taskId = 1;
-//            var taskItem = new TaskItem { Id = taskId, Title = "Test task" };
-//            _unitOfWorkMock.Setup(uow => uow.TaskItem.Get(It.IsAny<Expression<Func<TaskItem, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(taskItem);
-//            var result = _controller.GetById(taskId);
-//            var okResult = Assert.IsType<OkObjectResult>(result);
-//            var returnValue = Assert.IsType<TaskItem>(okResult.Value);
-//            Assert.Equal(taskItem, returnValue);
-//        }
-
-//        [Fact]
-//        public void GetById_Unauthorized()
-//        {
-//            _controller.ControllerContext.HttpContext = new DefaultHttpContext()
-//            {
-//                User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-//                {
-//                    new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
-//                    new Claim(ClaimTypes.Role, "User")
-//                }))
-//            };
-//            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new AppUser { Id = _controller.HttpContext.User.Identity.Name });
-//            var taskId = 1;
-//            var result = _controller.GetById(taskId);
-//            var unauthorizedResult = Assert.IsType<UnauthorizedResult>(result);
-//        }
-
-//        [Fact]
-//        public async Task Upsert_ValidTaskItem_ReturnsOk_Add()
-//        {
-//            var taskItem = new TaskItem
-//            {
-//                AppUserId = "AppUser-UserValidation-id",
-//                StatusId = 2,
-//                PriorityId = 1,
-//                Description = "Completa la documentazione del progetto.",
-//                DueDate = DateTime.Now.AddDays(7),
-//                TaskNotification = DateTime.Now,
-//                Title = "Documentazione",
-//                TeamId = 1,
-//                Id = 0
-//            };
-
-//            _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<ToDoVM>(), It.IsAny<CancellationToken>()))
-//                .ReturnsAsync(new ValidationResult { Errors = new List<ValidationFailure>() });
-//            _controller.ControllerContext.HttpContext = new DefaultHttpContext()
-//            {
-//                User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-//                {
-//                    new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
-//                    new Claim(ClaimTypes.Role, "Admin")
-//                }))
-//            };
-//            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new AppUser { Id = _controller.HttpContext.User.Identity.Name });
-
-//            _unitOfWorkMock.Setup(uow => uow.TaskItem.Add(It.IsAny<TaskItem>()));
-
-//            var taskItemVm = new ToDoVM()
-//            {
-//                TaskToDo = taskItem
-//            };
-
-//            var teamId = 1;
-//            var result = _controller.Upsert(teamId, taskItemVm);
-//            var okResult = Assert.IsType<Task<IActionResult>>(result);
-//            var returnValue = Assert.IsType<OkObjectResult>(okResult.Result);
-//            Assert.Equal(taskItem, returnValue.Value);
-//        }
+        [Fact]
+        public void GetAll_Ok()
+        {
+            var taskItems = new List<TaskItem>
+            {
+                new TaskItem { Id = 1, Title = "Test task 1" },
+                new TaskItem { Id = 2, Title = "Test task 2" }
+            };
+            var taskItemsVM = new List<TaskItemVM>
+            {
+                new TaskItemVM { Id = 1, Title = "Test task 1" },
+                new TaskItemVM { Id = 2, Title = "Test task 2" }
+            };
+            _taskItemServiceMock.Setup(s => s.GetAll())
+                .Returns(taskItems);
+            _mapper
+                .Setup(s => s.Map<IEnumerable<TaskItem>, IEnumerable<TaskItemVM>>(taskItems))
+                .Returns(taskItemsVM);
+            var result = _controller.GetAll();
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<List<TaskItemVM>>(okResult.Value);
+            Assert.Equal(taskItemsVM, returnValue);
+        }
 
 
-//        [Fact]
-//        public async Task Upsert_ValidTaskItem_ReturnsOk_Update()
-//        {
-//            var taskItem = new TaskItem
-//            {
-//                AppUserId = "AppUser-UserValidation-id",
-//                StatusId = 2,
-//                PriorityId = 1,
-//                Description = "Completa la documentazione del progetto.",
-//                DueDate = DateTime.Now.AddDays(7),
-//                TaskNotification = DateTime.Now,
-//                Title = "Documentazione",
-//                TeamId = 1,
-//                Id = 1
-//            };
-//            _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<ToDoVM>(), It.IsAny<CancellationToken>()))
-//                .ReturnsAsync(new ValidationResult { Errors = new List<ValidationFailure>() });
-//            _controller.ControllerContext.HttpContext = new DefaultHttpContext()
-//            {
-//                User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-//                {
-//                    new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
-//                    new Claim(ClaimTypes.Role, "Admin")
-//                }))
-//            };
-//            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new AppUser { Id = _controller.HttpContext.User.Identity.Name });
-//            _unitOfWorkMock.Setup(uow => uow.TaskItem.Add(It.IsAny<TaskItem>(),It.IsAny<int>(),It.IsAny<int>()));
-//            _unitOfWorkMock.Setup(uow => uow.TaskItem.Get(It.IsAny<Expression<Func<TaskItem, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(taskItem);
-//            _unitOfWorkMock.Setup(uow=>uow.Status.Get(It.IsAny<Expression<Func<Status, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new Status { Id = 2, Name = "In Progress" });
-//            _unitOfWorkMock.Setup(uow => uow.Priority.Get(It.IsAny<Expression<Func<Priority, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new Priority { Id = 1, Name = "High" });
+        [Fact]
+        public void GetById_OK()
+        {
+            var taskItem = new TaskItem
+            {
+                Id = 1,
+                Title = "Test task",
+                Description = "Test description",
+                DueDate = DateTime.Now.AddDays(7),
+                StatusId = 1,
+                PriorityId = 1,
+                AppUserId = "AppUser-UserValidation-id",
+                TeamId = 1
+            };
+            var taskItemVm = new TaskItemVM
+            {
+                Id = 1,
+                Title = "Test task",
+                Description = "Test description",
+                DueDate = DateTime.Now.AddDays(7),
+                StatusId = 1,
+                PriorityId = 1,
+                AppUserId = "AppUser-UserValidation-id",
+                TeamId = 1
+            };
+            _taskItemServiceMock.Setup(s => s.GetById(It.IsAny<int>()))
+                .Returns(taskItem);
+            _mapper
+                .Setup(s => s.Map<TaskItem, TaskItemVM>(taskItem))
+                .Returns(taskItemVm);
+            var result = _controller.GetById(taskItem.Id);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<TaskItemVM>(okResult.Value);
+            Assert.Equal(taskItemVm, returnValue);
 
-//            var taskItemVm = new ToDoVM()
-//            {
-//                TaskToDo = taskItem
-//            };
-//            var teamId = 1;
-//            var result = _controller.Upsert(teamId, taskItemVm);
-//            var okResult = Assert.IsType<Task<IActionResult>>(result);
-//            var returnValue = Assert.IsType<OkObjectResult>(okResult.Result);
-//            Assert.Equal(taskItem, returnValue.Value);
-//        }
+        }
 
-//        [Fact]
-//        public async void Upsert_InvalidTaskItem_ReturnsBadRequest()
-//        {
-//            var taskItem = new TaskItem
-//            {
-//                AppUserId = "AppUser-UserValidation-id",
-//                StatusId = 2,
-//                PriorityId = 1,
-//                Description = "Completa la documentazione del progetto.",
-//                DueDate = DateTime.Now.AddDays(7),
-//                TaskNotification = DateTime.Now,
-//                Title = "Documentazione",
-//                TeamId = 1,
-//                Id = 0
-//            };
-//            var errors = new List<ValidationFailure>
-//            {
-//                new ValidationFailure("Title", "Title is required")
-//            };
-//            _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<ToDoVM>(), It.IsAny<CancellationToken>()))
-//                .ReturnsAsync(new ValidationResult(errors));
-//            _controller.ControllerContext.HttpContext = new DefaultHttpContext()
-//            {
-//                User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-//                {
-//                    new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
-//                    new Claim(ClaimTypes.Role, "Admin")
-//                }))
-//            };
-//            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new AppUser { Id = _controller.HttpContext.User.Identity.Name });
-//            var taskItemVm = new ToDoVM()
-//            {
-//                TaskToDo = taskItem
-//            };
-//            _unitOfWorkMock.Setup(uow => uow.TaskItem.Add(It.IsAny<TaskItem>(), It.IsAny<int>(), It.IsAny<int>()));
-//            var teamId = 1;
-//            var result = _controller.Upsert(teamId, taskItemVm);
-//            var badRequestResult = Assert.IsType<Task<IActionResult>>(result);
-//            var returnValue = Assert.IsType<BadRequestObjectResult>(badRequestResult.Result);
-//        }
 
-//        [Fact]
-//        public void Delete_Ok()
-//        {
-//            var taskId = 1;
-//            _unitOfWorkMock.Setup(uow => uow.TaskItem.Get(It.IsAny<Expression<Func<TaskItem, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new TaskItem { Id = taskId });
-//            _controller.ControllerContext.HttpContext = new DefaultHttpContext()
-//            {
-//                User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-//                {
-//                    new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
-//                    new Claim(ClaimTypes.Role, "Admin")
-//                }))
-//            };
-//            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new AppUser { Id = _controller.HttpContext.User.Identity.Name });
+        [Fact]
+        public async Task Upsert_ValidTaskItem_ReturnsOk_Add()
+        {
+            var taskItemVM = new TaskItemVM
+            {
+                Title = "Test task",
+                Description = "Test description",
+                DueDate = DateTime.Now.AddDays(7),
+                StatusId = 1,
+                PriorityId = 1,
+                AppUserId = "AppUser-UserValidation-id",
+                TeamId = 1
+            };
+            var taskItem = new TaskItem
+            {
+                Title = "Test task",
+                Description = "Test description",
+                DueDate = taskItemVM.DueDate,
+                StatusId = 1,
+                PriorityId = 1,
+                AppUserId = "AppUser-UserValidation-id",
+                TeamId = 1
+            };
+            _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<TaskItemVM>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ValidationResult { Errors = new List<ValidationFailure>() });
+            _mapper
+                .Setup(s => s.Map<TaskItemVM, TaskItem>(taskItemVM))
+                .Returns(taskItem);
+            _taskItemServiceMock
+                .Setup(s => s.Upsert(It.IsAny<TaskItem>()))
+                .Returns(taskItem);
+            var result = await _controller.Upsert(taskItemVM);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<TaskItem>(okResult.Value);
+            Assert.Equal(taskItem, returnValue);
 
-//            var result = _controller.Delete(taskId);
+        }
 
-//            var okResult = Assert.IsType<OkObjectResult>(result);
-//            var returnValue = Assert.IsType<string>(okResult.Value);
-//            Assert.Equal("Delete successfully", returnValue);
-//        }
 
-//        [Fact]
-//        public void Delete_Unauthorized()
-//        {
-//            var taskId = 1;
-//            _controller.ControllerContext.HttpContext = new DefaultHttpContext()
-//            {
-//                User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-//                {
-//                    new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
-//                    new Claim(ClaimTypes.Role, "User")
-//                }))
-//            };
-//            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new AppUser { Id = _controller.HttpContext.User.Identity.Name });
-//            var result = _controller.Delete(taskId);
-//            var unauthorizedResult = Assert.IsType<UnauthorizedResult>(result);
-//        }
+        [Fact]
+        public async Task Upsert_ValidTaskItem_BadRequest()
+        {
+            _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<TaskItemVM>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ValidationResult { Errors = new List<ValidationFailure> { new ValidationFailure("Title", "Title is required") } });
+            var result = await _controller.Upsert(new TaskItemVM());
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        }
 
-//        [Fact]  
-//        public void Delete_NotFound()
-//        {
-//            var taskId = 1;
-//            _controller.ControllerContext.HttpContext = new DefaultHttpContext()
-//            {
-//                User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-//                {
-//                    new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
-//                    new Claim(ClaimTypes.Role, "Admin")
-//                }))
-//            };
-//            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
-//                .Returns(new AppUser { Id = _controller.HttpContext.User.Identity.Name });
-//            _unitOfWorkMock.Setup(uow => uow.TaskItem.Get(It.IsAny<Expression<Func<TaskItem, bool>>>(), It.IsAny<string>(), It.IsAny<bool>())).Returns((TaskItem)null);
-//            var result = _controller.Delete(taskId);
-//            var notFoundResult = Assert.IsType<NotFoundResult>(result);
-//        }
-//    }
-//}
+       
+
+        [Fact]
+        public void Delete_Ok()
+        {
+            var taskItem = new TaskItem
+            {
+                Id = 1,
+                Title = "Test task",
+                Description = "Test description",
+                DueDate = DateTime.Now.AddDays(7),
+                StatusId = 1,
+                PriorityId = 1,
+                AppUserId = "AppUser-UserValidation-id",
+                TeamId = 1
+            };
+            _taskItemServiceMock.Setup(s => s.Delete(It.IsAny<int>()))
+                .Returns(true);
+            var result = _controller.Delete(taskItem.Id);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<bool>(okResult.Value);
+            Assert.True(returnValue);
+        }
+
+    }
+}

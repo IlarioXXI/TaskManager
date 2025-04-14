@@ -76,6 +76,7 @@ builder.Services.AddScoped<IApiIdentityService, ApiIdentityService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IHistoryService, HistoryService>();
 builder.Services.AddScoped<ITaskItemService, TaskItemService>();
+builder.Services.AddScoped<ITeamService, TeamService>();
 
 builder.Services.AddControllers();
 builder.Services.AddMvc();
