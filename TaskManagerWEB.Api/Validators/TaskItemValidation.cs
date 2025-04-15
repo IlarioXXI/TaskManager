@@ -11,22 +11,17 @@ namespace TaskManagerWEB.Api.Validators
         public TaskItemValidation()
         {
             RuleFor(x => x.Id).NotNull();
-            RuleFor(x => x.AppUserId).NotNull();
             RuleFor(x => x.StatusId).NotNull();
             RuleFor(x => x.PriorityId).NotNull();
             RuleFor(x => x.Description).Length(1, 500).NotNull();
-            RuleFor(x => x.DueDate).NotNull();
+            RuleFor(x => x.DueDate).Null();
             RuleFor(x => x.TeamId).NotNull();
             RuleFor(x => x.Title)
                 .NotEmpty()
                 .WithMessage("Title is required.")
                 .Length(1, 100)
                 .WithMessage("Title must be between 1 and 100 characters long.");
-           RuleFor(x => x.TeamName)
-                .NotEmpty()
-                .WithMessage("Team name is required.")
-                .Length(1, 100)
-                .WithMessage("Team name must be between 1 and 100 characters long.");
+            RuleFor(x => x.TeamName).Null();
             RuleFor(x=>x.TeamId).NotNull()
                 .WithMessage("TeamId is required.");
         }

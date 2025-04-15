@@ -12,6 +12,7 @@ using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
 using TaskManager.Services.Interfaces;
+using TaskManagerWeb.Api.ViewModels.UserViewModels;
 using TaskManagerWEB.Api.Controllers;
 using TaskManagerWEB.Api.ViewModels.UserViewModels;
 using Xunit;
@@ -50,7 +51,7 @@ namespace Test.ControllerTest
                 .Setup(v => v.ValidateAsync(It.IsAny<AuthUser>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ValidationResult { Errors = new List<ValidationFailure>() });
             _apiIdentityServiceMock
-                .Setup(a => a.CreateJwtTokenAsync(It.IsAny<AuthUser>()))
+                .Setup(a => a.CreateJwtTokenAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync("token");
             var result = await _controller.CreateJWTToken(new AuthUser());
             Assert.NotNull(result);
@@ -92,7 +93,7 @@ namespace Test.ControllerTest
                 .Setup(v => v.ValidateAsync(It.IsAny<RegisterModel>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ValidationResult { Errors = new List<ValidationFailure>() });
             _apiIdentityServiceMock
-                .Setup(a => a.RegisterAsync(It.IsAny<RegisterModel>()))
+                .Setup(a => a.RegisterAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync("token");
             var result = await _controller.Register(new RegisterModel());
             Assert.NotNull(result);
@@ -145,9 +146,15 @@ namespace Test.ControllerTest
                 .Setup(v => v.ValidateAsync(It.IsAny<ChangePasswordModel>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ValidationResult { Errors = new List<ValidationFailure>() });
             _apiIdentityServiceMock
-                .Setup(a => a.MyChangePasswordAsync(It.IsAny<ChangePasswordModel>()))
+                .Setup(a => a.MyChangePasswordAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(true);
-            var result =await _controller.ChangePasswordAsync(It.IsAny<ChangePasswordModel>());
+            var model = new ChangePasswordModel()
+            {
+                CurrentPassword = "string",
+                NewPassword = "String",
+                ConfirmNewPassword = "String"
+            };
+            var result = await _controller.ChangePasswordAsync(model);
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(true, okResult.Value);
         }

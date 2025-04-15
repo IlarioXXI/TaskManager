@@ -12,6 +12,6 @@ namespace TaskManagerWEB.Api.ViewModels
         public List<int> taskItemsIds { get; set; }
 
         public List<string> UsersIds { get; set; }
-        public List<AppUser> Users { get; set; }
+        public List<AppUser>? Users { get; set; }
     }
 }

@@ -10,6 +10,7 @@ namespace TaskManager.Services.Interfaces
 {
     public interface IUserClaimService
     {
+        AppUser GetUserTracked();
         string GetUserId();
         string GetUSerEmail();
         IEnumerable<Claim> GetClaims();

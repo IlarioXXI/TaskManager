@@ -16,4 +16,4 @@
 		<ProjectReference Include="..\TaskManager.Models\TaskManager.Models.csproj" />
 	</ItemGroup>
 
-</Project >
+</Project>

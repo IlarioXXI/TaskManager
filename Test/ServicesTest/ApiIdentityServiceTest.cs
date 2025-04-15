@@ -21,6 +21,7 @@ using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
 using TaskManager.Services.Interfaces;
 using TaskManager.Services.Services;
+using TaskManagerWeb.Api.ViewModels.UserViewModels;
 using TaskManagerWEB.Api.Controllers;
 using Xunit;
 
@@ -69,7 +70,7 @@ namespace Test.ServicesTest
             _userManagerMock
                 .Setup(um => um.GetRolesAsync(user))
                 .ReturnsAsync(new List<string> { SD.Role_User });
-            var result = await _service.CreateJwtTokenAsync(authUser);
+            var result = await _service.CreateJwtTokenAsync(authUser.Email,authUser.Password);
             result = "token";
             Assert.NotNull(result);
             Assert.IsType<string>(result);
@@ -87,7 +88,7 @@ namespace Test.ServicesTest
                 .Setup(um => um.CheckPasswordAsync(user, authUser.Password))
                 .ReturnsAsync(false);
 
-            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _service.CreateJwtTokenAsync(authUser));
+            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _service.CreateJwtTokenAsync(authUser.Email,authUser.Password));
         }
 
         [Fact]
@@ -125,7 +126,7 @@ namespace Test.ServicesTest
             _userManagerMock
                 .Setup(um => um.CheckPasswordAsync(user, authUSer.Password))
                 .ReturnsAsync(true);
-            var result = await _service.RegisterAsync(registerModel);
+            var result = await _service.RegisterAsync(registerModel.Email,registerModel.Password,registerModel.Role);
             Assert.NotNull(result);
             Assert.IsType<string>(result);
 
@@ -167,7 +168,7 @@ namespace Test.ServicesTest
                 .Setup(um => um.CheckPasswordAsync(user, authUSer.Password))
                 .ReturnsAsync(true);
                
-            var result = await _service.RegisterAsync(registerModel);
+            var result = await _service.RegisterAsync(registerModel.Email,registerModel.Password,registerModel.Role);
             Assert.NotNull(result);
             Assert.IsType<string>(result);
         }
@@ -185,7 +186,7 @@ namespace Test.ServicesTest
             _unitOfWorkMock
                 .Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(new AppUser());
-            var result = await Assert.ThrowsAsync<Exception>(() => _service.RegisterAsync(registerModel));
+            var result = await Assert.ThrowsAsync<Exception>(() => _service.RegisterAsync(registerModel.Email, registerModel.Password, registerModel.Role));
             Assert.NotNull(result);
             Assert.IsType<Exception>(result);
         }

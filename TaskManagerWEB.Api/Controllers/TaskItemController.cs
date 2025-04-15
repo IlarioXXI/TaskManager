@@ -74,7 +74,8 @@ namespace TaskManagerWEB.Api.Controllers
             }
             var taskItemToUpdateOrCreate = _mapper.Map<TaskItemVM, TaskItem>(taskItem);
             var taskItemResult = _taskItemService.Upsert(taskItemToUpdateOrCreate);
-            return Ok(taskItemResult);
+            var result = _mapper.Map<TaskItem, TaskItemVM>(taskItemResult);
+            return Ok(result);
         }
 
         // DELETE api/<TaskItemController>/5

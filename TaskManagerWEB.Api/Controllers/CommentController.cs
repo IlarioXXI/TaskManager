@@ -61,8 +61,9 @@ namespace TaskManagerWEB.Api.Controllers
                 }
                 return BadRequest(errors);
             }
-            Comment comment = _mapper.Map<CommentVM, Comment>(commentVM);
-            var result = await _commentService.UpsertAsync(comment);
+            Comment comment = _mapper.Map<CommentVM,Comment>(commentVM);
+            var commentUpdatedOrCreated = _commentService.Upsert(comment);
+            var result = _mapper.Map<Comment, CommentVM>(commentUpdatedOrCreated);
             return Ok(result);
         }
 

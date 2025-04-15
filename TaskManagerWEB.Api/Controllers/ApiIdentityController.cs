@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManager.Models;
 using TaskManager.Services.Extensions;
 using TaskManager.Services.Interfaces;
+using TaskManagerWeb.Api.ViewModels.UserViewModels;
 using TaskManagerWEB.Api.ViewModels.UserViewModels;
 
 namespace TaskManagerWEB.Api.Controllers
@@ -60,7 +61,7 @@ namespace TaskManagerWEB.Api.Controllers
                 return BadRequest(errors);
             }
 
-            var result = await _apiIdentityService.CreateJwtTokenAsync(authUser);
+            var result = await _apiIdentityService.CreateJwtTokenAsync(authUser.Email,authUser.Password);
             return Ok(result);
         }
 
@@ -82,7 +83,7 @@ namespace TaskManagerWEB.Api.Controllers
                 }
                 return BadRequest(errors);
             }
-            var result = await _apiIdentityService.RegisterAsync(model);
+            var result = await _apiIdentityService.RegisterAsync(model.Email,model.Password,model.Role);
             return Ok(result);
         }
 
@@ -116,7 +117,7 @@ namespace TaskManagerWEB.Api.Controllers
                 return BadRequest(errors);
             }
             
-            var result = await _apiIdentityService.MyChangePasswordAsync(model);
+            var result = await _apiIdentityService.MyChangePasswordAsync(model.CurrentPassword,model.NewPassword);
             return Ok(result);
         }
 

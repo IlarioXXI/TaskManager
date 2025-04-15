@@ -153,6 +153,10 @@ namespace Test.ServicesTest
             _userClaimsServiceMOck.Setup(uow => uow.GetClaims()).Returns(new List<Claim> { new Claim(ClaimTypes.Role, "Admin") });
             _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(new AppUser { Id = "test-user-id" });
+            _unitOfWorkMock
+                .Setup(uow => uow.Team.Get(It.IsAny<Expression<Func<Team, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(team);
+
             _unitOfWorkMock.Setup(uow => uow.Team.Update(It.IsAny<Team>()));
             var result = _teamService.Upsert(team);
             Assert.NotNull(result);

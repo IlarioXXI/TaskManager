@@ -30,7 +30,11 @@ namespace TaskManager.Services.Services
             var userId = GetUserId();
             return _unitOfWork.AppUser.Get(u=>u.Id == userId);
         }
-
+        public AppUser GetUserTracked()
+        {
+            var userId = GetUserId();   
+            return _unitOfWork.AppUser.Get(u => u.Id == userId,tracked:true);
+        }
         public string GetUSerEmail()
         {
             return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;

@@ -9,9 +9,9 @@ namespace TaskManager.Services.Interfaces
 {
     public interface IApiIdentityService
     {
-        Task<string> CreateJwtTokenAsync(AuthUser authUser);
-        Task<string> RegisterAsync(RegisterModel model);
+        Task<string> CreateJwtTokenAsync(string email, string pass);
+        Task<string> RegisterAsync(string email, string pass, string roleTOAdd);
         IEnumerable<AppUser> GetAllUsers();
-        Task<bool> MyChangePasswordAsync(ChangePasswordModel model);
+        Task<bool> MyChangePasswordAsync(string currentPass, string newPass);
     }
 }

@@ -1,21 +1,13 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
-using TaskManager.Services.Extensions;
 using TaskManager.Services.Interfaces;
 
 namespace TaskManager.Services.Services
@@ -52,12 +44,12 @@ namespace TaskManager.Services.Services
         }
 
 
-        public async Task<string> CreateJwtTokenAsync(AuthUser authUser)
+        public async Task<string> CreateJwtTokenAsync(string email,string password)
         {
-            var user = await _userManager.FindByEmailAsync(authUser.Email);
-            if (!await _userManager.CheckPasswordAsync(user, authUser.Password))
+            var user = await _userManager.FindByEmailAsync(email);
+            if (!await _userManager.CheckPasswordAsync(user, password))
             {
-                _logger.LogInformation("User {email} tried to login with wrong password", authUser.Email);
+                _logger.LogInformation("User {email} tried to login with wrong password", email);
                 throw new UnauthorizedAccessException("Invalid credentials");
             }
 
@@ -79,7 +71,7 @@ namespace TaskManager.Services.Services
                     new (ClaimTypes.Role,isAdmin ? SD.Role_Admin : SD.Role_User),
                     new (JwtRegisteredClaimNames.Sub, user.Id),
                     new (ClaimTypes.Name, user.Id),
-                    new (JwtRegisteredClaimNames.Name, authUser.Email),
+                    new (JwtRegisteredClaimNames.Name, email),
                     new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         }),
                 SigningCredentials = new SigningCredentials
@@ -92,7 +84,7 @@ namespace TaskManager.Services.Services
             var handler = new JwtSecurityTokenHandler();
             SecurityToken token = handler.CreateToken(descriptor);
             string tokenString = handler.WriteToken(token);
-            _logger.LogInformation("User {email} is logged at : {data}", authUser.Email, DateTime.Now.ToLocalTime());
+            _logger.LogInformation("User {email} is logged at : {data}", email, DateTime.Now.ToLocalTime());
             return tokenString;
         }
 
@@ -108,41 +100,37 @@ namespace TaskManager.Services.Services
             return users;
         }
 
-        public async Task<string> RegisterAsync(RegisterModel model)
+        public async Task<string> RegisterAsync(string email, string passWord, string roleToAdd)
         {
-            var existingUser = _unitOfWork.AppUser.Get(u => u.UserName == model.Email);
+            var existingUser = _unitOfWork.AppUser.Get(u => u.UserName == email);
             if (existingUser != null)
             {
                 throw new Exception("User already exists");
             }
             var user = new AppUser
             {
-                UserName = model.Email,
-                Email = model.Email,
+                UserName = email,
+                Email = email,
             };
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(user, passWord);
 
-            await _userManager.AddToRoleAsync(user, model.Role);
+            await _userManager.AddToRoleAsync(user, roleToAdd);
             var role = await _userManager.GetRolesAsync(user);
 
-            var token = await CreateJwtTokenAsync(new AuthUser
-            {
-                Email = model.Email,
-                Password = model.Password
-            });
+            var token = await CreateJwtTokenAsync(email,passWord);
 
             return token;
         }
 
-        public async Task<bool> MyChangePasswordAsync(ChangePasswordModel model)
+        public async Task<bool> MyChangePasswordAsync(string currentPass, string newPass)
         {
-            var user = _userClaimService.GetUser();
+            var user = _userClaimService.GetUserTracked();
             if (user == null)
             {
                 _logger.LogWarning("User not found when attempting to change password.");
                 throw new Exception("User not found.");
             }
-            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            var result = await _userManager.ChangePasswordAsync(user, currentPass, newPass);
             if (!result.Succeeded)
             {
                 _logger.LogInformation("User {email} changed is password", user.Email);

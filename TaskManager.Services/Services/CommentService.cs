@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.Security.Claims;
 using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Utility;
@@ -32,7 +33,7 @@ namespace TaskManager.Services.Services
             return comments;
         }
 
-        public async Task<Comment> UpsertAsync(Comment comment)
+        public Comment Upsert(Comment comment)
         {
             if (comment == null)
             {
@@ -51,7 +52,10 @@ namespace TaskManager.Services.Services
                 comment.AppUserId = userId;
                 _unitOfWork.Comment.Add(comment);
                 _unitOfWork.Save();
+                comment.TaskItem = task;
+                comment.AppUser = _unitOfWork.AppUser.Get(u=>u.Id == comment.AppUserId);
                 _logger.LogInformation("User {email} added new comment to task: {task}", userId, task.Title);
+                return comment;
             }
             else
             {
@@ -61,16 +65,16 @@ namespace TaskManager.Services.Services
                     throw new Exception("Comment not found");
                 }
 
-                existingComment.AppUserId = userId;
-                existingComment.TaskItemId = comment.TaskItemId;
-                existingComment.Description = comment.Description;
-                existingComment.CreationDate = DateTime.Now;
-                _unitOfWork.Comment.Update(existingComment);
+                comment.AppUserId = existingComment.AppUserId;
+                comment.TaskItemId = existingComment.TaskItemId;
+                comment.CreationDate = DateTime.Now;
+                _unitOfWork.Comment.Update(comment);
                 _unitOfWork.Save();
+                comment.TaskItem = task;
+                comment.AppUser = _unitOfWork.AppUser.Get(u => u.Id == comment.AppUserId);
                 _logger.LogInformation("User {email} changed comment {comment} for task: {task}", userId, existingComment.Description, task.Title);
+                return comment;
             }
-
-            return comment;
         }
 
         public Comment Delete(int id)

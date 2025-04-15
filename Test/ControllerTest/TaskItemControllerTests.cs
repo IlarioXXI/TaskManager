@@ -127,10 +127,13 @@ namespace Test.ControllerTest
             _taskItemServiceMock
                 .Setup(s => s.Upsert(It.IsAny<TaskItem>()))
                 .Returns(taskItem);
+            _mapper
+                .Setup(s => s.Map<TaskItem, TaskItemVM>(taskItem))
+                .Returns(taskItemVM);
             var result = await _controller.Upsert(taskItemVM);
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<TaskItem>(okResult.Value);
-            Assert.Equal(taskItem, returnValue);
+            var returnValue = Assert.IsType<TaskItemVM>(okResult.Value);
+            Assert.Equal(taskItemVM, returnValue);
 
         }
 

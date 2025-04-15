@@ -56,18 +56,19 @@ namespace Test.ControllerTest
         }
 
         [Fact]
-        public async void UpsertAsync_ValidComment_ReturnsOk()
+        public async Task UpsertAsync_ValidComment_ReturnsOk()
         {
             var commentVM = new CommentVM { Id = 0, Description = "Test comment", TaskItemId = 1 };
             Comment comment = new Comment { Id = 0, Description = "Test comment", TaskItemId = 1 };
             _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<CommentVM>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ValidationResult { Errors = new List<ValidationFailure>() });
             _mapperMock.Setup(m => m.Map<CommentVM,Comment>(commentVM)).Returns(comment);
-            _commentService.Setup(c => c.UpsertAsync(It.IsAny<Comment>()).Result)
+            _commentService.Setup(c => c.Upsert(It.IsAny<Comment>()))
                 .Returns(comment);
+            _mapperMock.Setup(m => m.Map<Comment, CommentVM>(comment)).Returns(commentVM);
             var result = await _controller.UpsertAsync(commentVM);
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<Comment>(okResult.Value);
+            var returnValue = Assert.IsType<CommentVM>(okResult.Value);
             Assert.Equal(comment.Id, returnValue.Id);
         }
 
@@ -79,11 +80,12 @@ namespace Test.ControllerTest
             _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<CommentVM>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ValidationResult { Errors = new List<ValidationFailure>() });
             _mapperMock.Setup(m => m.Map<CommentVM, Comment>(commentVM)).Returns(comment);
-            _commentService.Setup(c => c.UpsertAsync(It.IsAny<Comment>()).Result)
+            _commentService.Setup(c => c.Upsert(It.IsAny<Comment>()))
                 .Returns(comment);
+            _mapperMock.Setup(m => m.Map<Comment, CommentVM>(comment)).Returns(commentVM);
             var result = await _controller.UpsertAsync(commentVM);
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<Comment>(okResult.Value);
+            var returnValue = Assert.IsType<CommentVM>(okResult.Value);
             Assert.Equal(comment.Id, returnValue.Id);
         }
 

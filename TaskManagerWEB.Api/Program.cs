@@ -24,6 +24,9 @@ using TaskManager.DataAccess.Utility;
 using TaskManager.Services.ServicesInterfaces;
 using TaskManagerWEB.Api.ViewModels;
 using TeamVM = TaskManagerWEB.Api.ViewModels.TeamVM;
+using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using TaskManagerWeb.Api.ViewModels.UserViewModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,8 +35,13 @@ var builder = WebApplication.CreateBuilder(args);
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         options.EnableSensitiveDataLogging();
     });
-        
-       
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
+
 // Add services to the container.
 builder.Services.Configure<AppJWTSettings>(builder.Configuration.GetSection("JWTSettings"));
 
@@ -69,6 +77,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LogoutPath = "/Identity/Account/Logout";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 });
+
+
 builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserClaimService, UserClaimService>();

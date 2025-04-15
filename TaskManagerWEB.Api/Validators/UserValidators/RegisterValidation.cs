@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using TaskManager.Models;
+using TaskManagerWeb.Api.ViewModels.UserViewModels;
 using TaskManagerWEB.Api.ViewModels.UserViewModels;
 
 namespace TaskManagerWEB.Api.Validators.UserValidators

@@ -60,12 +60,13 @@ namespace Test.ServicesTest
             _unitOfWorkMock.Setup(uow => uow.Comment.GetAll(It.IsAny<Expression<Func<Comment, bool>>>(), It.IsAny<string>()))
                 .Returns(comments);
             // Act & Assert
+            
             Assert.Throws<Exception>(() => _commentService.GetAllByTaskId(taskItemId));
         }
 
 
         [Fact]
-        public async Task UpsertAsync_ValidComment_AddsComment()
+        public void UpsertAsync_ValidComment_AddsComment()
         {
             // Arrange
             var comment = new Comment { Id = 0, TaskItemId = 1, Description = "New Comment"};
@@ -75,14 +76,16 @@ namespace Test.ServicesTest
             _userClaimServiceMock.Setup(u => u.GetUserId()).Returns("userId");
             _unitOfWorkMock.Setup(uow => uow.Comment.Add(It.IsAny<Comment>()));
             _unitOfWorkMock.Setup(uow => uow.Save());
+            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                                .Returns(new AppUser());
             // Act
-            var result = await _commentService.UpsertAsync(comment);
+            var result =  _commentService.Upsert(comment);
             // Assert
             Assert.NotNull(result);
             Assert.Equal(comment.Description, result.Description);
         }
         [Fact]
-        public async Task UpsertAsync_CommentNotFound_ThrowsException()
+        public void UpsertAsync_CommentNotFound_ThrowsException()
         {
             // Arrange
             var comment = new Comment { Id = 1, TaskItemId = 1, Description = "Updated Comment" };
@@ -92,28 +95,28 @@ namespace Test.ServicesTest
             _unitOfWorkMock.Setup(uow => uow.Comment.Get(It.IsAny<Expression<Func<Comment, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((Comment)null);
             // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => _commentService.UpsertAsync(comment));
+            Assert.Throws<Exception>(() => _commentService.Upsert(comment));
         }
         [Fact]
-        public async Task UpsertAsync_TaskNotFound_ThrowsException()
+        public void UpsertAsync_TaskNotFound_ThrowsException()
         {
             // Arrange
             var comment = new Comment { Id = 1, TaskItemId = 1, Description = "Updated Comment" };
             _unitOfWorkMock.Setup(uow => uow.TaskItem.Get(It.IsAny<Expression<Func<TaskItem, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((TaskItem)null);
             // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => _commentService.UpsertAsync(comment));
+            Assert.Throws<Exception>(() => _commentService.Upsert(comment));
         }
         [Fact]
-        public async Task UpsertAsync_CommentIsNull_ThrowsArgumentNullException()
+        public void UpsertAsync_CommentIsNull_ThrowsArgumentNullException()
         {
             // Arrange
             Comment comment = null;
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _commentService.UpsertAsync(comment));
+             Assert.Throws<ArgumentNullException>(() => _commentService.Upsert(comment));
         }
         [Fact]
-        public async Task UpsertAsync_CommentIdIsZero_AddsNewComment()
+        public void UpsertAsync_CommentIdIsZero_AddsNewComment()
         {
             // Arrange
             var comment = new Comment { Id = 0, TaskItemId = 1, Description = "New Comment" };
@@ -122,14 +125,16 @@ namespace Test.ServicesTest
                 .Returns(task);
             _userClaimServiceMock.Setup(u => u.GetUserId()).Returns("userId");
             _unitOfWorkMock.Setup(uow => uow.Comment.Add(It.IsAny<Comment>()));
+            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(new AppUser());
             // Act
-            var result =await _commentService.UpsertAsync(comment);
+            var result = _commentService.Upsert(comment);
             // Assert
             Assert.NotNull(result);
             Assert.Equal(comment.Description, result.Description);
         }
         [Fact]
-        public async Task UpsertAsync_CommentIdIsNotZero_UpdatesExistingComment()
+        public void UpsertAsync_CommentIdIsNotZero_UpdatesExistingComment()
         {
             // Arrange
             var comment = new Comment { Id = 1, TaskItemId = 1, Description = "Updated Comment" };
@@ -139,15 +144,17 @@ namespace Test.ServicesTest
             _userClaimServiceMock.Setup(u => u.GetUserId()).Returns("userId");
             _unitOfWorkMock.Setup(uow => uow.Comment.Get(It.IsAny<Expression<Func<Comment, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(comment);
+            _unitOfWorkMock.Setup(uow => uow.AppUser.Get(It.IsAny<Expression<Func<AppUser, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(new AppUser());
             // Act
-            var result = await _commentService.UpsertAsync(comment);
+            var result =  _commentService.Upsert(comment);
             // Assert
             Assert.NotNull(result);
             Assert.Equal(comment.Description, result.Description);
         }
 
         [Fact]
-        public async Task Delete_ok()
+        public void Delete_ok()
         {
             _userClaimServiceMock
                 .Setup(um => um.GetClaims()).Returns(new List<Claim>
@@ -172,7 +179,7 @@ namespace Test.ServicesTest
         }
 
         [Fact]
-        public async Task Delete_unauthorized()
+        public void Delete_unauthorized()
         {
             _userClaimServiceMock
                 .Setup(um => um.GetClaims()).Returns(new List<Claim>
@@ -191,7 +198,7 @@ namespace Test.ServicesTest
         }
 
         [Fact]
-        public async Task Delete_commentNotFound()
+        public void Delete_commentNotFound()
         {
             _userClaimServiceMock
                 .Setup(um => um.GetClaims()).Returns(new List<Claim>

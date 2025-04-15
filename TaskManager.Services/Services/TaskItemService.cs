@@ -47,13 +47,13 @@ namespace TaskManager.Services.Services
         public IEnumerable<TaskItem> GetAll()
         {
             var userId = _userClaimService.GetUserId();
-            var taskItems = _unitOfWork.TaskItem.GetAll(t => t.AppUserId == userId);
+            var taskItems = _unitOfWork.TaskItem.GetAll(t => t.AppUserId == userId, includeProperties: "Status,Priority,Comments,Team");
             return taskItems;
         }
 
         public TaskItem GetById(int id)
         {
-            var taskItem = _unitOfWork.TaskItem.Get(t => t.Id == id);
+            var taskItem = _unitOfWork.TaskItem.Get(t => t.Id == id,includeProperties:"Status,Priority,Comments,Team");
             return taskItem;
         }
 
@@ -61,7 +61,6 @@ namespace TaskManager.Services.Services
         {
             var userId = _userClaimService.GetUserId();                                 
             var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
-
 
             if (taskItem.Id == 0)
             {
@@ -90,17 +89,13 @@ namespace TaskManager.Services.Services
                     _unitOfWork.History.Add(history);
                     _unitOfWork.Save();
                 }
-                if (existingItem.AppUserId != null)
-                {
-                    existingItem.AppUserId = taskItem.AppUserId;
-                }
-                existingItem.Description = taskItem.Description;
-                existingItem.DueDate = taskItem.DueDate;
 
-                _unitOfWork.TaskItem.Update(existingItem);
+                _unitOfWork.TaskItem.Update(taskItem);
+                taskItem.Status = oldStatus;
+                taskItem.Priority = oldPriority;
                 _unitOfWork.Save();
                 _logger.LogInformation("TaskItem ({taskItemName}) updated successfully by : {email}", taskItem.Title, user.Email);
-                return existingItem;
+                return taskItem;
             }
         }
     }
