@@ -6,10 +6,8 @@ using TaskManager.DataAccess.DBInitializer;
 using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Repositories;
 using TaskManager.Services.Hubs;
-using TaskManager.Services.Interfaces;
 using TaskManager.Services.Middlewares;
 using TaskManager.Services.Services;
-using TaskManager.Services.ServicesInterfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,12 +58,6 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<IDbInitializer,DbInitializer>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
-builder.Services.AddScoped<IUserClaimService, UserClaimService>();
-builder.Services.AddScoped<IApiIdentityService, ApiIdentityService>();
-builder.Services.AddScoped<ICommentService, CommentService>();
-builder.Services.AddScoped<IHistoryService, HistoryService>();
-builder.Services.AddScoped<ITaskItemService, TaskItemService>();
-builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddTransient<GlobalErrorHandlerMiddleware>();
 var app = builder.Build();
 
