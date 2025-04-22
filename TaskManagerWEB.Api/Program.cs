@@ -30,11 +30,25 @@ using TaskManagerWeb.Api.ViewModels.UserViewModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
-    builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CORSPolicy",
+        builder =>
+        {
+            builder
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithOrigins("http://localhost:51678", "https://calm-water-04859b403.azurestaticapps.net");
+        });
+});
+
+builder.Services.AddDbContext<AppDbContext>(options =>
     {
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         options.EnableSensitiveDataLogging();
     });
+
+
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -156,7 +170,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("CORSPolicy");
 app.UseAuthorization();
 app.UseAuthentication();
 app.UseMiddleware<GlobalErrorHandlerMiddleware>();
