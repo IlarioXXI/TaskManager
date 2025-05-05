@@ -1,0 +1,35 @@
+<!-- <mat-form-field class="example-full-width">
+    <mat-label>Favorite food</mat-label>
+    <input matInput placeholder="Ex. Pizza" [(ngModel)]="title">
+</mat-form-field>
+<button mat-raised-button color="primary" (click)="onClick($event)">button</button>
+<p>{{title}}</p> -->
+
+<!-- <div *ngFor="let person of persons; index as i">
+    <p class="cerchioVerde" *ngIf="person.inOnline"></p>
+    <p class="cerchioRosso" *ngIf="!person.inOnline"></p>
+    <p>{{i}} {{person.name}} - {{person.surname}}</p>
+</div> -->
+
+
+<!--
+ ngModel two-way binding avviene sia l'event binding che il property binding
+modifichiamo il valore sia modificando l'input che direttamente da ts quindi anche dal backend,
+quindi si potrebbe utilizzare in un form di update.
+-->
+
+
+
+<!-- <ul>
+    <div *ngFor="let person of persons">
+        <li>
+            <div class="cerchio" [ngStyle]="{'background': person.isOnline ? 'green' : 'red'}"></div>
+            <p>{{person.name}} {{person.surname}}</p>
+        </li>
+    </div>
+</ul> -->
+
+<!-- <app-prova [data]="persons"></app-prova> -->
+<a routerLink="/">home</a>
+<a routerLink="/contatti">contatti</a>
+<router-outlet></router-outlet>
