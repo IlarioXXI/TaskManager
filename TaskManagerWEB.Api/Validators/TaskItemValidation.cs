@@ -14,7 +14,6 @@ namespace TaskManagerWEB.Api.Validators
             RuleFor(x => x.StatusId).NotNull();
             RuleFor(x => x.PriorityId).NotNull();
             RuleFor(x => x.Description).Length(1, 500).NotNull();
-            RuleFor(x => x.DueDate).Null();
             RuleFor(x => x.TeamId).NotNull();
             RuleFor(x => x.Title)
                 .NotEmpty()

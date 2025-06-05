@@ -17,6 +17,7 @@ namespace TaskManager.Services.Services
         private readonly IServiceScopeFactory _scopeFactory;
 
 
+
         public NotificationService(IHubContext<NotificationHub> hubContext,
             IServiceScopeFactory scopeFactory)
         {
@@ -31,8 +32,8 @@ namespace TaskManager.Services.Services
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                // potrei inserire lo scope in un using per liberare le risorse e non avre problemi di memory leak
-                var scope = _scopeFactory.CreateScope();
+                //potrei inserire lo scope in un using per liberare le risorse e non avre problemi di memory leak
+               var scope = _scopeFactory.CreateScope();
 
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
@@ -85,4 +86,6 @@ namespace TaskManager.Services.Services
             }
         }
     }
+
+
 }

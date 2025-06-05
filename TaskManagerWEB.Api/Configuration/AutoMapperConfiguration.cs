@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using SQLitePCL;
+using TaskManager.DataAccess;
 using TaskManager.DataAccess.Interfaces;
 using TaskManager.Models;
 using TaskManagerWeb.Api.Models;
 using TaskManagerWeb.Api.ViewModels;
 using TaskManagerWEB.Api.ViewModels;
 using TaskManagerWEB.Api.ViewModels.UserViewModels;
+using TeamVM = TaskManagerWEB.Api.ViewModels.TeamVM;
 
 namespace TaskManagerWEB.Api.Configuration
 {
@@ -25,9 +28,9 @@ namespace TaskManagerWEB.Api.Configuration
                     .ForMember(dest => dest.History, opt => opt.Ignore())
                     .PreserveReferences();
                 CreateMap<TaskItem, TaskItemVM>()
-                    .ForMember(dest => dest.TeamName, opt => opt.MapFrom(src => src.Team.Name))
-                    .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status.Name))
-                    .ForMember(dest => dest.PriorityName, opt => opt.MapFrom(src => src.Priority.Name));
+                    .ForMember(dest => dest.TeamName, opt => opt.MapFrom(src => src.Team!.Name))
+                    .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status!.Name))
+                    .ForMember(dest => dest.PriorityName, opt => opt.MapFrom(src => src.Priority!.Name));                  
 
 
 
@@ -41,6 +44,7 @@ namespace TaskManagerWEB.Api.Configuration
 
                 CreateMap<AppUser, AppUserVM>()
                     .ForMember(vm => vm.Email, opt => opt.MapFrom(src => src.Email))
+                    .ForMember(vm => vm.Id, opt => opt.MapFrom(src => src.Id))
                     .ReverseMap();
 
 
@@ -57,8 +61,7 @@ namespace TaskManagerWEB.Api.Configuration
                     .ForMember(vm => vm.UsersIds, opt => opt.MapFrom(src => src.Users.Select(u => u.Id).ToList()))
                     .ForMember(vm => vm.taskItemsIds, opt => opt.MapFrom(src => src.TaskItems.Select(t => t.Id).ToList()))
                     .ForMember(vm => vm.Name, opt => opt.MapFrom(src => src.Name))
-                    .ForMember(vm => vm.Id, opt => opt.MapFrom(src => src.Id))
-                    .ReverseMap();
+                    .ForMember(vm => vm.Id, opt => opt.MapFrom(src => src.Id));
 
                 CreateMap<TeamVM, Team>()
                     .ForMember(dest => dest.TaskItems, opt => opt.MapFrom(vm => vm.taskItemsIds.Select(id => new TaskItem { Id = id }).ToList()))

@@ -1,0 +1,27 @@
+<div class="overlay" *ngIf="show">
+  <div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg" style="min-width: 350px; max-width: 400px;">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Change your password</h5>
+        <button type="button" class="btn-close" (click)="hideForm()"></button>
+      </div>
+      <div class="card-body">
+        <form #changePassform="ngForm" (ngSubmit)="onSubmit(changePassform)">
+          <div class="form-floating mb-3">
+            <input class="form-control" autocomplete="current-password" type="password" name="currentPassword" ngModel required placeholder="CurrentPassword" />
+            <label>Current Password</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input class="form-control" autocomplete="current-password" type="password" name="newPassword" ngModel required placeholder="NewPassword" />
+            <label>New Password</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input class="form-control" autocomplete="current-password" type="password" name="confirmNewPassword" ngModel required placeholder="ConfirmNewPassword" />
+            <label>Confirm New Password</label>
+          </div>
+          <button [disabled]="!changePassform.valid" type="submit" class="w-100 btn btn-primary">Change Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

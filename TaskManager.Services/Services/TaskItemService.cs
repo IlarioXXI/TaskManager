@@ -47,7 +47,7 @@ namespace TaskManager.Services.Services
         public IEnumerable<TaskItem> GetAll()
         {
             var userId = _userClaimService.GetUserId();
-            var taskItems = _unitOfWork.TaskItem.GetAll(t => t.AppUserId == userId, includeProperties: "Status,Priority,Comments,Team");
+            var taskItems = _unitOfWork.TaskItem.GetAll(t => t.AppUserId == userId, includeProperties: "Status,Priority,Comments,Team,Comments.AppUser");
             return taskItems;
         }
 
@@ -67,6 +67,8 @@ namespace TaskManager.Services.Services
                 _unitOfWork.TaskItem.Add(taskItem);
                 _unitOfWork.Save();
                 _logger.LogInformation("TaskItem ({taskItemName}) created successfully by : {email}", taskItem.Title, user.Email);
+                taskItem.Status = _unitOfWork.Status.Get(s => s.Id == taskItem.StatusId);
+                taskItem.Priority = _unitOfWork.Priority.Get(p => p.Id == taskItem.PriorityId);
                 return taskItem;
             }
             else
@@ -91,8 +93,6 @@ namespace TaskManager.Services.Services
                 }
 
                 _unitOfWork.TaskItem.Update(taskItem);
-                taskItem.Status = oldStatus;
-                taskItem.Priority = oldPriority;
                 _unitOfWork.Save();
                 _logger.LogInformation("TaskItem ({taskItemName}) updated successfully by : {email}", taskItem.Title, user.Email);
                 return taskItem;

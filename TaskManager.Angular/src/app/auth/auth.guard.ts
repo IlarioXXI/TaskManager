@@ -4,7 +4,11 @@ import { inject } from '@angular/core';
 
 export const canActivate: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
-  return authService.isAuthenticated();
+  if (localStorage.getItem('token') == null) {
+    return false;
+  }else{
+    return true;
+  }
 };
 
 export const canActivateChild: CanActivateChildFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {

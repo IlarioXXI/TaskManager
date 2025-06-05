@@ -5,11 +5,14 @@ import { ContattiComponent } from "./components/contatti/contatti.component";
 import { ContattoComponent } from "./components/contatto/contatto.component";
 import { NotfoundComponent } from "./components/notfound/notfound.component";
 import { canActivate, canActivateChild } from "./auth/auth.guard";
+import { SignupComponent } from "./components/signup/signup.component";
+import { SigninComponent } from "./components/signin/signin.component";
+import { TeamsComponent } from "./components/teams/teams.component";
 
 
 const routes : Routes = [
     {
-        path:'homepage',
+        path:'home',
         component:HomeComponent
     },
     {
@@ -18,6 +21,15 @@ const routes : Routes = [
         redirectTo:'/homepage'
     },
     {
+        path:'register',
+        component:SignupComponent
+    },
+    {
+        path:'login',
+        component:SigninComponent
+    },
+    {
+
         path:'contatti',
         component:ContattiComponent,
         canActivate:[canActivate],
@@ -28,6 +40,10 @@ const routes : Routes = [
                 component:ContattoComponent
             }
         ]
+    },
+    {
+        path:'allTeams',
+        component:TeamsComponent,
     },
     {
         path:'404',

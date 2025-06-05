@@ -8,7 +8,7 @@ namespace TaskManagerWEB.Api.ViewModels
 
         public string Name { get; set; }
 
-        public List<TaskItem>? TaskItems { get; set; }
+        public List<TaskItemVM>? TaskItems { get; set; }
         public List<int> taskItemsIds { get; set; }
 
         public List<string> UsersIds { get; set; }

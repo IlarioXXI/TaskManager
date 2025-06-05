@@ -1,0 +1,13 @@
+<div class="card mb-2 shadow-sm">
+  <div class="card-body p-2">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <span class="badge bg-info text-dark">{{comment.appUserEmail}}</span>
+    </div>
+    <div class="mb-1">
+      <small class="text-muted">{{comment.creationDate | date:'short'}}</small>
+    </div>
+    <div>
+      <p class="mb-0">{{comment.description}}</p>
+    </div>
+  </div>
+</div>

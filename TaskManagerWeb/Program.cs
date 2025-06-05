@@ -9,8 +9,17 @@ using TaskManager.Services.Hubs;
 using TaskManager.Services.Middlewares;
 using TaskManager.Services.Services;
 
-var builder = WebApplication.CreateBuilder(args);
 
+Host.CreateDefaultBuilder(args)
+    .ConfigureServices(services =>
+    {
+        services.Configure<HostOptions>(hostOptions =>
+        {
+            hostOptions.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+        });
+    });
+
+var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>

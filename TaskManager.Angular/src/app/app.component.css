@@ -1,10 +1,4 @@
-.cerchio{
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: blue;
-    margin-right: 10px;
-}
+
 li{
     margin-bottom: 10px;
     display: flex;

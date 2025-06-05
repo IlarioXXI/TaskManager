@@ -1,1 +1,27 @@
-<p>home works!</p>
+<div class="row pb-3 p-4">
+  <div class="col-lg-3 col-sm-6 mb-4" *ngFor="let item of taskItems">
+    <div class="card border-0 p-3 shadow border-top border-5 rounded bg-{{item.color}}">
+      <div class="card-body pb-0">
+        <div class="pl-1">
+          <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">{{item.title}}</p>
+          <p class="card-title text-center"><b>{{item.description}}</b></p>
+        </div>
+        <div class="pl-1">
+          <p class="text-dark text-opacity-75 text-center">Status: <span>{{item.statusName}}</span></p>
+        </div>
+        <div class="pl-1">
+          <p class="text-dark text-opacity-75 text-center">Priority: <span>{{item.priorityName}}</span></p>
+        </div>
+        <div class="pl-1">
+          <p class="text-dark text-opacity-75 text-center">DueDate: <span>{{item.dueDate | date:'dd/MM/yyyy'}}</span></p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <button class="btn btn-primary bg-gradient border-0 form-control " (click)="showModal(item)" >Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<app-details [show]="show" [taskItem]="selectedTask" (close)="show = false"></app-details>

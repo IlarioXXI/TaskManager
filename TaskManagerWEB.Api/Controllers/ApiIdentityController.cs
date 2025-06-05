@@ -121,6 +121,15 @@ namespace TaskManagerWEB.Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("getEmail")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult getEmail()
+        {
+            var email = _apiIdentityService.getEmail();
+            return Ok(email);
+        }
+
     }
 
 }
+

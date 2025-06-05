@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using System.Data.Common;
 using System.Security.Claims;
+using TaskManager.DataAccess;
 using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Utility;
 using TaskManager.Models;
@@ -43,7 +45,8 @@ namespace TaskManager.Services.Services
             {
                 throw new UnauthorizedAccessException("Unauthorized");
             }
-            var teams = _unitOfWork.Team.GetAll();
+            var teams = _unitOfWork.Team.GetAll(includeProperties:"Users,TaskItems,TaskItems.Comments");
+            
             return teams;
         }
 
@@ -57,20 +60,27 @@ namespace TaskManager.Services.Services
 
         public Team Upsert(Team team)
         {
-            if (!team.Users.IsNullOrEmpty())
-            {
-                foreach (var us in team.Users)
-                {
-                    team.Users = _unitOfWork.AppUser.GetAll(u => u.Id == us.Id).ToList();
-                }
-            }
             
+
             if (!team.TaskItems.IsNullOrEmpty())
             {
+                var taskItemsInTeam = new List<TaskItem>();
                 foreach (var ti in team.TaskItems)
                 {
-                    team.TaskItems = _unitOfWork.TaskItem.GetAll(t => t.Id == ti.Id).ToList();
+                    var taskItemInTeam = _unitOfWork.TaskItem.Get(t => t.Id == ti.Id,includeProperties: null, tracked: true);
+                    taskItemsInTeam.Add(taskItemInTeam);
                 }
+                team.TaskItems = taskItemsInTeam;
+            }
+            if (!team.Users.IsNullOrEmpty())
+            {
+                var usersInTeam = new List<AppUser>();
+                foreach (var u in team.Users)
+                {
+                    var userInTeam = _unitOfWork.AppUser.Get(x=>x.Id == u.Id,includeProperties:null,tracked:true);
+                    usersInTeam.Add(userInTeam);
+                }
+                team.Users = usersInTeam;
             }
 
             if (team == null)
@@ -81,10 +91,11 @@ namespace TaskManager.Services.Services
             {
                 throw new UnauthorizedAccessException("Unauthorized");
             }
-            var userId = _userClaimService.GetUserId();
+            var userId = _userClaimService.GetUserId();     
             var user = _unitOfWork.AppUser.Get(u => u.Id == userId);
             if (team.Id == 0 || team.Id == null)
             {
+            
                 _unitOfWork.Team.Add(team);
                 _unitOfWork.Save();
                 _logger.LogInformation("Team ({teamName}) created successfully by : {email}", team.Name, user.Email);

@@ -1,0 +1,20 @@
+
+<form #homeform="ngForm" (ngSubmit)="onSubmit(homeform)">
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input matInput type="email" name="email" ngModel required email>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input matInput type="password" name="password"ngModel required>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Confirm Password</mat-label>
+        <input matInput type="password" name="confirmPassword"ngModel required>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Ruolo</mat-label>
+        <input matInput type="text" name="role" ngModel required>
+    </mat-form-field>
+  <button mat-flat-button type="submit" color="primary" [disabled]="!homeform.valid">submit</button>
+  </form>

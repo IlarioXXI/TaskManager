@@ -169,8 +169,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+
 app.UseHttpsRedirection();
-app.UseCors("CORSPolicy");
 app.UseAuthorization();
 app.UseAuthentication();
 app.UseMiddleware<GlobalErrorHandlerMiddleware>();

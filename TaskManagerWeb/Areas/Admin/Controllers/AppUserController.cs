@@ -8,12 +8,12 @@ using TaskManagerWeb.Models;
 namespace TaskManagerWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class UserController : Controller
+    public class AppUserController : Controller
     {
         private readonly AppDbContext _db;
 
 
-        public UserController(AppDbContext db)
+        public AppUserController(AppDbContext db)
         {
             _db = db;
 
@@ -26,10 +26,10 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
             List<AppUserVM> appUsers = new List<AppUserVM>();
             foreach (var user in users)
             {
-                if (user.Role == null)
-                {
-                    return NotFound();
-                }
+                //if (user.Role == null)
+                //{
+                //    return NotFound();
+                //}
                 var roleId = userRoles.FirstOrDefault(u => u.UserId == user.Id).RoleId;
                 user.Role = roles.FirstOrDefault(u => u.Id == roleId).Name;
                 appUsers.Add(new AppUserVM

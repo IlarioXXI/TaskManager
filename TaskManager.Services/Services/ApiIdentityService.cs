@@ -139,5 +139,11 @@ namespace TaskManager.Services.Services
             _logger.LogInformation("User {email} changed is password", user.Email);
             return true;
         }
+
+        public string getEmail()
+        {
+            var user = _unitOfWork.AppUser.Get(x => x.Id == _userClaimService.GetUserId());
+            return user.Email;
+        }
     }
 }

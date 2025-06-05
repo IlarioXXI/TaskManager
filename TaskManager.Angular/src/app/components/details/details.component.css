@@ -1,0 +1,40 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-dialog {
+  max-width: 900px;
+  min-width: 900px;
+  width: 95vw;
+  max-height: 90vh;
+  margin: auto;
+  display: flex;
+  align-items: center;
+}
+
+.modal-content {
+  background: #fff !important;
+  box-shadow: 0 0 24px rgba(0,0,0,0.2);
+  border-radius: 12px;
+  border: none;
+  padding: 2rem 1.5rem;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-body {
+  overflow-y: auto;
+  overflow-x: auto;
+  max-height: 60vh;
+}

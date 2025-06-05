@@ -1,0 +1,42 @@
+<div class="overlay" *ngIf="show">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content shadow-lg bg-white rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h4 class="modal-title text-uppercase text-primary fw-bold">
+          {{ team && team.id === 0 ? 'Create' : 'Update' }} Team
+        </h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="close.emit()"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <form #teamForm="ngForm" (ngSubmit)="onSubmit(teamForm)">
+          <div class="mb-4">
+            <label for="teamName" class="form-label fw-semibold">Team Name</label>
+            <input id="teamName" name="name" class="form-control form-control-lg" [(ngModel)]="team.name" required />
+            <span class="text-danger" *ngIf="teamForm.submitted && !team.name">Name is required</span>
+          </div>
+          <div class="mb-4">
+            <label for="users" class="form-label fw-semibold">Add Users</label>
+            <select
+                id="users"
+                name="UsersIds"
+                class="form-select"
+                [(ngModel)]="selectedUserIds"
+                multiple
+            >
+                <option *ngFor="let user of users" [value]="user.id">
+                {{ user.email }} ({{ user.email }})
+                </option>
+            </select>
+            <div class="form-text">Tieni premuto Ctrl (Cmd su Mac) per selezionare più utenti.</div>
+            </div>
+          <div class="modal-footer border-0 pt-4">
+            <button type="submit" class="btn btn-primary px-4 py-2">
+              {{ team && team.id === 0 ? 'Create' : 'Update' }}
+            </button>
+            <button type="button" class="btn btn-outline-secondary px-4 py-2 ms-2" (click)="close.emit()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -13,5 +13,6 @@ namespace TaskManager.Services.Interfaces
         Task<string> RegisterAsync(string email, string pass, string roleTOAdd);
         IEnumerable<AppUser> GetAllUsers();
         Task<bool> MyChangePasswordAsync(string currentPass, string newPass);
+        string getEmail();
     }
 }
