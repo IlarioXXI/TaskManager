@@ -14,7 +14,7 @@ import { ContattoComponent } from "./components/contatto/contatto.component";
 import { NotfoundComponent } from "./components/notfound/notfound.component";
 import {MatFormFieldModule, MatLabel} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
-import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withInterceptors, withInterceptorsFromDi } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { SignupComponent } from "./components/signup/signup.component";
 import { SigninComponent } from "./components/signin/signin.component";
 import { authTokenInterceptor } from "./interceptors/auth-token.interceptor";
@@ -28,8 +28,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 
 
 
-@NgModule({
-    declarations:[
+@NgModule({ declarations: [
         AppComponent,
         ContattiComponent,
         HomeComponent,
@@ -44,29 +43,24 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
         TeamsComponent,
         TeamModalComponent,
     ],
-    imports: [
-    BrowserModule,
-    AppRoutingModule,
-    MatSliderModule,
-    MatCardModule,
-    MatButtonModule,
-    MatInputModule,
-    FormsModule,
-    MatFormFieldModule,
-    MatCheckboxModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-],
-    providers:[
-    provideAnimationsAsync(),
-    provideHttpClient(withInterceptorsFromDi()), 
-    {
-        provide : HTTP_INTERCEPTORS,
-        useClass : authTokenInterceptor,
-        multi : true
-    },
-  ],
-    bootstrap:[AppComponent]
-})
-export class AppModule {}
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        MatSliderModule,
+        MatCardModule,
+        MatButtonModule,
+        MatInputModule,
+        FormsModule,
+        MatFormFieldModule,
+        MatCheckboxModule,
+        MatSelectModule,
+        ReactiveFormsModule], providers: [
+        provideAnimationsAsync(),
+        provideHttpClient(withInterceptorsFromDi()),
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: authTokenInterceptor,
+            multi: true
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
+export class AppModule{}
