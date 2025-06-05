@@ -1,4 +1,4 @@
-import { NgModule } from "@angular/core";
+import { NgModule, provideBrowserGlobalErrorListeners } from "@angular/core";
 import { AppComponent } from "./app.component";
 import { BrowserModule } from "@angular/platform-browser";
 import { AppRoutingModule } from './app-routing.module';
@@ -44,7 +44,17 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
         TeamModalComponent,
     ],
     bootstrap: [AppComponent], 
-    providers: [
+    imports: [
+        AppRoutingModule,
+        MatSliderModule,
+        MatCardModule,
+        MatButtonModule,
+        MatInputModule,
+        FormsModule,
+        MatFormFieldModule,
+        MatCheckboxModule,
+        MatSelectModule,
+        ReactiveFormsModule], providers: [
         provideAnimationsAsync(),
         provideHttpClient(withInterceptorsFromDi()),
         {
@@ -53,5 +63,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
             multi: true
         },
         provideHttpClient(withInterceptorsFromDi()),
+        provideBrowserGlobalErrorListeners(),
     ] })
 export class AppModule{}
