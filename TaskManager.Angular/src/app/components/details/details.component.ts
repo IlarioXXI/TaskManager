@@ -7,9 +7,10 @@ import Swal from 'sweetalert2';
 import { Team } from '../../models/team.model';
 
 @Component({
-  selector: 'app-details',
-  templateUrl: './details.component.html',
-  styleUrl: './details.component.css'
+    selector: 'app-details',
+    templateUrl: './details.component.html',
+    styleUrl: './details.component.css',
+    standalone: false
 })
 export class DetailsComponent implements OnInit, OnChanges {
 

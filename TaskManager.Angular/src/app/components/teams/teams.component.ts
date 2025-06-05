@@ -3,9 +3,10 @@ import { TeamService } from '../../services/team.service';
 import { TaskItem } from '../../models/taskItem.model';
 
 @Component({
-  selector: 'app-teams',
-  templateUrl: './teams.component.html',
-  styleUrl: './teams.component.css'
+    selector: 'app-teams',
+    templateUrl: './teams.component.html',
+    styleUrl: './teams.component.css',
+    standalone: false
 })
 export class TeamsComponent implements OnInit {
 

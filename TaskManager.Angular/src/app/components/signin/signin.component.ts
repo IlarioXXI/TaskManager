@@ -5,9 +5,10 @@ import { Router } from '@angular/router';
 import { AppComponent } from '../../app.component';
 
 @Component({
-  selector: 'app-signin',
-  templateUrl: './signin.component.html',
-  styleUrl: './signin.component.css'
+    selector: 'app-signin',
+    templateUrl: './signin.component.html',
+    styleUrl: './signin.component.css',
+    standalone: false
 })
 export class SigninComponent {
 

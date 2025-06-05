@@ -43,17 +43,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
         TeamsComponent,
         TeamModalComponent,
     ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
-        AppRoutingModule,
-        MatSliderModule,
-        MatCardModule,
-        MatButtonModule,
-        MatInputModule,
-        FormsModule,
-        MatFormFieldModule,
-        MatCheckboxModule,
-        MatSelectModule,
-        ReactiveFormsModule], providers: [
+    bootstrap: [AppComponent], 
+    providers: [
         provideAnimationsAsync(),
         provideHttpClient(withInterceptorsFromDi()),
         {

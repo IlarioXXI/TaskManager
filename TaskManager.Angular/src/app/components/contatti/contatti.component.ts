@@ -4,9 +4,10 @@ import { ActivatedRoute } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-contatti',
-  templateUrl: './contatti.component.html',
-  styleUrl: './contatti.component.css'
+    selector: 'app-contatti',
+    templateUrl: './contatti.component.html',
+    styleUrl: './contatti.component.css',
+    standalone: false
 })
 export class ContattiComponent implements OnInit {
 

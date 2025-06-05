@@ -6,9 +6,10 @@ import { TeamService } from '../../services/team.service';
 
 
 @Component({
-  selector: 'app-team-modal',
-  templateUrl: './team-modal.component.html',
-  styleUrl: './team-modal.component.css'
+    selector: 'app-team-modal',
+    templateUrl: './team-modal.component.html',
+    styleUrl: './team-modal.component.css',
+    standalone: false
 })
 export class TeamModalComponent implements OnInit {
   constructor(private userService : UserService, private teamService : TeamService) {}

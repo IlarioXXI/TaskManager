@@ -4,9 +4,10 @@ import { AppComponent } from '../../app.component';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
-  selector: 'app-change-pass',
-  templateUrl: './change-pass.component.html',
-  styleUrl: './change-pass.component.css'
+    selector: 'app-change-pass',
+    templateUrl: './change-pass.component.html',
+    styleUrl: './change-pass.component.css',
+    standalone: false
 })
 export class ChangePassComponent {
   constructor(private authService : AuthService) { }
