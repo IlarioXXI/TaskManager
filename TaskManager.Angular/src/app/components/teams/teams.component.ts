@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { TeamService } from '../../services/team.service';
 import { TaskItem } from '../../models/taskItem.model';
+import { DetailsComponent } from '../details/details.component';
+import { CommentComponent } from '../comment/comment.component';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-teams',
     templateUrl: './teams.component.html',
     styleUrl: './teams.component.css',
-    standalone: false
+    standalone: true,
+    imports: [DetailsComponent,CommentComponent]
 })
 export class TeamsComponent implements OnInit {
 
@@ -35,5 +39,27 @@ export class TeamsComponent implements OnInit {
   closeDetails() {
     this.showDetails = false;
     this.selectedTask = null;
+  }
+
+  deleteTeam(id : number){
+    Swal.fire({
+          title: 'Sei sicuro?',
+          text: 'Vuoi davvero eliminare questo team?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sì, elimina',
+          cancelButtonText: 'Annulla'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.teamService.deleteTeam(id).subscribe({
+              next: () => {
+                window.location.reload();
+              },
+              error: () => {
+                Swal.fire('Errore', 'Errore durante l\'eliminazione.', 'error');
+              }
+            });
+          }
+        });
   }
 }

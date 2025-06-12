@@ -1,5 +1,5 @@
-
-<div class="overlay" *ngIf="show">
+@if(show){
+<div class="overlay">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content shadow-lg">
       <div class="modal-header border-0">
@@ -7,27 +7,27 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="close.emit()"></button>
       </div>
       <div class="modal-body">
-        <form #taskForm="ngForm" (ngSubmit)="onSubmit(taskForm)">
+        <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
           <div class="row border-bottom pb-3">
             <div class="col-12 col-lg-6 pt-md-3">
               <h5 class="text-uppercase text-secondary"><strong>Title</strong></h5>
-              <input type="text" class="form-control mt-3 pl-1" name="title" [ngModel]="taskItemCopy.title" placeholder="{{taskItem?.title}}" required>
+              <input type="text" class="form-control mt-3 pl-1" formControlName="title" placeholder="{{taskItem?.title}}" required>
             </div>
             <div class="col-12 col-lg-6 pt-md-3">
               <h5 class="text-uppercase text-secondary"><strong>Description</strong></h5>
-              <input type="text" class="form-control mt-3 pl-1" name="description" [ngModel]="taskItemCopy.description" placeholder="{{taskItem?.description}}">
+              <input type="text" class="form-control mt-3 pl-1" formControlName="description" placeholder="{{taskItem?.description}}">
             </div>
             <div class="col-12 col-lg-6 pt-md-3">
               <h5 class="text-uppercase text-secondary"><strong>Status</strong></h5>
-              <select class="form-select mt-3 pl-1" name="status" [(ngModel)]="taskItemCopy.statusName" required>
-                <option value="not started">not started</option>
-                <option value="in progress">in progress</option>
-                <option value="completed">completed</option>
+              <select class="form-select" formControlName="status">
+                @for(s of statusList; track s) {
+                  <option [value]="s">{{s}}</option>
+                }
               </select>
             </div>
             <div class="col-12 col-lg-6 pt-md-3">
               <h5 class="text-uppercase text-secondary"><strong>Priority</strong></h5>
-              <select class="form-select mt-3 pl-1" name="priority" [(ngModel)]="taskItemCopy.priorityName" required>
+              <select class="form-select mt-3 pl-1" formControlName="priority"  required>
                 <option value="low">low</option>
                 <option value="medium">medium</option>
                 <option value="high">high</option>
@@ -35,10 +35,11 @@
             </div>
             <div class="col-12 col-lg-6 pt-md-3">
               <h5 class="text-uppercase text-secondary"><strong>Due Date</strong></h5>
-              <input type="date" class="form-control mt-3 pl-1" name="dueDate" [(ngModel)]="taskItemCopy.dueDateString" required>
+              <input type="date" class="form-control mt-3 pl-1" formControlName="dueDate"  required>
             </div>
           </div>
-          <div *ngFor="let comment of taskItemCopy.comments" class="mb-2">
+          @for(comment of taskItemCopy.comments; track comment.id) {
+          <div class="mb-2">
             <div class="position-relative">
               <button type="button"
                       class="btn btn-link text-danger p-0"
@@ -50,7 +51,8 @@
               <app-comment [comment]="comment"></app-comment>
             </div>
           </div>
-          <input type="text" class="form-control mt-3" placeholder="Add a comment..." [(ngModel)]="newComment" name="newComment"/>
+        }
+          <input type="text" class="form-control mt-3" placeholder="Add a comment..." formControlName="newComment"/>
           </form>
       </div>
       <div class="row">
@@ -59,13 +61,16 @@
               <button class="btn btn-danger w-100 py-2" (click)="deleteTask()">Delete Task</button>
             </div>
             <div class="col-4 p-4">
-              <button class="btn btn-primary w-100 py-2" (click)="onSubmit(taskForm)">Update</button>
+              <button class="btn btn-primary w-100 py-2" (click)="onSubmit()">Update</button>
             </div>
             <div class="col-4 p-4">
-              <button *ngIf="newComment && newComment.trim() !== ''" class="btn btn-primary w-100 py-2" (click)="addComment(taskForm)">Add Comment</button>
+              @if(taskForm.get('newComment').value && taskForm.get('newComment').value.trim() !== ''){
+              <button class="btn btn-primary w-100 py-2" (click)="addComment()">Add Comment</button>
+              }
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+}

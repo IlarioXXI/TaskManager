@@ -12,11 +12,15 @@ export class TeamService {
 
   getAllTeamsURL = "https://localhost:7109/api/team/getall";
   upsertTeamURL = "https://localhost:7109/api/Team/upsert";
+  deleteTeamURL = "https://localhost:7109/api/Team/Delete/"
 
   getAllTeams() {
     return this.http.get<Team[]>(this.getAllTeamsURL);
   }
   upsertTeam(id: number, name: string,usersIds?: string[], taskItemsIds?: number[]) {
     return this.http.post<Team>(this.upsertTeamURL, { id: id, name: name, usersIds: usersIds, taskItemsIds: taskItemsIds });
+  }
+  deleteTeam(id:number){
+    return this.http.delete<Team>(this.deleteTeamURL + id)
   }
 }

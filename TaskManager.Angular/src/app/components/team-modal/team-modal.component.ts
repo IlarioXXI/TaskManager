@@ -3,13 +3,15 @@ import { Team } from '../../models/team.model';
 import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { TeamService } from '../../services/team.service';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @Component({
     selector: 'app-team-modal',
     templateUrl: './team-modal.component.html',
     styleUrl: './team-modal.component.css',
-    standalone: false
+    standalone: true,
+    imports: [ReactiveFormsModule]
 })
 export class TeamModalComponent implements OnInit {
   constructor(private userService : UserService, private teamService : TeamService) {}
@@ -19,27 +21,31 @@ export class TeamModalComponent implements OnInit {
   @Input() selectedUserIds: string[] = [];
   @Output() close = new EventEmitter<void>();
 
+  teamForm = new FormGroup({
+    name : new FormControl(''),
+    usersIds : new FormControl<string[]> ([])
+  });
 
   users : User[] = [];
 
   ngOnInit() {
-    this.selectedUserIds = [];
     this.userService.getAllUsers().subscribe((users: User[]) => {
-      console.log('Utenti caricati dal servizio:', users);
       this.users = users;
-      console.log('Utenti caricati:', this.users);
       if (this.team && this.team.users) {
         this.selectedUserIds = this.team.users.map(user => user.id);
       }
     });
+    this.teamForm.patchValue({
+      name : this.team.name,
+      usersIds : this.selectedUserIds
+    })
   }
 
-  onSubmit(form: any) {
-    this.team.usersIds = this.selectedUserIds;  
-    console.log('User IDs inviati:', this.team.usersIds);
+  onSubmit() {
+    this.selectedUserIds = this.teamForm.value.usersIds ;  
     this.teamService.upsertTeam(
       this.team.id,
-      form.value.name,
+      this.teamForm.value.name,
       this.selectedUserIds,
       this.team.taskItemsIds).subscribe({
       next: (team: Team) => {

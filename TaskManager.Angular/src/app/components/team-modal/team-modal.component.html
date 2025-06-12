@@ -1,4 +1,5 @@
-<div class="overlay" *ngIf="show">
+@if(show){
+<div class="overlay">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content shadow-lg bg-white rounded-4">
       <div class="modal-header border-0 pb-0">
@@ -8,24 +9,27 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="close.emit()"></button>
       </div>
       <div class="modal-body pt-2">
-        <form #teamForm="ngForm" (ngSubmit)="onSubmit(teamForm)">
+        <form [formGroup]="teamForm" (ngSubmit)="onSubmit()">
           <div class="mb-4">
             <label for="teamName" class="form-label fw-semibold">Team Name</label>
-            <input id="teamName" name="name" class="form-control form-control-lg" [(ngModel)]="team.name" required />
-            <span class="text-danger" *ngIf="teamForm.submitted && !team.name">Name is required</span>
+            <input id="teamName" formControlName="name" class="form-control form-control-lg" required />
+            @if(!team.name){
+            <span class="text-danger">Name is required</span>
+            }
           </div>
           <div class="mb-4">
             <label for="users" class="form-label fw-semibold">Add Users</label>
             <select
                 id="users"
-                name="UsersIds"
+                formControlName="usersIds"
                 class="form-select"
-                [(ngModel)]="selectedUserIds"
                 multiple
             >
-                <option *ngFor="let user of users" [value]="user.id">
+            @for(user of users; track user.id){
+              <option [value]="user.id">
                 {{ user.email }} ({{ user.email }})
                 </option>
+            }
             </select>
             <div class="form-text">Tieni premuto Ctrl (Cmd su Mac) per selezionare più utenti.</div>
             </div>
@@ -40,3 +44,4 @@
     </div>
   </div>
 </div>
+}

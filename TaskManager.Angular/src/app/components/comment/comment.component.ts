@@ -5,7 +5,7 @@ import { Comment } from '../../models/comment.model';
     selector: 'app-comment',
     templateUrl: './comment.component.html',
     styleUrl: './comment.component.css',
-    standalone: false
+    standalone: true
 })
 export class CommentComponent {
   @Input() comment: any;

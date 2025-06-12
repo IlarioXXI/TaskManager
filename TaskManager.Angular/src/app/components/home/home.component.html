@@ -1,5 +1,6 @@
 <div class="row pb-3 p-4">
-  <div class="col-lg-3 col-sm-6 mb-4" *ngFor="let item of taskItems">
+  @for (item of taskItems; track $index) {
+  <div class="col-lg-3 col-sm-6 mb-4">
     <div class="card border-0 p-3 shadow border-top border-5 rounded bg-{{item.color}}">
       <div class="card-body pb-0">
         <div class="pl-1">
@@ -23,5 +24,6 @@
       </div>
     </div>
   </div>
+}
 </div>
 <app-details [show]="show" [taskItem]="selectedTask" (close)="show = false"></app-details>

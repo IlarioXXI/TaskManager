@@ -1,20 +1,29 @@
 
-<form #homeform="ngForm" (ngSubmit)="onSubmit(homeform)">
-    <mat-form-field>
-      <mat-label>Email</mat-label>
-      <input matInput type="email" name="email" ngModel required email>
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Password</mat-label>
-      <input matInput type="password" name="password"ngModel required>
-    </mat-form-field>
-    <mat-form-field>
-        <mat-label>Confirm Password</mat-label>
-        <input matInput type="password" name="confirmPassword"ngModel required>
-    </mat-form-field>
-    <mat-form-field>
-        <mat-label>Ruolo</mat-label>
-        <input matInput type="text" name="role" ngModel required>
-    </mat-form-field>
-  <button mat-flat-button type="submit" color="primary" [disabled]="!homeform.valid">submit</button>
-  </form>
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <h2>Use a local account to log in.</h2>
+    <hr />
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <div class="form-floating mb-3">
+        <input  class="form-control" autocomplete="username" type="email" formControlName="email" ngModel required email placeholder="name@example.com" />
+        <label  class="form-label">Email</label>
+        <span class="text-danger"></span>
+    </div>
+    <div class="form-floating mb-3">
+        <input class="form-control" autocomplete="current-password" type="password" formControlName="password"ngModel required placeholder="password" />
+        <label class="form-label">Password</label>
+        <span class="text-danger"></span>
+    </div>
+    <div class="form-floating mb-3">
+        <input class="form-control" autocomplete="current-password" type="password" formControlName="confirmPassword"ngModel required placeholder="confirmPassword" />
+        <label class="form-label">Confirm Password</label>
+        <span class="text-danger"></span>
+    </div>
+    <div class="form-floating mb-3">
+        <input class="form-control" autocomplete="current-password" type="text" formControlName="role"ngModel required placeholder="role" />
+        <label class="form-label">Role</label>
+        <span class="text-danger"></span>
+    </div>
+    <div>
+        <button color="primary" [disabled]="!registerForm.valid" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+    </div>
+</form>

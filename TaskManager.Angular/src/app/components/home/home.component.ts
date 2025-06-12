@@ -7,14 +7,16 @@ import { AuthService } from '../../auth/auth.service';
 import { Route, Router } from '@angular/router';
 import { TaskItem } from '../../models/taskItem.model';
 import { TaskItemService } from '../../services/task-item.service';
+import { DetailsComponent } from '../details/details.component';
 
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrl: './home.component.css',
-    standalone: false
-})
+    standalone: true,
+    imports: [DetailsComponent]
+  })
 export class HomeComponent implements OnInit{
 
   constructor(private router : Router, private taskItemService : TaskItemService){}

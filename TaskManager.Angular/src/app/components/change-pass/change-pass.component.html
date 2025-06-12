@@ -1,4 +1,5 @@
-<div class="overlay" *ngIf="show">
+@if(show){
+<div class="overlay">
   <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="card shadow-lg" style="min-width: 350px; max-width: 400px;">
       <div class="card-header d-flex justify-content-between align-items-center">
@@ -6,17 +7,17 @@
         <button type="button" class="btn-close" (click)="hideForm()"></button>
       </div>
       <div class="card-body">
-        <form #changePassform="ngForm" (ngSubmit)="onSubmit(changePassform)">
+        <form [formGroup]="changePassform" (ngSubmit)="onSubmit()">
           <div class="form-floating mb-3">
-            <input class="form-control" autocomplete="current-password" type="password" name="currentPassword" ngModel required placeholder="CurrentPassword" />
+            <input class="form-control" type="password" formControlName="currentPassword" required placeholder="CurrentPassword" autocomplete="current-password"/>
             <label>Current Password</label>
           </div>
           <div class="form-floating mb-3">
-            <input class="form-control" autocomplete="current-password" type="password" name="newPassword" ngModel required placeholder="NewPassword" />
+            <input class="form-control" type="password" formControlName="newPassword" required placeholder="NewPassword" autocomplete="new-password" />
             <label>New Password</label>
           </div>
           <div class="form-floating mb-3">
-            <input class="form-control" autocomplete="current-password" type="password" name="confirmNewPassword" ngModel required placeholder="ConfirmNewPassword" />
+            <input class="form-control" type="password" formControlName="confirmNewPassword" required placeholder="ConfirmNewPassword" autocomplete="new-password"/>
             <label>Confirm New Password</label>
           </div>
           <button [disabled]="!changePassform.valid" type="submit" class="w-100 btn btn-primary">Change Password</button>
@@ -25,3 +26,4 @@
     </div>
   </div>
 </div>
+}

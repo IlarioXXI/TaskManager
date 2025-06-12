@@ -1,5 +1,6 @@
 <div class="container my-4">
-  <div *ngFor="let team of teams" class="card shadow border-0 mb-4">
+  @for (team of teams; track $index) {
+  <div class="card shadow border-0 mb-4">
     <div class="card-header bg-primary text-light py-3">
       <h5 class="mb-0">{{ team.name }}</h5>
     </div>
@@ -7,37 +8,52 @@
       <div class="row">
         <div class="col-12 col-lg-6 pt-md-3">
           <h6 class="text-secondary"><strong>Users</strong></h6>
-          <ul *ngIf="team.users && team.users.length > 0">
-            <li *ngFor="let user of team.users">{{ user.email }}</li>
+          @if (team.users && team.users.length > 0) {
+          <ul >
+            @for(user of team.users; track $index) {
+              <li >{{ user.email }}</li>
+            }
           </ul>
-          <p *ngIf="!team.users || team.users.length === 0"><small>No users available</small></p>
+         }
+         @if (!team.users || team.users.length === 0) {
+          <p><small>No users available</small></p>
+         }
         </div>
       </div>
       <div class="row mt-3">
-        <div *ngIf="team.taskItems && team.taskItems.length > 0" class="col-12">
+        @if (team.taskItems && team.taskItems.length > 0) {
+        <div class="col-12">
           <h6 class="text-secondary"><strong>Tasks</strong></h6>
           <div class="row">
-            <div *ngFor="let t of team.taskItems" class="col-12 col-lg-6 mb-3">
+            @for (t of team.taskItems; track $index) {
+            <div class="col-12 col-lg-6 mb-3">
               <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                   <h5 class="card-title text-secondary">{{ t.title }}</h5>
                   <p><small>Status: {{ t.statusName }}</small></p>
                   <p><small>Priority: {{ t.priorityName }}</small></p>
                   <a class="btn btn-primary w-100 mb-2" (click)="openDetails(t)">Details</a>
-                  <div *ngIf="t.comments && t.comments.length > 0" class="mt-2">
+                  @if (t.comments && t.comments.length) 
+                  {
+                    <div class="mt-2">
                     <h6>Comments:</h6>
-                    <div *ngFor="let comment of t.comments">
+                    @for (comment of t.comments; track $index) {
                       <app-comment [comment]="comment"></app-comment>
+                    }
                     </div>
-                  </div>
+                  }
                 </div>
               </div>
             </div>
+          }
           </div>
         </div>
-        <div *ngIf="!team.taskItems || team.taskItems.length === 0" class="col-12">
+      }
+      @if (!team.taskItems || team.taskItems.length === 0) {
+        <div class="col-12">
           <p><small>No tasks available</small></p>
         </div>
+      }
       </div>
       <div class="row mt-3">
         <div class="col-3">
@@ -47,7 +63,7 @@
           <a class="btn btn-warning w-100">Update</a>
         </div>
         <div class="col-3">
-          <a class="btn btn-danger w-100">Delete</a>
+          <a class="btn btn-danger w-100" (click)="deleteTeam(team.id)">Delete</a>
         </div>
         <div class="col-3">
           <a class="btn btn-dark w-100">History</a>
@@ -55,6 +71,7 @@
       </div>
     </div>
   </div>
+}
 </div>
 <app-details
   [show]="showDetails"

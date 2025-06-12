@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TaskItem } from '../models/taskItem.model';
-import { UrlHandlingStrategy } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'

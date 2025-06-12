@@ -1,19 +1,19 @@
 
-<form #homeform="ngForm" (ngSubmit)="onSubmit(homeform)">
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <h2>Use a local account to log in.</h2>
     <hr />
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
     <div class="form-floating mb-3">
-        <input  class="form-control" autocomplete="username" type="email" name="email" ngModel required email placeholder="name@example.com" />
+        <input  class="form-control" autocomplete="username" type="email" formControlName="email" required email placeholder="name@example.com" />
         <label  class="form-label">Email</label>
         <span class="text-danger"></span>
     </div>
     <div class="form-floating mb-3">
-        <input class="form-control" autocomplete="current-password" type="password" name="password"ngModel required placeholder="password" />
+        <input class="form-control" autocomplete="current-password" type="password" formControlName="password" required placeholder="password" />
         <label class="form-label">Password</label>
         <span class="text-danger"></span>
     </div>
     <div>
-        <button color="primary" [disabled]="!homeform.valid" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+        <button color="primary" [disabled]="!loginForm.valid" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
     </div>
 </form>

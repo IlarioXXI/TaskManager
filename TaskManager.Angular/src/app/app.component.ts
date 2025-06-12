@@ -1,14 +1,17 @@
 import { Component, DoCheck, numberAttribute, OnChanges, OnInit, SimpleChanges} from "@angular/core";
 import { AuthService } from "./auth/auth.service";
-import { Router } from "@angular/router";
 import { User } from "./models/user.model";
 import { Team } from "./models/team.model";
+import { ChangePassComponent } from "./components/change-pass/change-pass.component";
+import { TeamModalComponent } from "./components/team-modal/team-modal.component";
+import { Router, RouterModule } from "@angular/router";
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [ChangePassComponent,TeamModalComponent,RouterModule]
 })
 export class AppComponent implements OnInit {
   constructor(private authService : AuthService, private router : Router){}

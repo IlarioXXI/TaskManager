@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
     selector: 'app-card-task-item',
     templateUrl: './card-task-item.component.html',
     styleUrl: './card-task-item.component.css',
-    standalone: false
+    standalone: true
 })
 export class CardTaskItemComponent {
 
