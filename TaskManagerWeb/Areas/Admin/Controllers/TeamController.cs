@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 using TaskManager.DataAccess;
 using TaskManager.DataAccess.Interfaces;
 using TaskManager.Models;
@@ -44,8 +45,12 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                var selectedIds = teamVM.SelectedUserIds ?? new List<string>();
                 if (teamVM.Team.Id == 0)
                 {
+                    teamVM.Team.Users = _unitOfWork.AppUser.GetAll()
+                       .Where(u => selectedIds.Contains(u.Id))
+                       .ToList();
                     _unitOfWork.Team.Add(teamVM.Team);
                 }
                 else

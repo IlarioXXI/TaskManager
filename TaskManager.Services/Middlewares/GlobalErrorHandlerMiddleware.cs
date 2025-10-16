@@ -48,7 +48,7 @@ namespace TaskManager.Services.Middlewares
                 context.Response.ContentType = MediaTypeNames.Application.Json;
                 await context.Response.WriteAsync(response);
             }
-        }
+            }
     }
 
 }

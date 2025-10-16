@@ -88,9 +88,9 @@
                             <div class="col-3">
                                 <a data-id="@item.Team.Id" class="delete btn btn-danger border-0 bg-gradient w-100 py-2">Delete</a>
                             </div>
-                            <div class="col-3">
+                            @* <div class="col-3">
                                 <a asp-action="Index" asp-controller="History" asp-route-id="@item.Team.Id" class="btn btn-dark border-0 bg-gradient w-100 py-2">History</a>
-                            </div>
+                            </div> *@
                         </div>
                     </div>
                 }
@@ -103,6 +103,12 @@
             $(document).on("click", ".delete", function (e) {
                 e.preventDefault();
 
+                var teamId = $(this).data("id") ?? $(this).attr("data-id");
+
+                if (!teamId) {
+                    console.error("teamId non trovato sull'elemento .delete");
+                    return;
+                }
 
                 Swal.fire({
                     title: "Are you sure?",
@@ -114,9 +120,9 @@
                     confirmButtonText: "Yes, delete it!"
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = '@Url.Action("Delete", "Team")' + '?id=' + teamId;
+                        window.location.href = '@Url.Action("Delete", "Team")' + '?id=' + encodeURIComponent(teamId);
                     }
                 });
             });
-            </script> 
+        </script>
             }

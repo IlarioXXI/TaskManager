@@ -85,20 +85,20 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
 
 
 
-                if (id != 0)
-                {
-                    task.TaskToDo = _unitOfWork.TaskItem.Get(t => t.Id == id, includeProperties: "History,Comments");
-                    if (task.TaskToDo.Status == null)
-                    {
-                        task.TaskToDo.Status = _unitOfWork.Status.Get(s => s.Id == task.TaskToDo.StatusId);
-                    }
-                    if (task.TaskToDo.Priority == null)
-                    {
-                        task.TaskToDo.Priority = _unitOfWork.Priority.Get(s => s.Id == task.TaskToDo.PriorityId);
-                    }
-                    task.PrioritySelectedId = task.TaskToDo.PriorityId;
-                    task.StatusSelectedId = task.TaskToDo.StatusId;
-                }
+                //if (id != 0)
+                //{
+                //    task.TaskToDo = _unitOfWork.TaskItem.Get(t => t.Id == id, includeProperties: "History,Comments");
+                //    if (task.TaskToDo.Status == null)
+                //    {
+                //        task.TaskToDo.Status = _unitOfWork.Status.Get(s => s.Id == task.TaskToDo.StatusId);
+                //    }
+                //    if (task.TaskToDo.Priority == null)
+                //    {
+                //        task.TaskToDo.Priority = _unitOfWork.Priority.Get(s => s.Id == task.TaskToDo.PriorityId);
+                //    }
+                //    task.PrioritySelectedId = task.TaskToDo.PriorityId;
+                //    task.StatusSelectedId = task.TaskToDo.StatusId;
+                //}
                 
                     return View(task);
 

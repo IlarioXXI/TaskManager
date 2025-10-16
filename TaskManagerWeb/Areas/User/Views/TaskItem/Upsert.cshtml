@@ -2,7 +2,7 @@
 @using TaskManager.DataAccess.Utility
 @model TaskManagerWeb.Models.ToDoVM
 <form method="post" asp-action="Upsert" asp-controller="TaskItem" asp-area="User">
-    <input asp-for="TaskToDo.Id" />
+    <input asp-for="TaskToDo.Id" hidden/>
     <input asp-for="TaskToDo.TeamId" hidden />
     <div class="row">
         <div class="col-10">

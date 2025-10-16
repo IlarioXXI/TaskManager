@@ -15,18 +15,30 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
         }
         public IActionResult Index(int id)
         {
-            var taskFromTb = _unitOfWork.TaskItem.Get(t=>t.Id == id,includeProperties:"History,Status,Priority");
-            var appUserIdHistory = _unitOfWork.History.Get(h => h.TaskItemId == id).AppUserId;
-            var taskItemVM = new ToDoVM()
+            var history = _unitOfWork.History.Get(h=>h.TaskItem.TeamId == id, includeProperties:"TaskItem");
+            history.TaskItem = _unitOfWork.TaskItem.Get(t => t.Id == history.TaskItemId, includeProperties: "Priority,Status,Team");
+            if (_unitOfWork.History.Get(h => h.TaskItemId == id) != null) 
             {
-                TaskToDo = taskFromTb,
-                AppUser = _unitOfWork.AppUser.Get(u=>u.Id == appUserIdHistory),
-            };
-            foreach (var user in taskItemVM.TaskToDo.History)
-            {
-                user.AppUser = _unitOfWork.AppUser.Get(u=>u.Id == user.AppUserId);
+                var appUserIdHistory = _unitOfWork.History.Get(h => h.TaskItemId == id).AppUserId;
+                var taskItemVM = new ToDoVM()
+                {
+                    TaskToDo = history.TaskItem,
+                    AppUser = _unitOfWork.AppUser.Get(u => u.Id == appUserIdHistory),
+                };
+                foreach (var user in taskItemVM.TaskToDo.History)
+                {
+                    user.AppUser = _unitOfWork.AppUser.Get(u => u.Id == user.AppUserId);
+                }
+                return View(taskItemVM);
             }
-            return View(taskItemVM);
+            var newTaskItem = new ToDoVM()
+            {
+                TaskToDo = history.TaskItem,
+                AppUser = null,
+            };
+            return View(newTaskItem);
+
+
         }
     }
 }
