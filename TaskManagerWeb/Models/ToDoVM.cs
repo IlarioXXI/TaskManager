@@ -18,6 +18,8 @@ namespace TaskManagerWeb.Models
         public int StatusSelectedId { get; set; }
         [ValidateNever]
         public IEnumerable<SelectListItem> Users { get; set; }
+
+        public string? SelectedUserId { get; set; }
     }
 
     

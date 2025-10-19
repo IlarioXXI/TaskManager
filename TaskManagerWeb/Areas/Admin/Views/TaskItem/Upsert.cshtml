@@ -1,76 +1,68 @@
 ﻿@model TaskManagerWeb.Models.ToDoVM
-<form method="post" asp-action="Upsert" asp-controller="TaskItem" asp-area="Admin">
-    <input asp-for="TaskToDo.Id" hidden/>
-    <input asp-for="TaskToDo.TeamId" hidden />
-    <div class="row">
-        <div class="col-10">
-            <div class="border p-3 mt-4">
-                <div class=" row pb-2">
-                    <h2 class="text-primary">Update Task</h2>
-                </div>
+@{
+    ViewData["Title"] = Model.TaskToDo?.Id == 0 ? "Create Task" : "Edit Task";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-            </div>
-            <div class="mb-3 row p-1">
-                <label asp-for="TaskToDo.Title" class="p-0"></label>
-                <input asp-for="TaskToDo.Title" class="form-control" />
-                <span asp-validation-for="TaskToDo.Title" class="text-danger"></span>
-            </div>
-            <div class="mb-3 row p-1">
-                <label asp-for="TaskToDo.Description" class="p-0"></label>
-                <input asp-for="TaskToDo.Description" class="form-control" />
-                <span asp-validation-for="TaskToDo.Description" class="text-danger"></span>
-            </div>
-            <div class="mb-3 row p-1">
-                <label>Due Date</label>
-                <input asp-for="TaskToDo.DueDate" class="form-control" required>
-            </div>
+<h2>@ViewData["Title"]</h2>
 
-            @if (Model.TaskToDo.StatusId == 0 || Model.TaskToDo.PriorityId == 0)
-            {
-                <div class="mb-3 row p-1">
-                    <select asp-for="StatusSelectedId" asp-items="@Model.StatusList" class="form-select p-0">
-                        <option disabled selected>--Select Status--</option>
-                    </select>
+<form asp-action="Upsert" method="post">
+    <input asp-for="TaskToDo.Id" type="hidden" />
+    <input asp-for="TaskToDo.TeamId" type="hidden" />
 
-                </div>
-                <div class="mb-3 row p-1">
-                    <select asp-for="PrioritySelectedId" asp-items="@Model.PriorityList" class="form-select p-0">
-                        <option disabled selected>--Select Priority--</option>
-                    </select>
+    <div class="mb-3">
+        <label asp-for="TaskToDo.Title" class="form-label"></label>
+        <input asp-for="TaskToDo.Title" class="form-control" />
+        <span asp-validation-for="TaskToDo.Title" class="text-danger"></span>
+    </div>
 
-                </div>
-            }
-            else
-            {
-                <div class="mb-3 row p-1">
-                    <select asp-for="@Model.StatusSelectedId" asp-items="@Model.StatusList" class="form-select p-0">
-                        <option>--Select Status--</option>
-                    </select>
+    <div class="mb-3">
+        <label asp-for="TaskToDo.Description" class="form-label"></label>
+        <textarea asp-for="TaskToDo.Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="TaskToDo.Description" class="text-danger"></span>
+    </div>
 
-                </div>
-                <div class="mb-3 row p-1">
-                    <select asp-for="@Model.PrioritySelectedId" asp-items="@Model.PriorityList" class="form-select p-0">
-                        <option>--Select Priority--</option>
-                    </select>
+    <div class="mb-3">
+        <label class="form-label">Due date</label>
+        <!-- datetime-local: format value to yyyy-MM-ddTHH:mm when model has value -->
+        <input asp-for="TaskToDo.DueDate" type="datetime-local" class="form-control"
+               value="@(Model.TaskToDo?.DueDate.HasValue == true ? Model.TaskToDo.DueDate.Value.ToString("yyyy-MM-ddTHH:mm") : "")" />
+        <span asp-validation-for="TaskToDo.DueDate" class="text-danger"></span>
+    </div>
 
-                </div>
-            }
-
-            <div class="mb-3 row p-1">
-                <label>Add Users</label>
-                <select asp-for="TaskToDo.AppUserId" asp-items="@Model.Users" class="form-select p-0" multiple>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary form-control">Update</button>
-            <a asp-area="User" asp-controller="Comment" asp-action="Upsert" asp-route-taskId="@Model.TaskToDo.Id" class="btn btn-primary form-control mt-3">Add Comment</a>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label class="form-label">Priority</label>
+            <select asp-for="PrioritySelectedId" asp-items="Model.PriorityList" class="form-select"></select>
         </div>
-        <div class="col-6 col-mid-3">
-            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary border  form-control">Back to List</a>
+        <div class="col-md-6">
+            <label class="form-label">Status</label>
+            <select asp-for="StatusSelectedId" asp-items="Model.StatusList" class="form-select"></select>
         </div>
+    </div>
+
+    <h5>Assegna utente</h5>
+    <!-- Radio buttons per una sola selezione (comportamento nativo) -->
+    <div class="list-group mb-3">
+        @foreach (var user in Model.Users)
+        {
+            var isChecked = (Model.SelectedUserId == user.Value) || (Model.TaskToDo?.AppUserId == user.Value);
+            <label class="list-group-item d-flex align-items-center">
+                <input type="radio" name="SelectedUserId" value="@user.Value" class="form-check-input me-2" @(isChecked ? "checked" : "") />
+                <div>
+                    <strong>@user.Text</strong>
+                </div>
+            </label>
+        }
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Salva</button>
+        <a asp-action="Index" asp-controller="Team" class="btn btn-secondary ms-2">Annulla</a>
     </div>
 </form>
 
-@{
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
 

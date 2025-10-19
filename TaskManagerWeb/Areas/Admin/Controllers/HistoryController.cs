@@ -15,8 +15,12 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
         }
         public IActionResult Index(int id)
         {
-            var history = _unitOfWork.History.Get(h=>h.TaskItem.TeamId == id, includeProperties:"TaskItem");
-            history.TaskItem = _unitOfWork.TaskItem.Get(t => t.Id == history.TaskItemId, includeProperties: "Priority,Status,Team");
+            var history = _unitOfWork.History.Get(h=>h.TaskItemId == id, includeProperties:"TaskItem");
+            if (history == null)
+            {
+                return View("NotFound");
+            }
+            history.TaskItem = _unitOfWork.TaskItem.Get(t => t.Id == history.TaskItemId, includeProperties: "Priority,Status,Team,History");
             if (_unitOfWork.History.Get(h => h.TaskItemId == id) != null) 
             {
                 var appUserIdHistory = _unitOfWork.History.Get(h => h.TaskItemId == id).AppUserId;

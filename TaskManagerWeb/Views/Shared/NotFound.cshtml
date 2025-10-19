@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "404 - Not Found";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container text-center my-5">
+    <h1 class="display-4">404 — Page not found</h1>
+    <p class="lead">The resource you requested does not exist or is not accessible.</p>
+    <p>If you think this is a mistake, contact the site administrator.</p>
+
+    <div class="mt-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary me-2">Home</a>
+        <a href="javascript:history.back()" class="btn btn-link">Go back</a>
+    </div>
+</div>

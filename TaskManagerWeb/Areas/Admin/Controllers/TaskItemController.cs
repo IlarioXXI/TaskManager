@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 using TaskManager.DataAccess.Interfaces;
-using TaskManager.Models;
 using TaskManagerWeb.Models;
+using System.Collections.Generic;
+using TaskManager.Models;
 
 namespace TaskManagerWeb.Areas.Admin.Controllers
 {
@@ -14,22 +16,21 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
         {
             _unitOfWork = unitOfWork;
         }
+
         public IActionResult Upsert(int? id, int teamId)
         {
             var taskItem = _unitOfWork.TaskItem.Get(t => t.Id == id);
-            var teamFromDb = _unitOfWork.Team.Get(t=>t.Id == teamId);
+            var teamFromDb = _unitOfWork.Team.Get(t => t.Id == teamId);
             var userList = new List<AppUser>();
 
-
-            var users = _unitOfWork.AppUser.GetAll(u=>u.Teams.Contains(teamFromDb));
-
+            var users = _unitOfWork.AppUser.GetAll(u => u.Teams.Contains(teamFromDb));
             foreach (var u in users)
             {
                 userList.Add(u);
             }
-            if (id==0 || id==null)
-            {
 
+            if (id == 0 || id == null)
+            {
                 ToDoVM taskItemVM = new()
                 {
                     TaskToDo = new TaskItem(),
@@ -48,16 +49,14 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
                         Text = u.Name,
                         Value = u.Id.ToString()
                     }),
-                    
+                    SelectedUserId = null
                 };
-                
+
                 taskItemVM.TaskToDo.TeamId = teamId;
                 return View(taskItemVM);
             }
             else
             {
-
-                
                 ToDoVM task = new()
                 {
                     TaskToDo = taskItem,
@@ -76,49 +75,23 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
                         Text = u.Name,
                         Value = u.Id.ToString()
                     }),
-
-
+                    SelectedUserId = taskItem?.AppUserId
                 };
 
-
-
-
-
-
-                //if (id != 0)
-                //{
-                //    task.TaskToDo = _unitOfWork.TaskItem.Get(t => t.Id == id, includeProperties: "History,Comments");
-                //    if (task.TaskToDo.Status == null)
-                //    {
-                //        task.TaskToDo.Status = _unitOfWork.Status.Get(s => s.Id == task.TaskToDo.StatusId);
-                //    }
-                //    if (task.TaskToDo.Priority == null)
-                //    {
-                //        task.TaskToDo.Priority = _unitOfWork.Priority.Get(s => s.Id == task.TaskToDo.PriorityId);
-                //    }
-                //    task.PrioritySelectedId = task.TaskToDo.PriorityId;
-                //    task.StatusSelectedId = task.TaskToDo.StatusId;
-                //}
-                
-                    return View(task);
-
+                return View(task);
             }
-
         }
 
         [HttpPost]
         public IActionResult Upsert(ToDoVM taskItemVM)
         {
-            //var claimsIdentity = (ClaimsIdentity)User.Identity;
-            //var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            //taskItemVM.TaskToDo.AppUserId = claim;
+            // assegna l'utente selezionato dall'admin
+            taskItemVM.TaskToDo.AppUserId = string.IsNullOrWhiteSpace(taskItemVM.SelectedUserId) ? null : taskItemVM.SelectedUserId;
 
             if (ModelState.IsValid)
             {
                 if (taskItemVM.TaskToDo.Id == 0)
                 {
-
                     taskItemVM.TaskToDo.StatusId = _unitOfWork.Status.Get(s => s.Id == taskItemVM.StatusSelectedId).Id;
                     taskItemVM.TaskToDo.PriorityId = _unitOfWork.Priority.Get(p => p.Id == taskItemVM.PrioritySelectedId).Id;
                     _unitOfWork.TaskItem.Add(taskItemVM.TaskToDo);
@@ -134,13 +107,13 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
                             ToStatus = _unitOfWork.Status.Get(s => s.Id == taskItemVM.StatusSelectedId).Name,
                             ChangeDate = DateTime.Now,
                             TaskItemId = taskItemVM.TaskToDo.Id,
+                            // mantiene l'AppUserId corrente nel DB (precedente assegnazione)
                             AppUserId = _unitOfWork.TaskItem.Get(t => t.Id == taskItemVM.TaskToDo.Id).AppUserId
                         };
                         _unitOfWork.History.Add(history);
                     }
-                    //var statusId = _unitOfWork.TaskItem.Get(t=>t.Id == taskItemVM.TaskToDo.Id).StatusId;
-                    //var priorityId = _unitOfWork.TaskItem.Get(t => t.Id == taskItemVM.TaskToDo.Id).PriorityId;
 
+                    // assegna gli oggetti Status/Priority e aggiorna TaskItem (incluso AppUserId già impostato sopra)
                     taskItemVM.TaskToDo.Status = _unitOfWork.Status.Get(s => s.Id == taskItemVM.StatusSelectedId);
                     taskItemVM.TaskToDo.Priority = _unitOfWork.Priority.Get(p => p.Id == taskItemVM.PrioritySelectedId);
                     _unitOfWork.TaskItem.Update(taskItemVM.TaskToDo);
@@ -151,6 +124,14 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
                 taskItemVM.TaskToDo.Priority = _unitOfWork.Priority.Get(s => s.Id == taskItemVM.PrioritySelectedId);
                 return RedirectToAction("Index", "Team");
             }
+
+            // se invalid, ricarica le liste prima di tornare alla view
+            var teamFromDb = _unitOfWork.Team.Get(t => t.Id == taskItemVM.TaskToDo.TeamId);
+            var usersReload = _unitOfWork.AppUser.GetAll(u => u.Teams.Contains(teamFromDb)).ToList();
+            taskItemVM.Users = usersReload.Select(u => new SelectListItem { Text = u.Name, Value = u.Id.ToString() });
+            taskItemVM.PriorityList = _unitOfWork.Priority.GetAll().Select(p => new SelectListItem { Text = p.Name, Value = p.Id.ToString() });
+            taskItemVM.StatusList = _unitOfWork.Status.GetAll().Select(s => new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
+
             return View(taskItemVM);
         }
     }

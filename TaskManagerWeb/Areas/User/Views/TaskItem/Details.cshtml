@@ -21,7 +21,7 @@
                 <a asp-area="user" asp-controller="Home" asp-action="Index" class="btn btn-outline-primary text-uppercase mb-5 btn-sm"><small>See tasks</small></a>
             </div>
             <div class="col-md-10 offset-md-1">
-                @if (Model.Comments== null)
+                @if (Model.Comments == null)
                 {
 
                     <div class="row border-bottom pb-3">
@@ -69,13 +69,11 @@
                                 <p><small>@Html.Raw(item.Description)</small></p>
                             </div>
                             <div class="row">
-                                <div class="col-6">
-                                    <a asp-action="Upsert" asp-controller="Comment" asp-route-taskId="@Model.Id" asp-route-id="@item.Id" id="@item.Id" class="btn btn-primary border-0 bg-gradient w-100 py-2">Update Comment</a>
-
-                                </div>
+                                
                                 <div class="col-6">
                                     <a data-id="@item.Id" class="delete btn btn-danger border-0 bg-gradient w-100 py-2">Delete</a>
                                 </div>
+                                
                             </div>
                         </div>
                     }
@@ -85,13 +83,17 @@
         </div>
         <div class="card-footer bg-white border-0">
             <div class="row">
-                <div class="col-md-2 offset-md-5">
+                <div class="col-6">
 @*                     @Html.ActionLink("Delete", "DeleteCategory", new { id = Model.Id }, new
                         {
                             @class = "delete"
                         }) *@
-                    
+
                     <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-primary border-0 bg-gradient w-100 py-2">Update</a>
+                </div>
+                <div class="col-6">
+                    <a asp-action="Upsert" asp-controller="Comment" asp-route-taskId="@Model.Id" class="btn btn-primary border-0 bg-gradient w-100 py-2">Add Comment</a>
+
                 </div>
             </div>
         </div>

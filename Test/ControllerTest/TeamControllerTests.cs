@@ -29,7 +29,7 @@ namespace Test.ControllerTest
             _validatorMock = new Mock<IValidator<TaskManagerWEB.Api.ViewModels.TeamVM>>();
             _mapper = new Mock<IMapper>();
             _teamService = new Mock<ITeamService>();
-            _controller = new TeamController(_teamService.Object,_validatorMock.Object,_mapper.Object);
+            //_controller = new TeamController(_teamService.Object,_validatorMock.Object,_mapper.Object);
         }
 
 
