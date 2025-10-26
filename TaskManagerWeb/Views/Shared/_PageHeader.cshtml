@@ -1,0 +1,30 @@
+@model (string Title, string? Subtitle, IEnumerable<(string text, string href, string? icon)> Actions)
+
+<div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3 py-2 border-bottom"
+     style="border-color: rgba(0,0,0,.08);">
+    <div>
+        <h1 class="h4 fw-semibold mb-1 text-dark">
+            @Model.Title
+        </h1>
+        @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+        {
+            <p class="text-muted mb-0">@Model.Subtitle</p>
+        }
+    </div>
+
+    @if (Model.Actions?.Any() == true)
+    {
+        <div class="btn-group shadow-sm">
+            @foreach (var a in Model.Actions)
+            {
+                <a href="@a.href" class="btn btn-sm btn-primary d-flex align-items-center gap-1 rounded-3">
+                    @if (!string.IsNullOrEmpty(a.icon))
+                    {
+                        <i class="bi @a.icon"></i>
+                    }
+                    <span>@a.text</span>
+                </a>
+            }
+        </div>
+    }
+</div>

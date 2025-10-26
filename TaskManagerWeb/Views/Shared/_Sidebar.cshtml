@@ -1,0 +1,59 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<nav class="tm-sidebar-nav list-group list-group-flush shadow-sm rounded-3 border-0 overflow-hidden">
+
+    <a class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"
+       asp-area="" asp-controller="Home" asp-action="Index">
+        <i class="bi bi-house-door fs-5 text-primary"></i>
+        <span>Home</span>
+    </a>
+
+    <div class="list-group-item fw-semibold text-uppercase small text-muted bg-light py-2">
+        Task
+    </div>
+
+    <a class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"
+       asp-area="User" asp-controller="TaskItem" asp-action="Index">
+        <i class="bi bi-list-check fs-5 text-success"></i>
+        <span>I miei Task</span>
+    </a>
+
+    <a class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"
+       asp-area="User" asp-controller="TaskItem" asp-action="Upsert">
+        <i class="bi bi-plus-lg fs-5 text-primary"></i>
+        <span>Nuovo Task</span>
+    </a>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="list-group-item fw-semibold text-uppercase small text-muted bg-light py-2 mt-2">
+            Amministrazione
+        </div>
+
+        <a class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"
+           asp-area="Admin" asp-controller="Team" asp-action="Index">
+            <i class="bi bi-people fs-5 text-info"></i>
+            <span>Team</span>
+        </a>
+
+        <a class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"
+           asp-area="Admin" asp-controller="TaskItem" asp-action="Upsert">
+            <i class="bi bi-clipboard-plus fs-5 text-success"></i>
+            <span>Nuovo Task (Admin)</span>
+        </a>
+
+        <a class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"
+           asp-area="Admin" asp-controller="AppUser" asp-action="Index">
+            <i class="bi bi-person-gear fs-5 text-warning"></i>
+            <span>Utenti</span>
+        </a>
+
+        <a class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"
+           asp-area="Admin" asp-controller="History" asp-action="Index">
+            <i class="bi bi-clock-history fs-5 text-secondary"></i>
+            <span>Storico</span>
+        </a>
+    }
+</nav>

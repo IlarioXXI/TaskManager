@@ -1,52 +1,77 @@
 ﻿@using TaskManagerWeb.Models
 @model TeamVM
-<form method="post" asp-action="Upsert" asp-controller="Team">
-    <input asp-for="Team.Id" hidden />
-    <div class="row">
-        <div class="col-10">
-            <div class="border p-3 mt-4">
-                <div class=" row pb-2">
-                    <h2 class="text-primary">@(Model.Team.Id != 0 ? "Update" : "Create") Team</h2>
-                </div>
 
-            </div>
-            <div class="mb-3 row p-1">
-                <label asp-for="Team.Name" class="p-0"></label>
-                <input asp-for="Team.Name" class="form-control" />
-                <span asp-validation-for="Team.Name" class="text-danger"></span>
-            </div>
-            <div class="mb-3 row p-1">
-                <label>Add Users</label>
-                <select asp-for=" @Model.SelectedUserIds" asp-items="@Model.Users" class="form-select p-0" multiple>
-                </select>
-            </div>
-            <div class="row">
-                <div class="col-6 col-md-3">
-                    @if (Model.Team.Id != 0)
-                    {
-                        <button type="submit" class="btn btn-primary form-control">Update</button>
-                    }
-                    else
-                    {
-                        <button type="submit" class="btn btn-primary form-control">Create</button>
-                    }
-
-                </div>
-                <div class="col-6 col-mid-3">
-                    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary border  form-control">Back to List</a>
-                </div>
-            </div>
-        </div>
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom py-3 px-4">
+        <h4 class="mb-0 fw-semibold" style="color:var(--tm-primary);">
+            <i class="bi bi-people-fill me-2"></i>
+            @(Model.Team.Id != 0 ? "Aggiorna Team" : "Crea Nuovo Team")
+        </h4>
     </div>
-</form>
+
+    <div class="card-body px-4 py-4">
+        <form method="post" asp-action="Upsert" asp-controller="Team">
+            <input asp-for="Team.Id" type="hidden" />
+
+            <div class="mb-4">
+                <label asp-for="Team.Name" class="form-label fw-semibold text-muted small text-uppercase">
+                    Nome Team
+                </label>
+                <input asp-for="Team.Name" class="form-control rounded-3 shadow-sm border" placeholder="Inserisci il nome del team" />
+                <span asp-validation-for="Team.Name" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-muted small text-uppercase">
+                    Assegna Utenti
+                </label>
+
+                <div class="border rounded-3 p-3 bg-light shadow-sm">
+                    <div class="row g-2">
+                        @foreach (var user in Model.Users)
+                        {
+                            var isChecked = Model.SelectedUserIds != null && Model.SelectedUserIds.Contains(user.Value);
+                            <div class="col-12 col-md-6">
+                                <div class="form-check">
+                                    <input type="checkbox"
+                                           name="SelectedUserIds"
+                                           value="@user.Value"
+                                           class="form-check-input"
+                                           id="user_@user.Value"
+                                           @(isChecked ? "checked" : "") />
+                                    <label class="form-check-label fw-medium" for="user_@user.Value">@user.Text</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <span class="form-text text-muted small">Puoi selezionare più utenti da assegnare al team.</span>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary px-4 py-2 rounded-3 fw-semibold">
+                    <i class="bi bi-save me-1"></i>
+                    @(Model.Team.Id != 0 ? "Aggiorna" : "Crea")
+                </button>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary px-4 py-2 rounded-3">
+                    <i class="bi bi-arrow-left-circle me-1"></i> Torna alla lista
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $("select[multiple]").select2();
+            $("select[multiple]").select2({
+                theme: "bootstrap-5",
+                width: '100%',
+                placeholder: "Seleziona uno o più utenti",
+                allowClear: true
+            });
         });
     </script>
-}
-@{
-    <partial name="_ValidationScriptsPartial"   />
+    <partial name="_ValidationScriptsPartial" />
 }

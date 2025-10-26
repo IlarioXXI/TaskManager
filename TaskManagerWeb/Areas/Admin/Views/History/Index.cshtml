@@ -1,84 +1,68 @@
 ﻿@using TaskManagerWeb.Models
 @model ToDoVM
 
-<div class="card shadow border-0">
-    <div class="card-header bg-primary bg-gradient text-light ml-0 py-4">
-        <div class="row px-4">
-            <div class="col-6">
-                <h5 class="pt-2 text-white">
-                    History
-                </h5>
-            </div>
-
-        </div>
-    </div>
-    <div class="card-body my-4">
-        <div class="row">
-        </div>
-        <div class="row mb-3 pb-3">
-            @*             <div class="col-md-2 offset-md-1">
-                <a asp-area="user" asp-controller="Home" asp-action="Index" class="btn btn-outline-primary text-uppercase mb-5 btn-sm"><small>See tasks</small></a>
-            </div> *@
-            <div class="col-md-10 offset-md-1">
-
-
-                <div class="row border-bottom pb-3">
-
-                    <div class="col-12 col-lg-6 pt-md-3">
-                        <h5 class="text-uppercase text-secondary"><strong>Title</strong></h5>
-                        <p><small>@Html.Raw(Model.TaskToDo.Title)</small></p>
-                    </div>
-                    <div class="col-12 col-lg-6 pt-md-3">
-                        <h5 class="text-uppercase text-secondary"><strong>Description</strong></h5>
-                        <p><small>@Html.Raw(Model.TaskToDo.Description)</small></p>
-                    </div>
-                    <div class="col-12 col-lg-6 pt-md-3">
-                        <h5 class="text-uppercase text-secondary"><strong>Status</strong></h5>
-                        <p><small>@Html.Raw(Model.TaskToDo.Status.Name.ToString())</small></p>
-                    </div>
-                </div>
-
-
-            </div>
-        </div>
-        <div class="card-footer bg-white border-0">
-            <div class="row">
-                <div class="col-md-12">
-                    @if (Model.TaskToDo.History != null && Model.TaskToDo.History.Any(item => item.TaskItemId == Model.TaskToDo.Id))
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped w-100">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">To state</th>
-                                        <th scope="col">From state</th>
-                                        <th scope="col">Data</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model.TaskToDo.History.Where(item => item.TaskItemId == Model.TaskToDo.Id))
-                                    {
-                                        <tr>
-                                            <td>@Html.Raw(item.AppUser.Name)</td>
-                                            <td>@Html.Raw(item.FromStatus)</td>
-                                            <td>@Html.Raw(item.ToStatus)</td>
-                                            <td>@Html.Raw(item.ChangeDate.ToString("g"))</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                    else
-                    {
-                        <p>No history available</p>
-                    }
-                </div>
-            </div>
-        </div>
-
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-3 px-4">
+        <h4 class="mb-0 fw-semibold" style="color:var(--tm-primary);">
+            <i class="bi bi-clock-history me-2"></i> Storico Task
+        </h4>
     </div>
 
+    <div class="card-body px-4 py-4">
+        <div class="row gy-3">
+            <div class="col-12 col-lg-6">
+                <h6 class="text-uppercase text-muted small mb-1 fw-semibold">Titolo</h6>
+                <p class="fw-medium mb-0">@Html.Raw(Model.TaskToDo.Title)</p>
+            </div>
+            <div class="col-12 col-lg-6">
+                <h6 class="text-uppercase text-muted small mb-1 fw-semibold">Descrizione</h6>
+                <p class="fw-normal text-secondary mb-0">@Html.Raw(Model.TaskToDo.Description)</p>
+            </div>
+            <div class="col-12 col-lg-6">
+                <h6 class="text-uppercase text-muted small mb-1 fw-semibold">Stato attuale</h6>
+                <span class="badge rounded-pill px-3 py-2" style="background-color:rgba(28,125,111,0.1); color:#1c7d6f;">
+                    @Html.Raw(Model.TaskToDo.Status.Name.ToString())
+                </span>
+            </div>
+        </div>
+    </div>
 
+    <div class="card-footer bg-light border-0 px-4 pb-4">
+        <h6 class="fw-semibold text-muted mb-3">
+            <i class="bi bi-list-ul me-1"></i> Cronologia modifiche
+        </h6>
 
+        @if (Model.TaskToDo.History != null && Model.TaskToDo.History.Any(item => item.TaskItemId == Model.TaskToDo.Id))
+        {
+            <div class="table-responsive shadow-sm rounded-4 overflow-hidden">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr class="text-uppercase small text-muted">
+                            <th scope="col">Utente</th>
+                            <th scope="col">Da stato</th>
+                            <th scope="col">A stato</th>
+                            <th scope="col">Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.TaskToDo.History.Where(item => item.TaskItemId == Model.TaskToDo.Id))
+                        {
+                            <tr>
+                                <td class="fw-medium">@Html.Raw(item.AppUser.Name)</td>
+                                <td><span class="badge bg-secondary-subtle text-dark px-3 py-2">@Html.Raw(item.FromStatus)</span></td>
+                                <td><span class="badge bg-success-subtle text-dark px-3 py-2">@Html.Raw(item.ToStatus)</span></td>
+                                <td class="text-muted">@Html.Raw(item.ChangeDate.ToString("g"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mt-3 border-0 rounded-3 shadow-sm">
+                <i class="bi bi-info-circle me-1"></i> Nessuna cronologia disponibile per questo task.
+            </div>
+        }
+    </div>
+</div>

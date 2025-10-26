@@ -3,35 +3,90 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TaskManagerWEB</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TaskManagerWEB.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
 
+
+
+    <style>
+        :root {
+            --tm-primary: #1c7d6f;
+            --tm-bg: #f8faf9;
+            --tm-surface: #ffffff;
+            --tm-text: #1f2937;
+        }
+        body {
+            background: var(--tm-bg);
+            color: var(--tm-text);
+            font-family: "Inter", system-ui, sans-serif;
+        }
+        .navbar {
+            background: var(--tm-surface);
+            box-shadow: 0 2px 10px rgba(0,0,0,.05);
+        }
+        .navbar-brand {
+            color: var(--tm-primary) !important;
+            font-weight: 600;
+        }
+        .navbar-nav .nav-link {
+            color: var(--tm-text) !important;
+            font-weight: 500;
+            transition: color .2s ease;
+        }
+        .navbar-nav .nav-link:hover {
+            color: var(--tm-primary) !important;
+        }
+        footer {
+            background: var(--tm-surface);
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            padding: 1rem 0;
+            font-size: 0.9rem;
+        }
+        footer i {
+            color: var(--tm-primary);
+        }
+        main {
+            background: var(--tm-surface);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 18px rgba(0,0,0,.06);
+        }
+    </style>
 </head>
+
 <body>
     <header>
         @if (!User.Identity.IsAuthenticated)
         {
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-primary border-bottom box-shadow mb-3 text-white">
+            <nav class="navbar navbar-expand-lg">
                 <div class="container-fluid">
-                    <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-check2-square me-1"></i> TaskManagerWEB
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                            aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
+
+                    <div class="collapse navbar-collapse" id="navbarMain">
+                        <ul class="navbar-nav ms-auto">
                             <li class="nav-item">
-                                <a class="nav-link" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Registrati</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Accedi</a>
                             </li>
                         </ul>
                     </div>
@@ -40,113 +95,82 @@
         }
         else
         {
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-primary border-bottom box-shadow mb-3 text-white">
+            <nav class="navbar navbar-expand-lg">
                 <div class="container-fluid">
-                    <a class="navbar-brand text-white" asp-area="User" asp-controller="Home" asp-action="Index">TaskManagerWEB</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+                    <a class="navbar-brand" asp-area="User" asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-check2-square me-1"></i> TaskManagerWEB
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                            aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
+
+                    <div class="collapse navbar-collapse" id="navbarMain">
+                        <ul class="navbar-nav me-auto">
                             @if (User.IsInRole(SD.Role_User))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                                 </li>
                             }
-                            
+
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Teams
-                                </a>
-                                <ul class="dropdown-menu" id="dropDownTeams">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                   aria-expanded="false">Teams</a>
+                                <ul class="dropdown-menu shadow-sm border-0">
                                     @if (User.IsInRole(SD.Role_User))
                                     {
-                                        <li class="nav-item">
-                                            <a class="dropdown-item" asp-area="User" asp-controller="Team" asp-action="Index">MyTeams</a>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="User" asp-controller="Team" asp-action="Index">
+                                                I miei Team
+                                            </a>
                                         </li>
                                     }
                                     else
                                     {
-                                        <li class="nav-item">
-                                            <a class="dropdown-item" asp-area="User" asp-controller="Team" asp-action="Index">MyTeams</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item" asp-area="Admin" asp-controller="Team" asp-action="Index">AllTeams</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item" asp-area="Admin" asp-controller="Team" asp-action="Upsert">Add Team</a>
-                                        </li>
+                                        <li><a class="dropdown-item" asp-area="User" asp-controller="Team" asp-action="Index">I miei Team</a></li>
+                                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Team" asp-action="Index">Tutti i Team</a></li>
+                                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Team" asp-action="Upsert">Aggiungi Team</a></li>
                                     }
-
                                 </ul>
                             </li>
+
                             @if (User.IsInRole(SD.Role_Admin))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-white" asp-area="Admin" asp-controller="AppUser" asp-action="Index">ManageUser</a>
+                                    <a class="nav-link" asp-area="Admin" asp-controller="AppUser" asp-action="Index">Gestisci Utenti</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-white" asp-area="User" asp-controller="Home" asp-action="Index">My Tasks</a>
+                                    <a class="nav-link" asp-area="User" asp-controller="Home" asp-action="Index">I miei Task</a>
                                 </li>
                             }
                         </ul>
                         <partial name="_LoginPartial"></partial>
                     </div>
-
                 </div>
             </nav>
         }
-
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
 
+    <div class="container my-4">
+        <main role="main" class="pb-4">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted bg-primary ">
-        <div class="text-center text-white">
-            Made by <i class="bi bi-0-circle"></i>
-        </div>
+    <footer class="text-center">
+        Made with ❤️ by Ilario D'Onghia
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://cdn.tiny.cloud/1/2ektt0c7uk9qk2epidlwjpd0hlplc7b4s60u2dhz5s8gsg3m/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="~/js/signalr/dist/browser/signalr.js"></script>
     <script src="~/js/notification.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-
-@* @section Scripts {
-    <script>
-            Swal.fire({
-              title: "<strong>HTML <u>example</u></strong>",
-              icon: "info",
-              html: `
-                You can use <b>bold text</b>,
-        <a href="#" autofocus>links</a>,
-                and other HTML tags
-              `,
-              showCloseButton: true,
-              showCancelButton: true,
-              focusConfirm: false,
-              confirmButtonText: `
-        <i class="fa fa-thumbs-up"></i> Great!
-              `,
-              confirmButtonAriaLabel: "Thumbs up, great!",
-              cancelButtonText: `
-        <i class="fa fa-thumbs-down"></i>
-              `,
-              cancelButtonAriaLabel: "Thumbs down"
-            });
-    </script>
-            
-} *@

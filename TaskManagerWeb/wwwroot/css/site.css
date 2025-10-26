@@ -7,6 +7,10 @@
     margin: auto 0.25rem;
     box-shadow: 0 -2px;
 }
+:root {
+    --bs-primary: #1c7d6f !important;
+    --tm-primary: #1c7d6f;
+}
 
 html {
     font-size: 14px;
@@ -44,3 +48,133 @@ body {
     background-color: #28a745; /* Verde */
     color: white;
 }
+.page-header {
+    border-bottom: 1px solid rgba(0,0,0,.08);
+    padding-bottom: .75rem;
+    margin-bottom: 1.5rem;
+}
+
+    .page-header h1 {
+        color: #1c7d6f;
+        font-weight: 600;
+    }
+
+    .page-header .btn-group .btn {
+        border-radius: .6rem;
+        padding-inline: 1rem;
+    }
+.tm-sidebar-nav .list-group-item {
+    border: none;
+    transition: background-color .2s, transform .15s ease-in-out;
+}
+
+    .tm-sidebar-nav .list-group-item:hover {
+        background-color: rgba(28, 125, 111, 0.08);
+        transform: translateX(3px);
+    }
+
+    .tm-sidebar-nav .list-group-item.active {
+        background-color: rgba(28, 125, 111, 0.12);
+        color: var(--tm-primary);
+        font-weight: 600;
+    }
+
+    .tm-sidebar-nav .list-group-item i {
+        width: 1.25rem;
+        text-align: center;
+    }
+
+.form-control:focus {
+    border-color: #1c7d6f !important;
+    box-shadow: 0 0 0 0.2rem rgba(28,125,111,.15);
+}
+
+.btn-primary {
+    background-color: #1c7d6f;
+    border-color: #1c7d6f;
+}
+
+    .btn-primary:hover {
+        background-color: #166b60;
+    }
+
+.user-row:hover {
+    background-color: rgba(28,125,111,0.05);
+    border-radius: .6rem;
+    transition: all .2s ease;
+}
+
+.form-select:focus {
+    border-color: var(--tm-primary) !important;
+    box-shadow: 0 0 0 0.15rem rgba(28,125,111,0.15);
+}
+
+
+
+
+.custom-select-modern {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-color: #fff !important;
+    border: 2px solid #cbd5e1 !important;
+    border-radius: 0.75rem !important;
+    padding: 0.6rem 2.2rem 0.6rem 0.8rem !important;
+    font-size: 0.95rem !important;
+    color: #1f2937 !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%231c7d6f' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.8rem center;
+    background-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+    .custom-select-modern:hover {
+        border-color: rgba(28, 125, 111, 0.5) !important;
+    }
+
+    .custom-select-modern:focus {
+        border-color: #1c7d6f !important;
+        box-shadow: 0 0 0 0.2rem rgba(28,125,111,0.15) !important;
+        outline: none !important;
+    }
+
+
+
+.custom-select-modern {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-color: #fff !important;
+    border: 1.5px solid #d1d5db !important;
+    border-radius: 0.6rem !important;
+    padding: 0.6rem 2rem 0.6rem 0.8rem !important;
+    font-size: 0.95rem;
+    color: #1f2937 !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%231c7d6f' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.8rem center;
+    background-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+    .custom-select-modern:focus {
+        border-color: #1c7d6f !important;
+        box-shadow: 0 0 0 0.15rem rgba(28,125,111,0.15) !important;
+        outline: none !important;
+    }
+
+
+.form-check-input {
+    border-color: #cbd5e1 !important;
+}
+
+    .form-check-input:checked {
+        background-color: #1c7d6f !important;
+        border-color: #1c7d6f !important;
+    }
+
+    .form-check-input:focus {
+        box-shadow: none !important;
+    }
+

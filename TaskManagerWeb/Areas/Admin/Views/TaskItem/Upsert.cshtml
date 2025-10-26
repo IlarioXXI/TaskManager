@@ -1,69 +1,81 @@
 ﻿@model TaskManagerWeb.Models.ToDoVM
 @{
-    ViewData["Title"] = Model.TaskToDo?.Id == 0 ? "Create Task" : "Edit Task";
+    ViewData["Title"] = Model.TaskToDo?.Id == 0 ? "Crea Task" : "Modifica Task";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@ViewData["Title"]</h2>
-
-<form asp-action="Upsert" method="post">
-    <input asp-for="TaskToDo.Id" type="hidden" />
-    <input asp-for="TaskToDo.TeamId" type="hidden" />
-
-    <div class="mb-3">
-        <label asp-for="TaskToDo.Title" class="form-label"></label>
-        <input asp-for="TaskToDo.Title" class="form-control" />
-        <span asp-validation-for="TaskToDo.Title" class="text-danger"></span>
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom py-3 px-4">
+        <h4 class="mb-0 fw-semibold" style="color:var(--tm-primary);">
+            <i class="bi bi-clipboard-check me-2"></i> @ViewData["Title"]
+        </h4>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="TaskToDo.Description" class="form-label"></label>
-        <textarea asp-for="TaskToDo.Description" class="form-control" rows="4"></textarea>
-        <span asp-validation-for="TaskToDo.Description" class="text-danger"></span>
-    </div>
+    <div class="card-body px-4 py-4">
+        <form asp-action="Upsert" method="post">
+            <input asp-for="TaskToDo.Id" type="hidden" />
+            <input asp-for="TaskToDo.TeamId" type="hidden" />
 
-    <div class="mb-3">
-        <label class="form-label">Due date</label>
-        <!-- datetime-local: format value to yyyy-MM-ddTHH:mm when model has value -->
-        <input asp-for="TaskToDo.DueDate" type="datetime-local" class="form-control"
-               value="@(Model.TaskToDo?.DueDate.HasValue == true ? Model.TaskToDo.DueDate.Value.ToString("yyyy-MM-ddTHH:mm") : "")" />
-        <span asp-validation-for="TaskToDo.DueDate" class="text-danger"></span>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label class="form-label">Priority</label>
-            <select asp-for="PrioritySelectedId" asp-items="Model.PriorityList" class="form-select"></select>
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">Status</label>
-            <select asp-for="StatusSelectedId" asp-items="Model.StatusList" class="form-select"></select>
-        </div>
-    </div>
-
-    <h5>Assegna utente</h5>
-    <!-- Radio buttons per una sola selezione (comportamento nativo) -->
-    <div class="list-group mb-3">
-        @foreach (var user in Model.Users)
-        {
-            var isChecked = (Model.SelectedUserId == user.Value) || (Model.TaskToDo?.AppUserId == user.Value);
-            <label class="list-group-item d-flex align-items-center">
-                <input type="radio" name="SelectedUserId" value="@user.Value" class="form-check-input me-2" @(isChecked ? "checked" : "") />
-                <div>
-                    <strong>@user.Text</strong>
+            <div class="row g-3">
+                <div class="col-12 col-md-6">
+                    <label asp-for="TaskToDo.Title" class="form-label fw-semibold text-muted small text-uppercase">Titolo</label>
+                    <input asp-for="TaskToDo.Title" class="form-control rounded-3 shadow-sm border" />
+                    <span asp-validation-for="TaskToDo.Title" class="text-danger small"></span>
                 </div>
-            </label>
-        }
-    </div>
 
-    <div class="mb-3">
-        <button type="submit" class="btn btn-primary">Salva</button>
-        <a asp-action="Index" asp-controller="Team" class="btn btn-secondary ms-2">Annulla</a>
+                <div class="col-12 col-md-6">
+                    <label class="form-label fw-semibold text-muted small text-uppercase">Data di scadenza</label>
+                    <input asp-for="TaskToDo.DueDate" type="datetime-local"
+                           class="form-control rounded-3 shadow-sm border"
+                           value="@(Model.TaskToDo?.DueDate.HasValue == true ? Model.TaskToDo.DueDate.Value.ToString("yyyy-MM-ddTHH:mm") : "")" />
+                    <span asp-validation-for="TaskToDo.DueDate" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="TaskToDo.Description" class="form-label fw-semibold text-muted small text-uppercase">Descrizione</label>
+                    <textarea asp-for="TaskToDo.Description" class="form-control rounded-3 shadow-sm border" rows="4"></textarea>
+                    <span asp-validation-for="TaskToDo.Description" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label fw-semibold text-muted small text-uppercase">Priorità</label>
+                    <select asp-for="PrioritySelectedId" asp-items="Model.PriorityList" class="form-select custom-select-modern"></select>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label fw-semibold text-muted small text-uppercase">Stato</label>
+                    <select asp-for="StatusSelectedId" asp-items="Model.StatusList" class="form-select custom-select-modern"></select>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h6 class="fw-semibold text-muted mb-2 text-uppercase small">Assegna utente</h6>
+                <div class="list-group rounded-3 border shadow-sm">
+                    @foreach (var user in Model.Users)
+                    {
+                        var isChecked = (Model.SelectedUserId == user.Value) || (Model.TaskToDo?.AppUserId == user.Value);
+                        <label class="list-group-item d-flex align-items-center border-0 border-bottom">
+                            <input type="radio" name="SelectedUserId" value="@user.Value"
+                                   class="form-check-input me-2" @(isChecked ? "checked" : "") />
+                            <span class="fw-medium">@user.Text</span>
+                        </label>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold rounded-3">
+                    <i class="bi bi-save me-1"></i> Salva
+                </button>
+                <a asp-action="Index" asp-controller="Team"
+                   class="btn btn-outline-secondary px-4 py-2 rounded-3">
+                    <i class="bi bi-x-circle me-1"></i> Annulla
+                </a>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-
-

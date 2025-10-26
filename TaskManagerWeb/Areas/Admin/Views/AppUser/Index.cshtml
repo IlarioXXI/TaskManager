@@ -1,53 +1,50 @@
 ﻿@using TaskManagerWeb.Models
 @model List<AppUserVM>
 
-<div class="card shadow border-0">
-    <div class="card-header bg-primary bg-gradient text-light ml-0 py-4">
-        <div class="row px-4">
-            <div class="col-6">
-                <h5 class="pt-2 text-white">
-                    Users
-                </h5>
-            </div>
-
-        </div>
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3 px-4">
+        <h4 class="mb-0 fw-semibold" style="color:var(--tm-primary);">
+            <i class="bi bi-people-fill me-2"></i> Gestione Utenti
+        </h4>
     </div>
-    <div class="card-body my-4">
-        <div class="row">
-        </div>
-        <div class="row mb-3 pb-3">
-            @*             <div class="col-md-2 offset-md-1">
-                <a asp-area="user" asp-controller="Home" asp-action="Index" class="btn btn-outline-primary text-uppercase mb-5 btn-sm"><small>See tasks</small></a>
-            </div> *@
-            <div class="col-md-10 offset-md-1">
-                <form method="post" >
+
+    <div class="card-body px-4 py-4">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info text-center rounded-3 shadow-sm border-0">
+                <i class="bi bi-info-circle me-1"></i> Nessun utente trovato.
+            </div>
+        }
+        else
+        {
+            <form method="post">
                 @for (int i = 0; i < Model.Count; i++)
                 {
-                        <input asp-for="@Model[i].AppUser.Id" hidden/>
-                        <div class="row border-bottom pb-3">
+                    <input asp-for="@Model[i].AppUser.Id" hidden />
 
-                            <div class="col-4 pt-md-3">
-                                <h5 class="text-uppercase text-secondary"><strong>Name</strong></h5>
-                                
-                                <p><small>@Html.Raw(Model[i].AppUser.Name)</small></p>
-                            </div>
-                            <div class="col-4 pt-md-3">
-                                <h5 class="text-uppercase text-secondary"><strong>Role</strong></h5>
-
-                                <select asp-for="@Model[i].RoleSelectedId" asp-items="@Model[i].Roles" class="form-select p-0">
-                                    <option disabled selected>--Role--</option>
-                                </select>
-                            </div>
-                            <div class="col-4 pt-md-3">
-                                <button type="submit" class="btn btn-warning form-control">Update</button>
-                            </div>
+                    <div class="user-row d-flex flex-wrap align-items-center justify-content-between py-3 border-bottom">
+                        <div class="col-12 col-md-4 mb-2 mb-md-0">
+                            <h6 class="text-muted text-uppercase small mb-1 fw-semibold">Nome</h6>
+                            <p class="mb-0 fw-medium">@Html.Raw(Model[i].AppUser.Name)</p>
                         </div>
+
+                        <div class="col-12 col-md-4 mb-2 mb-md-0">
+                            <h6 class="text-muted text-uppercase small mb-1 fw-semibold">Ruolo</h6>
+                            <select asp-for="@Model[i].RoleSelectedId"
+                                    asp-items="@Model[i].Roles"
+                                    class="custom-select-modern">
+                                <option disabled selected>-- Seleziona ruolo --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-3 text-md-end mt-2 mt-md-0">
+                            <button type="submit" class="btn btn-primary px-4 py-2 rounded-3 fw-semibold">
+                                <i class="bi bi-arrow-repeat me-1"></i> Aggiorna
+                            </button>
+                        </div>
+                    </div>
                 }
-                </form>
-            </div>
-        </div>
-
+            </form>
+        }
     </div>
-
-
-
+</div>

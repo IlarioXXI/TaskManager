@@ -1,0 +1,22 @@
+@{
+    var message = TempData["StatusMessage"] as string;
+    var error = TempData["ErrorMessage"] as string;
+}
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-success border-0 shadow-sm d-flex align-items-center gap-2 py-2 px-3 rounded-3 mt-3" role="alert"
+         style="background-color: #e8f8f3; color: #11634f;">
+        <i class="bi bi-check-circle-fill fs-5"></i>
+        <div class="fw-semibold">@message</div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center gap-2 py-2 px-3 rounded-3 mt-3" role="alert"
+         style="background-color: #fde8e8; color: #9c2f2f;">
+        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+        <div class="fw-semibold">@error</div>
+    </div>
+}
