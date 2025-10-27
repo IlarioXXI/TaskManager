@@ -2,140 +2,210 @@
 @using TaskManager.DataAccess.Utility
 @model IEnumerable<TeamVM>
 
-<div class="card shadow border-0">
-    <div class="card-header bg-primary text-light ml-0 py-4 text-center">
-        <div class="row px-4">
-            <div class="col-6">
-                <h5 class="pt-2 text-white ">
-                    Teams
-                </h5>
-            </div>
-        </div>
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom py-3 px-4 text-center">
+        <h4 class="fw-semibold text-success">
+            <i class="bi bi-people-fill me-2"></i> Gestione Team
+        </h4>
     </div>
-    <div class="card-body my-4">
-        <div class="row mb-3 pb-3">
-            <div class="col-md-10 offset-md-1">
+
+    <div class="card-body px-4 py-4">
+        @if (!Model.Any())
+        {
+            <div class="alert alert-light text-center text-muted py-5">
+                <i class="bi bi-info-circle me-2"></i> Nessun team disponibile.
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
                 @foreach (var item in Model)
                 {
-                    <div class="row border-bottom pb-3">
-                        <div class="col-12 col-lg-6 pt-md-3">
-                            <h5 class="text-uppercase text-secondary"><strong>@item.Team.Name</strong></h5>
-                            <p><small>@Html.Raw(item.Team.Name)</small></p>
-                        </div>
-
-                        <div class="col-12 col-lg-6 pt-md-3">
-                            @if (item.Team.Users != null)
-                            {
-                                <div class="col-6">
-                                    <ul>Users</ul>
-                                    @foreach (var user in item.Team.Users)
-                                    {
-                                        <li>@user.Name</li>
-                                    }
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0 rounded-3 overflow-hidden mb-4">
+                            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-0 fw-bold text-uppercase">@item.Team.Name</h5>
+                                    <small class="text-white-50">@(item.Team.Users?.Count() ?? 0) membri</small>
                                 </div>
-                            }
-                            else
-                            {
-                                <p><small>No users available</small></p>
-                            }
-                        </div>
-
-                        <div class="col-12 pt-md-3">
-                            <div class="row">
-                                @if (item.TaskItems != null)
+                                @if (User.IsInRole(SD.Role_Admin))
                                 {
-                                    foreach (var t in item.TaskItems)
-                                    {
-                                        var taskClass = t.Priority.Name.ToLower() switch
-                                        {
-                                            "low" => "bg-success",
-                                            "medium" => "bg-warning",
-                                            _ => "bg-danger"
-                                        };
-
-                                        <div class="col-12 col-lg-6 pt-md-3 @taskClass p-2 mb-2">
-                                            <h5 class="text-uppercase text-secondary"><strong>@t.Title</strong></h5>
-                                            <p><small>@Html.Raw(t.Status.Name)</small></p>  
-                                            <p><small>@Html.Raw(t.Priority.Name)</small></p>
-                                            <div class="col-12">
-                                                @if (User.IsInRole(SD.Role_Admin))
-                                                {
-                                                    <a asp-area="Admin" asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" asp-route-id="@t.Id" class="btn btn-primary border-0 bg-gradient w-100 py-2">Update</a>
-                                                    <a asp-area="Admin" asp-action="Index" asp-controller="History" asp-route-id="@t.Id" class="btn btn-dark border-0 bg-gradient w-100 py-2">History</a>
-                                                    <a asp-area="Admin" asp-controller="Comment" asp-action="Upsert" asp-route-taskItemId="@t.Id">Add comment</a>
-                                                }else{
-                                                <a asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" asp-route-id="@t.Id" class="btn btn-primary border-0 bg-gradient w-100 py-2">Update</a>
-                                                }
-                                                
-                                            </div>
-
-
-
-                                            @if (t.Comments != null)
-                                            {
-                                                <div class="mt-2">
-                                                    <h6>Comments:</h6>
-                                                    @foreach (var comment in t.Comments)
-                                                    {
-                                                        <div>
-                                                            <strong>@comment.AppUser.Name:</strong>
-                                                            <small>@Html.Raw(comment.Description)</small>
-                                                        </div>
-                                                    }
-                                                </div>
-                                            }
-                                        </div>
-                                        
-                                    }
+                                    <div class="btn-group">
+                                        <a asp-area="Admin" asp-action="Upsert" asp-controller="Team" asp-route-id="@item.Team.Id" class="btn btn-light btn-sm">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <button class="btn btn-light btn-sm delete" data-id="@item.Team.Id">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 }
                             </div>
-                        </div>
-                        @if (User.IsInRole(SD.Role_Admin))
-                        {
-                            <div class="row">
-                                <div class="col-4">
-                                    <a asp-area="Admin" asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" class="btn btn-info border-0 bg-gradient w-100 py-2">Add Task</a>
-                                </div>
-                                <div class="col-4">
-                                    <a asp-area="Admin" asp-action="Upsert" asp-controller="Team" asp-route-id="@item.Team.Id" class="btn btn-warning border-0 bg-gradient w-100 py-2">Update</a>
-                                </div>
 
-                                <div class="col-4">
-                                    <a data-id="@item.Team.Id" class="delete btn btn-danger border-0 bg-gradient w-100 py-2">Delete</a>
+                            <div class="card-body bg-light">
+                                <div class="row">
+                                    <div class="col-md-4 border-end">
+                                        <h6 class="fw-semibold text-muted mb-2">Utenti</h6>
+                                        @if (item.Team.Users != null && item.Team.Users.Any())
+                                        {
+                                            <ul class="list-unstyled mb-0">
+                                                @foreach (var user in item.Team.Users)
+                                                {
+                                                    <li class="mb-1"><i class="bi bi-person me-1 text-success"></i>@user.Name</li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-muted small">Nessun utente assegnato.</p>
+                                        }
+                                    </div>
+
+                                    <div class="col-md-8">
+                                        <h6 class="fw-semibold text-muted mb-2">Task</h6>
+                                        @if (item.TaskItems != null && item.TaskItems.Any())
+                                        {
+                                            <div class="row g-3">
+                                                @foreach (var t in item.TaskItems)
+                                                {
+                                                    var taskColor = t.Priority.Name.ToLower() switch
+                                                    {
+                                                        "low" => "border-success-subtle bg-success-subtle",
+                                                        "medium" => "border-warning-subtle bg-warning-subtle",
+                                                        _ => "border-danger-subtle bg-danger-subtle"
+                                                    };
+
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="border rounded-3 p-3 shadow-sm @taskColor">
+                                                            <h6 class="fw-bold text-dark mb-1">@t.Title</h6>
+                                                            <p class="text-muted small mb-1">@t.Description</p>
+                                                            <span class="badge bg-white text-dark border">@t.Status.Name</span>
+                                                            <span class="badge bg-white text-dark border">@t.Priority.Name</span>
+                                                            <div class="mt-3 d-flex gap-2">
+                                                                
+                                                                @if (User.IsInRole(SD.Role_Admin))
+                                                                {
+                                                                    <a asp-area="Admin" asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" asp-route-id="@t.Id" class="btn btn-outline-primary btn-sm">
+                                                                        <i class="bi bi-pencil"></i>
+                                                                    </a>
+                                                                    <a asp-action="Index" asp-area="Admin" asp-controller="History" asp-route-taskItemId="@t.Id" class="btn btn-outline-dark btn-sm">
+                                                                        <i class="bi bi-clock-history"></i>
+                                                                    </a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a asp-area="User" asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" asp-route-id="@t.Id" class="btn btn-outline-primary btn-sm">
+                                                                        <i class="bi bi-pencil"></i>
+                                                                    </a>
+                                                                }
+                                                                <a asp-area="User" asp-controller="Comment" asp-action="Upsert" asp-route-taskId="@t.Id" class="btn btn-outline-success btn-sm">
+                                                                    <i class="bi bi-chat-left-text"></i>
+                                                                </a>
+                                                            </div>
+
+                                                            @if (t.Comments != null && t.Comments.Any())
+                                                            {
+                                                                <div class="mt-3 border-top pt-2">
+                                                                    <h6 class="small fw-semibold text-muted mb-1">Commenti:</h6>
+                                                                    @foreach (var comment in t.Comments)
+                                                                    {
+                                                                        <div class="small text-dark mb-1">
+                                                                            <i class="bi bi-chat-dots text-success me-1"></i>
+                                                                            <strong>@comment.AppUser.Name:</strong> @comment.Description
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-muted small">Nessun task assegnato.</p>
+                                        }
+                                    </div>
                                 </div>
-                                
                             </div>
-                        }
-                        
+
+                            @if (User.IsInRole(SD.Role_Admin))
+                            {
+                                <div class="card-footer bg-white border-top py-3">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a asp-area="Admin" asp-action="Upsert" asp-controller="TaskItem" asp-route-teamId="@item.Team.Id" class="btn btn-success btn-sm">
+                                            <i class="bi bi-plus-lg"></i> Nuovo Task
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 }
             </div>
-        </div>
+        }
     </div>
+</div>
 
-    @section Scripts {
-        <script>
-            $(document).on("click", ".delete", function (e) {
-                e.preventDefault();
+@section Scripts {
+    <script>
+        $(document).on("click", ".delete", function (e) {
+            e.preventDefault();
+            const teamId = $(this).data("id");
 
-                const teamId = $(this).data("id");
-
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "You won't be able to revert this!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, delete it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '@Url.Action("Delete", "Team")' + '?id=' + teamId;
-                    }
-                });
+            Swal.fire({
+                title: "Eliminare il team?",
+                text: "Questa azione non è reversibile!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1c7d6f",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sì, elimina"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("Delete", "Team")' + '?id=' + teamId;
+                }
             });
-        </script>
-    }
+        });
+    </script>
+}
 
+@section Styles {
+    <style>
+        :root {
+            --tm-primary: #1c7d6f;
+        }
 
-    
+        /* Card Team */
+        .card {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+            }
+
+        /* Task box colorati */
+        .bg-success-subtle {
+            background-color: rgba(28,125,111,0.1) !important;
+        }
+
+        .bg-warning-subtle {
+            background-color: rgba(255,193,7,0.15) !important;
+        }
+
+        .bg-danger-subtle {
+            background-color: rgba(220,53,69,0.1) !important;
+        }
+
+        /* Pulsanti coerenti */
+        .btn-success {
+            background-color: var(--tm-primary) !important;
+            border-color: var(--tm-primary) !important;
+        }
+
+            .btn-success:hover {
+                background-color: #17685e !important;
+            }
+    </style>
+}

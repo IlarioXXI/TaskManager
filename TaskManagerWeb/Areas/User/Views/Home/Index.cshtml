@@ -1,106 +1,198 @@
 ﻿@using TaskManager.Models
 @model IEnumerable<TaskItem>
 
-<div class="row pb-3">
-    @foreach (var item in Model.Where(i => i.Status.Name.ToLower() == "not started" || i.Status.Name.ToLower() == "in progress"))
-    {
-        @if (item.Priority.Name.ToLower() == "low")
-        {
-            <div class="col-lg-3 col-sm-6 bg-success">
-                <div class="row p-2">
-                    <div class="col-12 p-1">
-                        <div class="card border-0 p-3 shadow border-top border-5 rounded">
-
-                            <div class="card-body pb-0">
-                                <div class="pl-1">
-                                    <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">@item.Title</p>
-                                    <p class="card-title text-warning text-center"><b>@item.Description</b></p>
-                                </div>
-                                <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center">Status: <span>@item.Status.Name</span></p>
-                                </div>
-                                <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center">Priority: <span>@item.Priority.Name</span></p>
-                                </div>
-                                <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center">DueDate: <span>@item.DueDate.ToString()</span></p>
-                                </div>
-                            </div>
-                            <div class="row">
-                            
-                                <div class="col-6">
-                                    <a asp-controller="TaskItem" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary bg-gradient border-0 fom-controll">Details</a>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-        else if (item.Priority.Name.ToLower() == "medium")
-        {
-            <div class="col-lg-3 col-sm-6 bg-warning">
-                <div class="row p-2">
-                    <div class="col-12 p-1">
-                        <div class="card border-0 p-3 shadow border-top border-5 rounded">
-
-                            <div class="card-body pb-0">
-                                <div class="pl-1">
-                                    <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">@item.Title</p>
-                                    <p class="card-title text-warning text-center">by <b>@item.Description</b></p>
-                                </div>
-                                <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center mb-0">Status: <p>@item.Status.Name</p></p>
-                                </div>
-                                <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center">Priority: <span>@item.Priority.Name</span></p>
-                                </div>
-                                <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center">DueDate: <span>@item.DueDate</span></p>
-                                </div>
-                            </div>
-                            <div>
-                                <a asp-controller="TaskItem" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary bg-gradient border-0 fom-controll">Details</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-        else if (item.Priority.Name.ToLower() == "high")
-        {
-            <div class="col-lg-3 col-sm-6 text-bg-danger">
-                <div class="row p-2">
-                    <div class="col-12 p-1">
-                        <div class="card border-0 p-3 shadow border-top border-5 rounded">
-
-                            <div class="card-body pb-0">
-                                <div class="pl-1">
-                                    <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">@item.Title</p>
-                                    <p class="card-title text-warning text-center">by <b>@item.Description</b></p>
-                                </div>
-                                <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center mb-0">Status: <span>@item.Status.Name</span></p>
-                                </div>
-                                <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center">Priority: <span>@item.Priority.Name</span></p>
-                                </div>
-                                <div class="pl-1">
-                                    <p class="text-dark text-opacity-75 text-center">DueDate: <span>@item.DueDate</span></p>
-                                </div>
-                            </div>
-                            <div>
-
-                                <a asp-controller="TaskItem" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary bg-gradient border-0 fom-controll">Details</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-
-    }
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom py-3 px-4 d-flex align-items-center justify-content-between">
+        <h4 class="mb-0 fw-semibold" style="color:var(--tm-primary);">
+            <i class="bi bi-calendar-week me-2"></i> Pianificazione Settimanale
+        </h4>
+    </div>
+    <div class="card-body px-4 py-4">
+        <div id="calendar" class="shadow-sm rounded-3 border"></div>
+    </div>
 </div>
 
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          var calendarEl = document.getElementById('calendar');
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            slotMinTime: '08:00:00',
+            slotMaxTime: '20:00:00',
+            locale: 'it',
+            allDaySlot: false,
+            nowIndicator: true,
+            height: 'auto',
+            expandRows: true,
+            headerToolbar: {
+              left: 'prev,next today',
+              center: 'title',
+              right: 'timeGridDay,timeGridWeek,dayGridMonth'
+            },
+            eventContent: function(arg) {
+              // Personalizzazione HTML di ogni task
+              let priorityIcon = '';
+              if (arg.event.backgroundColor === '#dc3545') priorityIcon = '<i class="bi bi-exclamation-triangle-fill me-1 text-danger"></i>';
+              else if (arg.event.backgroundColor === '#f0ad4e') priorityIcon = '<i class="bi bi-exclamation-circle-fill me-1 text-warning"></i>';
+              else priorityIcon = '<i class="bi bi-check-circle-fill me-1 text-success"></i>';
 
+              let desc = arg.event.extendedProps.description ? `<div class="small text-white-50">${arg.event.extendedProps.description}</div>` : '';
+              return {
+                html: `
+                  <div class="fc-task-card">
+                    <div class="fc-task-header">
+                      ${priorityIcon}<span class="fw-semibold">${arg.event.title}</span>
+                    </div>
+                    ${desc}
+                  </div>
+                `
+              };
+            },
+            events: [
+              @foreach (var item in Model)
+              {
+                      var color = item.Priority.Name.ToLower() switch
+                      {
+                              "low" => "#1c7d6f",
+                              "medium" => "#f0ad4e",
+                              _ => "#dc3545"
+                      };
+                      <text>
+                      {
+                          id: '@item.Id',
+                          title: '@item.Title',
+                          start: '@(item.DueDate?.ToString("s") ?? "")',
+                          url: '@Url.Action("Details", "TaskItem", new { id = item.Id })',
+                          backgroundColor: '@color',
+                          borderColor: '@color',
+                          textColor: '#fff',
+                          extendedProps: {
+                              description: '@item.Description'
+                          }
+                      },
+                      </text>
+              }
+            ],
+            eventClick: function(info) {
+              info.jsEvent.preventDefault();
+              if (info.event.url) {
+                window.location.href = info.event.url;
+              }
+            }
+          });
+          calendar.render();
+        });
+    </script>
+}
+
+
+@section Styles {
+    <style>
+        :root {
+            --tm-primary: #1c7d6f;
+            --tm-bg-light: #f8faf9;
+        }
+
+        /* Calendar container */
+        #calendar {
+            background-color: #fff;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Toolbar */
+        .fc .fc-toolbar-title {
+            color: var(--tm-primary);
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .fc .fc-button-primary {
+            background-color: var(--tm-primary);
+            border-color: var(--tm-primary);
+        }
+
+            .fc .fc-button-primary:hover {
+                background-color: #17685e;
+                border-color: #17685e;
+            }
+
+        /* Grid background */
+        .fc .fc-timegrid-slot {
+            background-color: var(--tm-bg-light);
+            border-color: #e8f1ef;
+        }
+
+        /* Day header (Lunedì, Martedì, ecc.) */
+        .fc .fc-col-header-cell-cushion {
+            color: var(--tm-primary);
+            font-weight: 600;
+        }
+
+        /* Events (task) */
+        .fc-event {
+            border-radius: 8px !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            transition: transform 0.1s ease;
+        }
+
+            .fc-event:hover {
+                transform: scale(1.03);
+            }
+
+        /* "Now" line */
+        .fc .fc-timegrid-now-indicator-line {
+            border-color: var(--tm-primary);
+        }
+
+        .fc .fc-timegrid-now-indicator-arrow {
+            border-top-color: var(--tm-primary);
+        }
+
+        /* All-day label */
+        .fc .fc-timegrid-axis-cushion {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+
+        .fc-task-card {
+            background: rgba(255,255,255,0.15);
+            padding: 4px 8px;
+            border-radius: 8px;
+            line-height: 1.2;
+        }
+
+            .fc-task-card:hover {
+                background: rgba(255,255,255,0.25);
+                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+                transition: all 0.15s ease-in-out;
+            }
+
+        /* Titolo e descrizione */
+        .fc-task-header {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .fc-event-main {
+            overflow: hidden;
+        }
+
+        /* Miglioramento generale degli eventi */
+        .fc-event {
+            border-radius: 10px !important;
+            border: none !important;
+            padding: 2px !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: transform 0.1s ease;
+        }
+
+            .fc-event:hover {
+                transform: scale(1.02);
+            }
+    </style>
+}

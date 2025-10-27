@@ -2,67 +2,119 @@
 @using TaskManager.DataAccess.Utility
 @model TaskManagerWeb.Models.ToDoVM
 @{
-    ViewData["Title"] = "Update task";
+    ViewData["Title"] = "Aggiorna Task";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@ViewData["Title"]</h2>
-
-<form asp-action="Upsert" method="post">
-    <input asp-for="TaskToDo.Id" type="hidden" />
-    <input asp-for="TaskToDo.TeamId" type="hidden" />
-
-    <div class="mb-3">
-        <label class="form-label">Title</label>
-        <input asp-for="TaskToDo.Title" class="form-control" disabled />
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0 fw-semibold" style="color:var(--tm-primary);">
+            <i class="bi bi-pencil-square me-2"></i> Aggiorna stato task
+        </h4>
+        <a asp-action="Index" asp-controller="Team" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Torna alla lista
+        </a>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Description</label>
-        <textarea asp-for="TaskToDo.Description" class="form-control" rows="4" disabled></textarea>
-    </div>
+    <div class="card-body px-4 py-4">
+        <form asp-action="Upsert" method="post">
+            <input asp-for="TaskToDo.Id" type="hidden" />
+            <input asp-for="TaskToDo.TeamId" type="hidden" />
 
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label class="form-label">Priority</label>
-            <select class="form-select" disabled>
-                <option value="">@Model.TaskToDo?.Priority?.Name</option>
-            </select>
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">Status (modificabile)</label>
-            <select asp-for="StatusSelectedId" asp-items="Model.StatusList" class="form-select"></select>
-        </div>
-    </div>
+            <!-- Titolo e descrizione -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-muted small text-uppercase">Titolo</label>
+                <input asp-for="TaskToDo.Title" class="form-control form-control-lg border-0 bg-light shadow-sm" disabled />
+            </div>
 
-    <div class="mb-3">
-        <label class="form-label">Due date</label>
-        <input asp-for="TaskToDo.DueDate" type="datetime-local" class="form-control"
-               value="@(Model.TaskToDo?.DueDate.HasValue == true ? Model.TaskToDo.DueDate.Value.ToString("yyyy-MM-ddTHH:mm") : "")" disabled />
-    </div>
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-muted small text-uppercase">Descrizione</label>
+                <textarea asp-for="TaskToDo.Description" class="form-control border-0 bg-light shadow-sm" rows="4" disabled></textarea>
+            </div>
 
-    <h5>Assegnazione (visualizzazione)</h5>
-    <div class="list-group mb-3">
-        @foreach (var user in Model.Users)
-        {
-            var isChecked = (Model.SelectedUserId == user.Value) || (Model.TaskToDo?.AppUserId == user.Value);
-            <label class="list-group-item d-flex align-items-center">
-                <input type="radio" name="SelectedUserId" value="@user.Value" class="form-check-input me-2" @(isChecked ? "checked" : "") disabled />
-                <div>
-                    <strong>@user.Text</strong>
+            <!-- Priorità e stato -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted small text-uppercase">Priorità</label>
+                    <select class="form-select border-0 bg-light shadow-sm" disabled>
+                        <option value="">@Model.TaskToDo?.Priority?.Name</option>
+                    </select>
                 </div>
-            </label>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted small text-uppercase">Stato (modificabile)</label>
+                    <select asp-for="StatusSelectedId" asp-items="Model.StatusList" class="form-select border border-success shadow-sm"></select>
+                </div>
+            </div>
+
+            <!-- Scadenza -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-muted small text-uppercase">Data di scadenza</label>
+                <input asp-for="TaskToDo.DueDate" type="datetime-local" class="form-control border-0 bg-light shadow-sm"
+                       value="@(Model.TaskToDo?.DueDate.HasValue == true ? Model.TaskToDo.DueDate.Value.ToString("yyyy-MM-ddTHH:mm") : "")" disabled />
+            </div>
+
+            <!-- Assegnazione -->
+            <h6 class="fw-semibold text-uppercase text-muted small mb-3">Assegnato a</h6>
+            <div class="list-group mb-4 border-0">
+                @foreach (var user in Model.Users)
+                {
+                    var isChecked = (Model.SelectedUserId == user.Value) || (Model.TaskToDo?.AppUserId == user.Value);
+                    <label class="list-group-item d-flex align-items-center rounded-3 shadow-sm mb-2 border-0 bg-light">
+                        <input type="radio" name="SelectedUserId" value="@user.Value" class="form-check-input me-2" @(isChecked ? "checked" : "") disabled />
+                        <div>
+                            <strong>@user.Text</strong>
+                        </div>
+                    </label>
+                }
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-save me-1"></i> Salva
+                </button>
+                <a asp-action="Index" asp-controller="Team" class="btn btn-outline-secondary px-4">
+                    <i class="bi bi-x-circle me-1"></i> Annulla
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        :root {
+            --tm-primary: #1c7d6f;
         }
-    </div>
 
-    <div class="mb-3">
-        <button type="submit" class="btn btn-primary">Salva</button>
-        <a asp-action="Index" asp-controller="Team" class="btn btn-secondary ms-2">Annulla</a>
-    </div>
-</form>
+        /* Etichette */
+        label.form-label {
+            letter-spacing: 0.5px;
+        }
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+        /* Input e textarea disabilitati */
+        .form-control[disabled], .form-select[disabled] {
+            opacity: 0.85;
+            cursor: not-allowed;
+        }
+
+        /* Select modificabile */
+        .form-select {
+            border-radius: 0.5rem;
+        }
+
+            .form-select:focus {
+                border-color: var(--tm-primary);
+                box-shadow: 0 0 0 0.2rem rgba(28,125,111,0.2);
+            }
+
+        /* Pulsanti */
+        .btn-success {
+            background-color: var(--tm-primary) !important;
+            border-color: var(--tm-primary) !important;
+        }
+
+            .btn-success:hover {
+                background-color: #17685e !important;
+            }
+    </style>
 }
-
-
