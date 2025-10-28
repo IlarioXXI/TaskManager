@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using TaskManager.DataAccess;
 using TaskManager.Models;
 using TaskManager.Services.Hubs;
+
 
 namespace TaskManager.Services.Services
 {
@@ -17,6 +15,8 @@ namespace TaskManager.Services.Services
     {
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly IServiceScopeFactory _scopeFactory;
+
+
 
         public NotificationService(IHubContext<NotificationHub> hubContext,
             IServiceScopeFactory scopeFactory)
@@ -27,64 +27,65 @@ namespace TaskManager.Services.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // iniziale delay
-            await Task.Delay(10000, stoppingToken);
+
+            await Task.Delay(10000);
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                using var scope = _scopeFactory.CreateScope();
+                //potrei inserire lo scope in un using per liberare le risorse e non avre problemi di memory leak
+                var scope = _scopeFactory.CreateScope();
+
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
                 var users = db.Users.ToList();
 
-                if (users != null && users.Any())
+                if (users != null)
                 {
                     foreach (var u in users)
                     {
-                        var taskItems = db.TaskItems
-                            .Where(x => x.AppUserId == u.Id)
-                            .ToList();
-
-                        var taskItemsToNotify = new List<TaskItem>();
-                        var userConnected = NotificationHub.IsUserConnected(u.Id);
-
-                        foreach (var i in taskItems)
+                        List<TaskItem>? taskItems = new List<TaskItem>();
+                        if (db.TaskItems.All(x => x.AppUserId == u.Id) != null)
                         {
-                            // recupera lo status in modo sicuro
-                            var status = db.Status.FirstOrDefault(s => s.Id == i.StatusId);
-                            if (status == null) continue;
-
-                            // salta se completed o se l'utente non è connesso
-                            if (string.Equals(status.Name, "completed", StringComparison.OrdinalIgnoreCase) || !userConnected)
-                                continue;
-
-                            // controlla che DueDate sia valorizzata
-                            if (!i.DueDate.HasValue)
-                                continue;
-
-                            if (i.DueDate.Value <= DateTime.Now.AddDays(1))
+                            foreach (var item in db.TaskItems.Where(x => x.AppUserId == u.Id))
                             {
-                                // TASK: TaskNotification è non-nullable (DateTime). Usa default(DateTime) come "mai notificato".
-                                if (i.TaskNotification == default(DateTime) || i.TaskNotification.AddDays(1) <= DateTime.Now)
-                                {
-                                    i.TaskNotification = DateTime.Now;
-                                    db.TaskItems.Update(i);
-                                    db.SaveChanges();
-                                    taskItemsToNotify.Add(i);
-                                }
+                                taskItems.Add(item);
                             }
                         }
-
-                        if (taskItemsToNotify.Any() && userConnected)
+                        var taskItemsToNotify = new List<TaskItem>();
+                        foreach (var i in taskItems)
                         {
-                            await Task.Delay(20000, stoppingToken);
-                            await _hubContext.Clients.User(u.Id).SendAsync("SendNotification", JsonConvert.SerializeObject(taskItemsToNotify), stoppingToken);
+                            //lo posso concatenare l'if ma penso sia piu semplice da leggere
+                            if (db.Status.FirstOrDefault(s => s.Id == i.StatusId).Name != "completed" && NotificationHub.IsUserConnected(u.Id))
+                            {
+                                if (i.DueDate.Value <= DateTime.Now.AddDays(1))
+                                {
+                                    if (i.TaskNotification.AddDays(1) <= DateTime.Now)
+                                    {
+                                        db.TaskItems.FirstOrDefault(t => t.Id == i.Id).TaskNotification = DateTime.Now;
+                                        db.TaskItems.Update(i);
+                                        db.SaveChanges();
+                                        taskItemsToNotify.Add(i);
+                                    }
+                                }
+                            }
+
+                        }
+
+
+                        if (!taskItemsToNotify.IsNullOrEmpty() && NotificationHub.IsUserConnected(u.Id))
+                        {
+                            await Task.Delay(20000);
+                            await _hubContext.Clients.User(u.Id).SendAsync("SendNotification", JsonConvert.SerializeObject(taskItemsToNotify));
                         }
                     }
+
                 }
+
 
                 await Task.Delay(1000, stoppingToken);
             }
         }
     }
+
+
 }
