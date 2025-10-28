@@ -6,86 +6,36 @@ var connection = new signalR.HubConnectionBuilder()
 
 connection.start()
     .then(() => {
-        console.log("User ID: " + connection.connectionId);
-        console.log("Connected to NotificationHub")
-    }
-       )
-    .catch(err => console.error(err.toString()));
+        console.log("✅ Connected to NotificationHub");
+        console.log("User ID:", connection.connectionId);
+    })
+    .catch(err => console.error("❌ Connection error:", err.toString()));
 
+// 🔹 Genera HTML per l'elenco di task
 function writeEl(items) {
-    var output = "";
-    for (var i = 0; i < items.length; i++) { 
-        var obj = items[i]; 
-        for (var key in obj) {
-            if (key=="Title") {
-                var value = obj[key];
-                output += "<div><strong>" + key + ":</strong> " + value + "</div>"; 
-            }
-            if (key == "DueDate") {
-                var value = obj[key];
-                output += "<div><strong>" + key + ":</strong> " + new Date(value).toLocaleDateString() + "</div>";
-            }
-            
+    return items.map(obj => {
+        let html = "";
+        if (obj.Title) {
+            html += `<div><strong class="text-success">Titolo:</strong> ${obj.Title}</div>`;
         }
-    }
-    return output; 
+        if (obj.DueDate) {
+            const date = new Date(obj.DueDate).toLocaleDateString();
+            html += `<div><strong class="text-muted">Scadenza:</strong> ${date}</div>`;
+        }
+        return `<div class="border-bottom pb-2 mb-2">${html}</div>`;
+    }).join("");
 }
 
+// 🔹 Mostra la notifica al ricevimento
 connection.on("SendNotification", function (task) {
-    var items = JSON.parse(task);
+    const items = JSON.parse(task);
+
     Swal.fire({
-        title: "<strong>Tasks to do</strong>", 
+        title: `<h3 style="color:#1c7d6f;"><i class="bi bi-bell-fill me-2"></i>Nuovi Task da completare</h3>`,
         icon: "info",
         html: `
-            <div style="font-size: 16px; line-height: 1.5;">
+            <div style="text-align:left; font-size:15px; line-height:1.6;">
                 ${writeEl(items)}
             </div>
-            <a href="/" style="color: #007bff; text-decoration: underline;">Click here to see all tasks</a>
-        `,
-        showCloseButton: true,
-        showCancelButton: false,
-        focusConfirm: false,
-        confirmButtonText: `
-            <i class="fa fa-thumbs-up"></i> Great!
-          `,
-        customClass: {
-            title: 'swal-title',
-            html: 'swal-html',
-            confirmButton: 'swal-confirm-button'
-        },
-        backdrop: true,
-        toast: false,
-        position: 'center',
-        animation: true,
-        timer: 20000
-    });
-});
-
-
-
-
-
-//$(document).on("click", ".delete", function (e) {
-//    e.preventDefault();
-
-//    Swal.fire({
-//        title: "<strong>HTML <u>example</u></strong>",
-//        icon: "info",
-//        html: `
-//            You can use <b>bold text</b>,
-//    <a href="#" autofocus>links</a>,
-//            and other HTML tags
-//          `,
-//        showCloseButton: true,
-//        showCancelButton: true,
-//        focusConfirm: false,
-//        confirmButtonText: `
-//    <i class="fa fa-thumbs-up"></i> Great!
-//          `,
-//        confirmButtonAriaLabel: "Thumbs up, great!",
-//        cancelButtonText: `
-//    <i class="fa fa-thumbs-down"></i>
-//          `,
-//        cancelButtonAriaLabel: "Thumbs down"
-//    });
-//});
+            <div class="mt-3">
+                <a href="/" st

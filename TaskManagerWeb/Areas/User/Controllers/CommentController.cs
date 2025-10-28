@@ -32,12 +32,15 @@ namespace TaskManagerWeb.Areas.User.Controllers
         }
 
         [HttpPost]
-        public IActionResult Upsert(Comment comment)
+        public IActionResult Upsert(Comment comment, string? returnUrl)
         {
             comment.CreationDate = DateTime.Now;
             _unitOfWork.Comment.Add(comment);
             _unitOfWork.Save();
-            return RedirectToAction("Index","Team");
+            
+            if (!string.IsNullOrEmpty(returnUrl))
+                return Redirect(returnUrl);
+            return RedirectToAction("Details", "TaskItem", new { id = comment.TaskItemId });
         }
 
         public IActionResult Delete(int id)
