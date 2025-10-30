@@ -19,6 +19,15 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
 
         public IActionResult Upsert(int? id, int teamId)
         {
+
+            var referer = Request.Headers["Referer"].ToString();
+            if (!string.IsNullOrEmpty(referer) &&
+                !referer.Contains("/TaskItem/Upsert", StringComparison.OrdinalIgnoreCase))
+            {
+                ViewBag.ReturnUrl = referer;
+            }
+
+
             var taskItem = _unitOfWork.TaskItem.Get(t => t.Id == id);
             var teamFromDb = _unitOfWork.Team.Get(t => t.Id == teamId);
             var userList = new List<AppUser>();
@@ -83,13 +92,22 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Upsert(ToDoVM taskItemVM)
+        public IActionResult Upsert(ToDoVM taskItemVM, string? returnUrl)
         {
             // assegna l'utente selezionato dall'admin
             taskItemVM.TaskToDo.AppUserId = string.IsNullOrWhiteSpace(taskItemVM.SelectedUserId) ? null : taskItemVM.SelectedUserId;
-
+            if (taskItemVM.TaskToDo.DueDate.HasValue)
+            {
+                var hour = taskItemVM.TaskToDo.DueDate.Value.Hour;
+                if (hour < 8 || hour > 19)
+                {
+                    ModelState.AddModelError("TaskToDo.DueDate", "L'orario deve essere compreso tra le 08:00 e le 19:00.");
+                }
+            }
             if (ModelState.IsValid)
             {
+                
+
                 if (taskItemVM.TaskToDo.Id == 0)
                 {
                     taskItemVM.TaskToDo.StatusId = _unitOfWork.Status.Get(s => s.Id == taskItemVM.StatusSelectedId).Id;
@@ -122,6 +140,9 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
                 _unitOfWork.Save();
                 taskItemVM.TaskToDo.Status = _unitOfWork.Status.Get(s => s.Id == taskItemVM.StatusSelectedId);
                 taskItemVM.TaskToDo.Priority = _unitOfWork.Priority.Get(s => s.Id == taskItemVM.PrioritySelectedId);
+                if (!string.IsNullOrEmpty(returnUrl))
+                    return Redirect(returnUrl);
+
                 return RedirectToAction("Index", "Team");
             }
 

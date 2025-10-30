@@ -6,10 +6,9 @@ var connection = new signalR.HubConnectionBuilder()
 
 connection.start()
     .then(() => {
-        console.log("✅ Connected to NotificationHub");
         console.log("User ID:", connection.connectionId);
     })
-    .catch(err => console.error("❌ Connection error:", err.toString()));
+    .catch(err => console.error(err.toString()));
 
 // 🔹 Genera HTML per l'elenco di task
 function writeEl(items) {
@@ -26,7 +25,6 @@ function writeEl(items) {
     }).join("");
 }
 
-// 🔹 Mostra la notifica al ricevimento
 connection.on("SendNotification", function (task) {
     const items = JSON.parse(task);
 
@@ -38,4 +36,20 @@ connection.on("SendNotification", function (task) {
                 ${writeEl(items)}
             </div>
             <div class="mt-3">
-                <a href="/" st
+                <a href="/" style="color:#1c7d6f; text-decoration:none; font-weight:500;">
+                    <i class="bi bi-list-task me-1"></i> Vai alla lista task
+                </a>
+            </div>
+        `,
+        showCloseButton: true,
+        showConfirmButton: false,
+        background: "#f9fdfc",
+        backdrop: `rgba(28,125,111,0.4)`,
+        customClass: {
+            popup: 'swal2-rounded',
+            htmlContainer: 'swal2-content-custom'
+        },
+        timer: 15000,
+        timerProgressBar: true
+    });
+});

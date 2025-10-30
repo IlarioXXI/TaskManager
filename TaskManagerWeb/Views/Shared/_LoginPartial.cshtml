@@ -5,6 +5,7 @@
 <ul class="navbar-nav align-items-center">
     @if (SignInManager.IsSignedIn(User))
     {
+        
         <li class="nav-item me-2">
             <a id="manage" class="nav-link fw-semibold text-dark d-flex align-items-center gap-1"
                asp-area="Identity" asp-page="/Account/Manage/Index" title="Gestisci account">

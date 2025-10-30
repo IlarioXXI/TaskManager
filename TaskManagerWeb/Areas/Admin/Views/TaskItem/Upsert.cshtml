@@ -15,7 +15,7 @@
         <form asp-action="Upsert" method="post">
             <input asp-for="TaskToDo.Id" type="hidden" />
             <input asp-for="TaskToDo.TeamId" type="hidden" />
-
+            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
             <div class="row g-3">
                 <div class="col-12 col-md-6">
                     <label asp-for="TaskToDo.Title" class="form-label fw-semibold text-muted small text-uppercase">Titolo</label>
