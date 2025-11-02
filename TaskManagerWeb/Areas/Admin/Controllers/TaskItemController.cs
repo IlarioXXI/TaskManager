@@ -104,6 +104,10 @@ namespace TaskManagerWeb.Areas.Admin.Controllers
                     ModelState.AddModelError("TaskToDo.DueDate", "L'orario deve essere compreso tra le 08:00 e le 19:00.");
                 }
             }
+            if (taskItemVM.TaskToDo.DueDate == null)
+            {
+                ModelState.AddModelError("TaskToDo.DueDate", "Inserire la data di scadenza.");
+            }
             if (ModelState.IsValid)
             {
                 
